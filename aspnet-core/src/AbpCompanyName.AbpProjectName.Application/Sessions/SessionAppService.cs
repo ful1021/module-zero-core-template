@@ -27,7 +27,15 @@ namespace AbpCompanyName.AbpProjectName.Sessions
 
             if (AbpSession.UserId.HasValue)
             {
-                output.User = ObjectMapper.Map<UserLoginInfoDto>(await GetCurrentUserAsync());
+                var user = await GetCurrentUserAsync();
+                var role = await UserManager.GetRolesAsync(user);
+
+                output.User = ObjectMapper.Map<UserLoginInfoDto>(user);
+
+                output.Avatar = "//hbimg.huabanimg.com/9fd86985ec36de14e4a4040b2008f6d0df93515618f4-wm0Y66_fw658";// user.ProfilePicture;
+                output.Name = user.Name;
+                output.Introduction = user.Introduction;
+                output.Roles = role;
             }
 
             return output;

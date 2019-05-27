@@ -9,6 +9,10 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
     {
         public const string DefaultPassword = "123qwe";
 
+        public string Introduction { get; set; }
+
+        public UserType UserType { get; set; }
+
         public static string CreateRandomPassword()
         {
             return Guid.NewGuid().ToString("N").Truncate(16);

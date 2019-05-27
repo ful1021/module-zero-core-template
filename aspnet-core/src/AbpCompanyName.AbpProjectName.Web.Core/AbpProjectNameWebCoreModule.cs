@@ -12,14 +12,18 @@ using Abp.Zero.Configuration;
 using AbpCompanyName.AbpProjectName.Authentication.JwtBearer;
 using AbpCompanyName.AbpProjectName.Configuration;
 using AbpCompanyName.AbpProjectName.EntityFrameworkCore;
+using Abp.Runtime.Caching.Redis;
+using Abp.Configuration.Startup;
+using AbpCompanyName.AbpProjectName.ProxyScripting;
 
 namespace AbpCompanyName.AbpProjectName
 {
     [DependsOn(
          typeof(AbpProjectNameApplicationModule),
          typeof(AbpProjectNameEntityFrameworkModule),
-         typeof(AbpAspNetCoreModule)
-        ,typeof(AbpAspNetCoreSignalRModule)
+         typeof(AbpAspNetCoreModule),
+         typeof(AbpRedisCacheModule)
+        , typeof(AbpAspNetCoreSignalRModule)
      )]
     public class AbpProjectNameWebCoreModule : AbpModule
     {
@@ -38,6 +42,8 @@ namespace AbpCompanyName.AbpProjectName
                 AbpProjectNameConsts.ConnectionStringName
             );
 
+            Configuration.Modules.AbpWebCommon().ApiProxyScripting.Generators[VueProxyScriptGenerator.Name] = typeof(VueProxyScriptGenerator);
+
             // Use database for language management
             Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();
 
@@ -45,6 +51,14 @@ namespace AbpCompanyName.AbpProjectName
                  .CreateControllersForAppServices(
                      typeof(AbpProjectNameApplicationModule).GetAssembly()
                  );
+
+            //Uncomment this line to use Redis cache instead of in-memory cache.
+            //See app.config for Redis configuration and connection string
+            Configuration.Caching.UseRedis(options =>
+            {
+                options.ConnectionString = _appConfiguration["Abp:RedisCache:ConnectionString"];
+                options.DatabaseId = _appConfiguration.GetValue<int>("Abp:RedisCache:DatabaseId");
+            });
 
             ConfigureTokenAuth();
         }

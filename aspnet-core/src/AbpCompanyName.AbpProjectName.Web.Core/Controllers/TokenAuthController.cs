@@ -4,8 +4,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.MultiTenancy;
@@ -17,6 +15,8 @@ using AbpCompanyName.AbpProjectName.Authorization;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
 using AbpCompanyName.AbpProjectName.Models.TokenAuth;
 using AbpCompanyName.AbpProjectName.MultiTenancy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AbpCompanyName.AbpProjectName.Controllers
 {
@@ -133,6 +133,15 @@ namespace AbpCompanyName.AbpProjectName.Controllers
             }
         }
 
+        [HttpGet]
+        [AbpAuthorize]
+        public async Task LogOut()
+        {
+            if (AbpSession.UserId != null)
+            {
+            }
+        }
+
         private async Task<User> RegisterExternalUserAsync(ExternalAuthUserInfo externalUser)
         {
             var user = await _userRegistrationManager.RegisterAsync(
@@ -188,6 +197,7 @@ namespace AbpCompanyName.AbpProjectName.Controllers
             {
                 case AbpLoginResultType.Success:
                     return loginResult;
+
                 default:
                     throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(loginResult.Result, usernameOrEmailAddress, tenancyName);
             }
