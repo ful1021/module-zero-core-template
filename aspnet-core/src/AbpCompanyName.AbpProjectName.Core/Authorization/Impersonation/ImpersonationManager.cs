@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Abp.Domain.Services;
 using Abp.Runtime.Caching;
 using Abp.Runtime.Security;
 using Abp.Runtime.Session;
@@ -11,7 +10,7 @@ using AbpCompanyName.AbpProjectName.Authorization.Users;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Impersonation
 {
-    public class ImpersonationManager : DomainService
+    public class ImpersonationManager : AbpProjectNameDomainServiceBase, IImpersonationManager
     {
         public IAbpSession AbpSession { get; set; }
 

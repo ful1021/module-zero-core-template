@@ -19,6 +19,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Impersonation
 
         public ImpersonationCacheItem()
         {
+            
         }
 
         public ImpersonationCacheItem(int? targetTenantId, long targetUserId, bool isBackToImpersonator)

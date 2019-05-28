@@ -9,5 +9,11 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Accounts
         Task<IsTenantAvailableOutput> IsTenantAvailable(IsTenantAvailableInput input);
 
         Task<RegisterOutput> Register(RegisterInput input);
+
+        Task<ImpersonateOutput> Impersonate(ImpersonateInput input);
+
+        Task<ImpersonateOutput> BackToImpersonator();
+
+        Task<SwitchToLinkedAccountOutput> SwitchToLinkedAccount(SwitchToLinkedAccountInput input);
     }
 }
