@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Abp.Application.Services;
@@ -9,6 +10,7 @@ using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
 using AbpCompanyName.AbpProjectName.Authorization;
+using AbpCompanyName.AbpProjectName.Authorization.Permissions;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
 using AbpCompanyName.AbpProjectName.Roles.Dto;
@@ -132,9 +134,19 @@ namespace AbpCompanyName.AbpProjectName.Roles
         public async Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input)
         {
             var permissions = PermissionManager.GetAllPermissions();
-            var role = await _roleManager.GetRoleByIdAsync(input.Id);
-            var grantedPermissions = (await _roleManager.GetGrantedPermissionsAsync(role)).ToArray();
-            var roleEditDto = ObjectMapper.Map<RoleEditDto>(role);
+            var grantedPermissions = new Permission[0];
+            RoleEditDto roleEditDto;
+
+            if (input.Id > 0) //Editing existing role?
+            {
+                var role = await _roleManager.GetRoleByIdAsync(input.Id);
+                grantedPermissions = (await _roleManager.GetGrantedPermissionsAsync(role)).ToArray();
+                roleEditDto = ObjectMapper.Map<RoleEditDto>(role);
+            }
+            else
+            {
+                roleEditDto = new RoleEditDto();
+            }
 
             return new GetRoleForEditOutput
             {
@@ -143,6 +155,43 @@ namespace AbpCompanyName.AbpProjectName.Roles
                 GrantedPermissionNames = grantedPermissions.Select(p => p.Name).ToList()
             };
         }
+
+        public async Task CreateOrUpdateRole(CreateOrUpdateRoleInput input)
+        {
+            if (input.Id.HasValue && input.Id > 0)
+            {
+                await UpdateRoleAsync(input);
+            }
+            else
+            {
+                await CreateRoleAsync(input);
+            }
+        }
+
+        protected virtual async Task UpdateRoleAsync(CreateOrUpdateRoleInput input)
+        {
+            Debug.Assert(input.Id != null, "input.Role.Id should be set.");
+
+            var role = await _roleManager.GetRoleByIdAsync(input.Id.Value);
+            role.DisplayName = input.DisplayName;
+            role.Description = input.Description;
+            role.IsDefault = input.IsDefault;
+
+            await UpdateGrantedPermissionsAsync(role, input.GrantedPermissionNames);
+        }
+
+        protected virtual async Task CreateRoleAsync(CreateOrUpdateRoleInput input)
+        {
+            var role = new Role(AbpSession.TenantId, input.DisplayName) { IsDefault = input.IsDefault, Description = input.Description };
+            CheckErrors(await _roleManager.CreateAsync(role));
+            await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
+            await UpdateGrantedPermissionsAsync(role, input.GrantedPermissionNames);
+        }
+
+        private async Task UpdateGrantedPermissionsAsync(Role role, List<string> grantedPermissionNames)
+        {
+            var grantedPermissions = PermissionManager.GetPermissionsFromNamesByValidating(grantedPermissionNames);
+            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
+        }
     }
 }
-

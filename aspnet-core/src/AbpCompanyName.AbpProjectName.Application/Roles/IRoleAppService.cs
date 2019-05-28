@@ -11,6 +11,8 @@ namespace AbpCompanyName.AbpProjectName.Roles
 
         Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input);
 
+        Task CreateOrUpdateRole(CreateOrUpdateRoleInput input);
+
         Task<ListResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input);
     }
 }
