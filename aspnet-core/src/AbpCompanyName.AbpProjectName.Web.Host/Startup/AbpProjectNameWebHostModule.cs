@@ -1,7 +1,6 @@
 ﻿using Abp.Modules;
 using Abp.Reflection.Extensions;
 using AbpCompanyName.AbpProjectName.Configuration;
-using AbpCompanyName.AbpProjectName.Web.Host.Startup.Nav;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 

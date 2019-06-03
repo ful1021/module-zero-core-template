@@ -1,0 +1,29 @@
+﻿[
+  {
+    "name": "Pages",
+    "displayName": "页面",
+    "children": [
+      {
+        "name": "System",
+        "displayName": "设置",
+        "children": [
+          {
+            "name": "Tenants",
+            "displayName": "租户管理",
+            "defaultPermission": true
+          },
+          {
+            "name": "Roles",
+            "displayName": "角色管理",
+            "defaultPermission": true
+          },
+          {
+            "name": "Users",
+            "displayName": "用户管理",
+            "defaultPermission": true
+          }
+        ]
+      }
+    ]
+  }
+]

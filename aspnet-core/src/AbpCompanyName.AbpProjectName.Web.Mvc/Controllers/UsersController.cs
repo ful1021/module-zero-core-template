@@ -10,7 +10,7 @@ using AbpCompanyName.AbpProjectName.Users.Dto;
 
 namespace AbpCompanyName.AbpProjectName.Web.Controllers
 {
-    [AbpMvcAuthorize(PermissionNames.Pages_Users)]
+    [AbpMvcAuthorize(PermissionNames.Pages_System_Users)]
     public class UsersController : AbpProjectNameControllerBase
     {
         private readonly IUserAppService _userAppService;
