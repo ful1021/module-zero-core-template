@@ -1,11 +1,16 @@
 ﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#" %> 
+<%@ Property Name="PermissionJsonPath" Type="System.String" Category="01.数据源" Description="项目名称" Default="Permissions/Permission.json" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%@ Import Namespace="CodeSmith.Engine.Json" %>
+<%@ Assembly Src="Permissions/PermissionConst.cs" %>
+<%@ Assembly Src="Permissions/PermissionJson.cs" %>
+<%@ Import Namespace="AbpCompanyName.AbpProjectName.Authorization.Permissions" %>
+
 namespace AbpCompanyName.AbpProjectName.Authorization
 {
     public static class PermissionNames
     {
-        <%foreach(var item in GetPermissionJson()){%>
+        <%foreach(var item in GetPermissionJson(PermissionJsonPath)){%>
 		/// <summary>
 		/// <%=item.Summary %>
 		/// </summary>
@@ -16,9 +21,8 @@ namespace AbpCompanyName.AbpProjectName.Authorization
 }
 <script runat="template">
 
-    public static List<PermissionConst> GetPermissionJson()
+    public static List<PermissionConst> GetPermissionJson(string fileFullName)
     {
-       var fileFullName = "Permissions/Permission.json";
         string text = System.IO.File.ReadAllText(fileFullName);
         var json = JsonConvert.DeserializeObject<List<PermissionJson>>(text).OrderBy(c => c.Order).ToList();
 
@@ -46,84 +50,5 @@ namespace AbpCompanyName.AbpProjectName.Authorization
             }
         }
         return permissionConsts;
-    }
-    public class PermissionConst
-    {
-        public string Summary { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
-    }
-
-    public class PermissionJson
-    {
-        public PermissionJson()
-        {
-            Order = 100;
-        }
-
-        public string Name { get; set; }
-        public string DisplayName { get; set; }
-        public string Description { get; set; }
-
-        [JsonProperty(PropertyName = "multiTenancySides")]
-        public MultiTenancySides? MultiTenancySide { private get; set; }
-
-        public bool DefaultPermission { private get; set; }
-        public List<PermissionJson> Children { private get; set; }
-        public int Order { get; set; }
-        public List<int> DisableOrder { get; set; }
-
-        public List<PermissionJson> GetChildren()
-        {
-            Children = Children ?? new List<PermissionJson>();
-            DisableOrder = DisableOrder ?? new List<int>();
-            if (DefaultPermission)
-            {
-                Children.Add(new PermissionJson
-                {
-                    Name = "Create",
-                    DisplayName = "新增",
-                    Order = 10,
-                    DefaultPermission = false
-                });
-                Children.Add(new PermissionJson
-                {
-                    Name = "Edit",
-                    DisplayName = "编辑",
-                    Order = 20,
-                    DefaultPermission = false
-                });
-                Children.Add(new PermissionJson
-                {
-                    Name = "Delete",
-                    DisplayName = "删除",
-                    Order = 30,
-                    DefaultPermission = false
-                });
-            }
-            if (MultiTenancySide.HasValue)
-            {
-                Children.ForEach(c =>
-                {
-                    c.MultiTenancySide = MultiTenancySide.Value;
-                });
-            }
-            return Children.OrderBy(c => c.Order).Where(c => !DisableOrder.Contains(c.Order)).ToList();
-        }
-
-        public MultiTenancySides GetMultiTenancySides()
-        {
-            if (MultiTenancySide.HasValue)
-            {
-                return MultiTenancySide.Value;
-            }
-            return MultiTenancySides.Tenant | MultiTenancySides.Host;
-        }
-    }
-
-    public enum MultiTenancySides
-    {
-        Tenant = 1,
-        Host = 2
     }
 </script>

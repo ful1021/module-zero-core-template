@@ -18,6 +18,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Authorization\Permissions\Permission.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Authorization\Permissions\Permission.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Abp.AutoMapper" Version="4.6.0" />
     <PackageReference Include="Abp.ZeroCore.EntityFrameworkCore" Version="4.6.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.4" />

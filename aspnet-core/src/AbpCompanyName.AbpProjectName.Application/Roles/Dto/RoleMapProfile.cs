@@ -12,6 +12,7 @@ namespace AbpCompanyName.AbpProjectName.Roles.Dto
         {
             // Role and permission
             CreateMap<Permission, string>().ConvertUsing(r => r.Name);
+            CreateMap<Permission, FlatPermissionDto>();
             CreateMap<RolePermissionSetting, string>().ConvertUsing(r => r.Name);
 
             CreateMap<CreateRoleDto, Role>();

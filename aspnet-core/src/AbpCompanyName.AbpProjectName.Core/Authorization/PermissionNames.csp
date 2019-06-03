@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <codeSmith xmlns="http://www.codesmithtools.com/schema/csp.xsd">
   <propertySets>
-    <propertySet name="PermissionNames" template="PermissionNames.cst" />
+    <propertySet name="PermissionNames" output="PermissionNames.cs" template="PermissionNames.cst">
+      <property name="PermissionJsonPath">Permissions/Permission.json</property>
+    </propertySet>
   </propertySets>
 </codeSmith>
