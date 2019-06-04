@@ -3,89 +3,139 @@
     public static class PermissionNames
     {
 		/// <summary>
-		/// 页面
+		/// 设置
 		/// </summary>
-		public const string Pages = "Pages";
+		public const string System = "System";
 
 		/// <summary>
-		/// 页面_设置
+		/// 设置_租户管理
 		/// </summary>
-		public const string Pages_System = "Pages.System";
+		public const string System_Tenants = "System.Tenants";
 
 		/// <summary>
-		/// 页面_设置_租户管理
+		/// 设置_租户管理_列表
 		/// </summary>
-		public const string Pages_System_Tenants = "Pages.System.Tenants";
+		public const string System_Tenants_List = "System.Tenants.List";
 
 		/// <summary>
-		/// 页面_设置_租户管理_列表
+		/// 设置_租户管理_新增
 		/// </summary>
-		public const string Pages_System_Tenants_List = "Pages.System.Tenants.List";
+		public const string System_Tenants_Create = "System.Tenants.Create";
 
 		/// <summary>
-		/// 页面_设置_租户管理_新增
+		/// 设置_租户管理_编辑
 		/// </summary>
-		public const string Pages_System_Tenants_Create = "Pages.System.Tenants.Create";
+		public const string System_Tenants_Edit = "System.Tenants.Edit";
 
 		/// <summary>
-		/// 页面_设置_租户管理_编辑
+		/// 设置_租户管理_删除
 		/// </summary>
-		public const string Pages_System_Tenants_Edit = "Pages.System.Tenants.Edit";
+		public const string System_Tenants_Delete = "System.Tenants.Delete";
 
 		/// <summary>
-		/// 页面_设置_租户管理_删除
+		/// 设置_角色管理
 		/// </summary>
-		public const string Pages_System_Tenants_Delete = "Pages.System.Tenants.Delete";
+		public const string System_Roles = "System.Roles";
 
 		/// <summary>
-		/// 页面_设置_角色管理
+		/// 设置_角色管理_列表
 		/// </summary>
-		public const string Pages_System_Roles = "Pages.System.Roles";
+		public const string System_Roles_List = "System.Roles.List";
 
 		/// <summary>
-		/// 页面_设置_角色管理_列表
+		/// 设置_角色管理_新增
 		/// </summary>
-		public const string Pages_System_Roles_List = "Pages.System.Roles.List";
+		public const string System_Roles_Create = "System.Roles.Create";
 
 		/// <summary>
-		/// 页面_设置_角色管理_新增
+		/// 设置_角色管理_编辑
 		/// </summary>
-		public const string Pages_System_Roles_Create = "Pages.System.Roles.Create";
+		public const string System_Roles_Edit = "System.Roles.Edit";
 
 		/// <summary>
-		/// 页面_设置_角色管理_编辑
+		/// 设置_角色管理_删除
 		/// </summary>
-		public const string Pages_System_Roles_Edit = "Pages.System.Roles.Edit";
+		public const string System_Roles_Delete = "System.Roles.Delete";
 
 		/// <summary>
-		/// 页面_设置_角色管理_删除
+		/// 设置_用户管理
 		/// </summary>
-		public const string Pages_System_Roles_Delete = "Pages.System.Roles.Delete";
+		public const string System_Users = "System.Users";
 
 		/// <summary>
-		/// 页面_设置_用户管理
+		/// 设置_用户管理_列表
 		/// </summary>
-		public const string Pages_System_Users = "Pages.System.Users";
+		public const string System_Users_List = "System.Users.List";
 
 		/// <summary>
-		/// 页面_设置_用户管理_列表
+		/// 设置_用户管理_新增
 		/// </summary>
-		public const string Pages_System_Users_List = "Pages.System.Users.List";
+		public const string System_Users_Create = "System.Users.Create";
 
 		/// <summary>
-		/// 页面_设置_用户管理_新增
+		/// 设置_用户管理_编辑
 		/// </summary>
-		public const string Pages_System_Users_Create = "Pages.System.Users.Create";
+		public const string System_Users_Edit = "System.Users.Edit";
 
 		/// <summary>
-		/// 页面_设置_用户管理_编辑
+		/// 设置_用户管理_删除
 		/// </summary>
-		public const string Pages_System_Users_Edit = "Pages.System.Users.Edit";
+		public const string System_Users_Delete = "System.Users.Delete";
 
 		/// <summary>
-		/// 页面_设置_用户管理_删除
+		/// 商品中心
 		/// </summary>
-		public const string Pages_System_Users_Delete = "Pages.System.Users.Delete";
+		public const string ProductCenter = "ProductCenter";
+
+		/// <summary>
+		/// 商品中心_商品管理
+		/// </summary>
+		public const string ProductCenter_Product = "ProductCenter.Product";
+
+		/// <summary>
+		/// 商品中心_商品管理_列表
+		/// </summary>
+		public const string ProductCenter_Product_List = "ProductCenter.Product.List";
+
+		/// <summary>
+		/// 商品中心_商品管理_新增
+		/// </summary>
+		public const string ProductCenter_Product_Create = "ProductCenter.Product.Create";
+
+		/// <summary>
+		/// 商品中心_商品管理_编辑
+		/// </summary>
+		public const string ProductCenter_Product_Edit = "ProductCenter.Product.Edit";
+
+		/// <summary>
+		/// 商品中心_商品管理_删除
+		/// </summary>
+		public const string ProductCenter_Product_Delete = "ProductCenter.Product.Delete";
+
+		/// <summary>
+		/// 商品中心_类目管理
+		/// </summary>
+		public const string ProductCenter_Category = "ProductCenter.Category";
+
+		/// <summary>
+		/// 商品中心_类目管理_列表
+		/// </summary>
+		public const string ProductCenter_Category_List = "ProductCenter.Category.List";
+
+		/// <summary>
+		/// 商品中心_类目管理_新增
+		/// </summary>
+		public const string ProductCenter_Category_Create = "ProductCenter.Category.Create";
+
+		/// <summary>
+		/// 商品中心_类目管理_编辑
+		/// </summary>
+		public const string ProductCenter_Category_Edit = "ProductCenter.Category.Edit";
+
+		/// <summary>
+		/// 商品中心_类目管理_删除
+		/// </summary>
+		public const string ProductCenter_Category_Delete = "ProductCenter.Category.Delete";
 
     }
 }

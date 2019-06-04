@@ -1,28 +1,38 @@
 ﻿[
   {
-    "name": "Pages",
-    "displayName": "页面",
+    "name": "System",
+    "displayName": "设置",
     "children": [
       {
-        "name": "System",
-        "displayName": "设置",
-        "children": [
-          {
-            "name": "Tenants",
-            "displayName": "租户管理",
-            "defaultPermission": true
-          },
-          {
-            "name": "Roles",
-            "displayName": "角色管理",
-            "defaultPermission": true
-          },
-          {
-            "name": "Users",
-            "displayName": "用户管理",
-            "defaultPermission": true
-          }
-        ]
+        "name": "Tenants",
+        "displayName": "租户管理",
+        "defaultPermission": true
+      },
+      {
+        "name": "Roles",
+        "displayName": "角色管理",
+        "defaultPermission": true
+      },
+      {
+        "name": "Users",
+        "displayName": "用户管理",
+        "defaultPermission": true
+      }
+    ]
+  },
+  {
+    "name": "ProductCenter",
+    "displayName": "商品中心",
+    "children": [
+      {
+        "name": "Product",
+        "displayName": "商品管理",
+        "defaultPermission": true
+      },
+      {
+        "name": "Category",
+        "displayName": "类目管理",
+        "defaultPermission": true
       }
     ]
   }

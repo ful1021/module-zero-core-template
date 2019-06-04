@@ -31,7 +31,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Permissions
                 {
                     Name = "List",
                     DisplayName = "列表",
-                    Order = 10,
+                    Order = 5,
                     DefaultPermission = false
                 });
                 Children.Add(new PermissionJson
