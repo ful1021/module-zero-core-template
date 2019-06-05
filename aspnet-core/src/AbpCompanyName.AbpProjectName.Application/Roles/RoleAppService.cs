@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
@@ -12,6 +11,7 @@ using Abp.Linq.Extensions;
 using AbpCompanyName.AbpProjectName.Authorization;
 using AbpCompanyName.AbpProjectName.Authorization.Permissions;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
+using AbpCompanyName.AbpProjectName.Authorization.Roles.Cache;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
 using AbpCompanyName.AbpProjectName.Roles.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -22,12 +22,14 @@ namespace AbpCompanyName.AbpProjectName.Roles
     [AbpAuthorize(PermissionNames.System_Roles)]
     public class RoleAppService : AsyncCrudAppServiceBase<Role, RoleListDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>, IRoleAppService
     {
+        private readonly RoleCache _roleCache;
         private readonly RoleManager _roleManager;
         private readonly UserManager _userManager;
 
-        public RoleAppService(IRepository<Role> repository, RoleManager roleManager, UserManager userManager)
+        public RoleAppService(IRepository<Role> repository, RoleCache roleCache, RoleManager roleManager, UserManager userManager)
             : base(repository)
         {
+            _roleCache = roleCache;
             _roleManager = roleManager;
             _userManager = userManager;
         }

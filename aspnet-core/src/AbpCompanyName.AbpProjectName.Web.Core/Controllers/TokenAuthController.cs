@@ -3,50 +3,85 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using Abp;
 using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.MultiTenancy;
+using Abp.Net.Mail;
+using Abp.Runtime.Caching;
 using Abp.Runtime.Security;
+using Abp.Runtime.Session;
 using Abp.UI;
 using AbpCompanyName.AbpProjectName.Authentication.External;
 using AbpCompanyName.AbpProjectName.Authentication.JwtBearer;
 using AbpCompanyName.AbpProjectName.Authorization;
+using AbpCompanyName.AbpProjectName.Authorization.Impersonation;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
+using AbpCompanyName.AbpProjectName.Identity;
 using AbpCompanyName.AbpProjectName.Models.TokenAuth;
 using AbpCompanyName.AbpProjectName.MultiTenancy;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace AbpCompanyName.AbpProjectName.Controllers
 {
     [Route("api/[controller]/[action]")]
     public class TokenAuthController : AbpProjectNameControllerBase
     {
+        private const string UserIdentifierClaimType = "http://aspnetzero.com/claims/useridentifier";
+
         private readonly LogInManager _logInManager;
         private readonly ITenantCache _tenantCache;
         private readonly AbpLoginResultTypeHelper _abpLoginResultTypeHelper;
         private readonly TokenAuthConfiguration _configuration;
+        private readonly UserManager _userManager;
+        private readonly ICacheManager _cacheManager;
+        private readonly IOptions<JwtBearerOptions> _jwtOptions;
         private readonly IExternalAuthConfiguration _externalAuthConfiguration;
         private readonly IExternalAuthManager _externalAuthManager;
         private readonly UserRegistrationManager _userRegistrationManager;
+        private readonly IImpersonationManager _impersonationManager;
+        private readonly IUserLinkManager _userLinkManager;
+        private readonly ISmsSender _smsSender;
+        private readonly IEmailSender _emailSender;
+        private readonly IdentityOptions _identityOptions;
 
         public TokenAuthController(
             LogInManager logInManager,
             ITenantCache tenantCache,
             AbpLoginResultTypeHelper abpLoginResultTypeHelper,
             TokenAuthConfiguration configuration,
+            UserManager userManager,
+            ICacheManager cacheManager,
+            IOptions<JwtBearerOptions> jwtOptions,
             IExternalAuthConfiguration externalAuthConfiguration,
             IExternalAuthManager externalAuthManager,
-            UserRegistrationManager userRegistrationManager)
+            UserRegistrationManager userRegistrationManager,
+            IImpersonationManager impersonationManager,
+            IUserLinkManager userLinkManager,
+            ISmsSender smsSender,
+            IEmailSender emailSender,
+            IOptions<IdentityOptions> identityOptions)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
             _abpLoginResultTypeHelper = abpLoginResultTypeHelper;
             _configuration = configuration;
+            _userManager = userManager;
+            _cacheManager = cacheManager;
+            _jwtOptions = jwtOptions;
             _externalAuthConfiguration = externalAuthConfiguration;
             _externalAuthManager = externalAuthManager;
             _userRegistrationManager = userRegistrationManager;
+            _impersonationManager = impersonationManager;
+            _userLinkManager = userLinkManager;
+            _smsSender = smsSender;
+            _emailSender = emailSender;
+            _identityOptions = identityOptions.Value;
         }
 
         [HttpPost]
@@ -58,79 +93,16 @@ namespace AbpCompanyName.AbpProjectName.Controllers
                 GetTenancyNameOrNull()
             );
 
-            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
+            //Login!
+            var accessToken = CreateAccessToken(await CreateJwtClaims(loginResult.Identity, loginResult.User));
 
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
-                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
-                UserId = loginResult.User.Id
+                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                UserId = loginResult.User.Id,
             };
-        }
-
-        [HttpGet]
-        public List<ExternalLoginProviderInfoModel> GetExternalAuthenticationProviders()
-        {
-            return ObjectMapper.Map<List<ExternalLoginProviderInfoModel>>(_externalAuthConfiguration.Providers);
-        }
-
-        [HttpPost]
-        public async Task<ExternalAuthenticateResultModel> ExternalAuthenticate([FromBody] ExternalAuthenticateModel model)
-        {
-            var externalUser = await GetExternalUserInfo(model);
-
-            var loginResult = await _logInManager.LoginAsync(new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider), GetTenancyNameOrNull());
-
-            switch (loginResult.Result)
-            {
-                case AbpLoginResultType.Success:
-                    {
-                        var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
-                        return new ExternalAuthenticateResultModel
-                        {
-                            AccessToken = accessToken,
-                            EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
-                            ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds
-                        };
-                    }
-                case AbpLoginResultType.UnknownExternalLogin:
-                    {
-                        var newUser = await RegisterExternalUserAsync(externalUser);
-                        if (!newUser.IsActive)
-                        {
-                            return new ExternalAuthenticateResultModel
-                            {
-                                WaitingForActivation = true
-                            };
-                        }
-
-                        // Try to login again with newly registered user!
-                        loginResult = await _logInManager.LoginAsync(new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider), GetTenancyNameOrNull());
-                        if (loginResult.Result != AbpLoginResultType.Success)
-                        {
-                            throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(
-                                loginResult.Result,
-                                model.ProviderKey,
-                                GetTenancyNameOrNull()
-                            );
-                        }
-
-                        return new ExternalAuthenticateResultModel
-                        {
-                            AccessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity)),
-                            ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds
-                        };
-                    }
-                default:
-                    {
-                        throw _abpLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(
-                            loginResult.Result,
-                            model.ProviderKey,
-                            GetTenancyNameOrNull()
-                        );
-                    }
-            }
         }
 
         [HttpGet]
@@ -139,33 +111,44 @@ namespace AbpCompanyName.AbpProjectName.Controllers
         {
             if (AbpSession.UserId != null)
             {
+                var tokenValidityKeyInClaims = User.Claims.First(c => c.Type == AppConsts.TokenValidityKey);
+                await _userManager.RemoveTokenValidityKeyAsync(_userManager.GetUser(AbpSession.ToUserIdentifier()), tokenValidityKeyInClaims.Value);
+                _cacheManager.GetCache(AppConsts.TokenValidityKey).Remove(tokenValidityKeyInClaims.Value);
             }
         }
 
-        private async Task<User> RegisterExternalUserAsync(ExternalAuthUserInfo externalUser)
+        [HttpPost]
+        public async Task<ImpersonatedAuthenticateResultModel> ImpersonatedAuthenticate(string impersonationToken)
         {
-            var user = await _userRegistrationManager.RegisterAsync(
-                externalUser.Name,
-                externalUser.Surname,
-                externalUser.EmailAddress,
-                externalUser.EmailAddress,
-                Authorization.Users.User.CreateRandomPassword(),
-                true
-            );
+            var result = await _impersonationManager.GetImpersonatedUserAndIdentity(impersonationToken);
+            var accessToken = CreateAccessToken(await CreateJwtClaims(result.Identity, result.User));
 
-            user.Logins = new List<UserLogin>
+            return new ImpersonatedAuthenticateResultModel
             {
-                new UserLogin
-                {
-                    LoginProvider = externalUser.Provider,
-                    ProviderKey = externalUser.ProviderKey,
-                    TenantId = user.TenantId
-                }
+                AccessToken = accessToken,
+                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds
             };
+        }
 
-            await CurrentUnitOfWork.SaveChangesAsync();
+        [HttpPost]
+        public async Task<SwitchedAccountAuthenticateResultModel> LinkedAccountAuthenticate(string switchAccountToken)
+        {
+            var result = await _userLinkManager.GetSwitchedUserAndIdentity(switchAccountToken);
+            var accessToken = CreateAccessToken(await CreateJwtClaims(result.Identity, result.User));
 
-            return user;
+            return new SwitchedAccountAuthenticateResultModel
+            {
+                AccessToken = accessToken,
+                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds
+            };
+        }
+
+        [HttpGet]
+        public List<ExternalLoginProviderInfoModel> GetExternalAuthenticationProviders()
+        {
+            return ObjectMapper.Map<List<ExternalLoginProviderInfoModel>>(_externalAuthConfiguration.Providers);
         }
 
         private async Task<ExternalAuthUserInfo> GetExternalUserInfo(ExternalAuthenticateModel model)
@@ -205,6 +188,11 @@ namespace AbpCompanyName.AbpProjectName.Controllers
 
         private string CreateAccessToken(IEnumerable<Claim> claims, TimeSpan? expiration = null)
         {
+            return CreateToken(claims, expiration ?? _configuration.Expiration);
+        }
+
+        private string CreateToken(IEnumerable<Claim> claims, TimeSpan? expiration = null)
+        {
             var now = DateTime.UtcNow;
 
             var jwtSecurityToken = new JwtSecurityToken(
@@ -212,32 +200,62 @@ namespace AbpCompanyName.AbpProjectName.Controllers
                 audience: _configuration.Audience,
                 claims: claims,
                 notBefore: now,
-                expires: now.Add(expiration ?? _configuration.Expiration),
-                signingCredentials: _configuration.SigningCredentials
+                signingCredentials: _configuration.SigningCredentials,
+                expires: expiration == null ?
+                    (DateTime?)null :
+                    now.Add(expiration.Value)
             );
 
             return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
         }
 
-        private static List<Claim> CreateJwtClaims(ClaimsIdentity identity)
+        private static string GetEncryptedAccessToken(string accessToken)
         {
-            var claims = identity.Claims.ToList();
-            var nameIdClaim = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
+            return SimpleStringCipher.Instance.Encrypt(accessToken, AppConsts.DefaultPassPhrase);
+        }
 
-            // Specifically add the jti (random nonce), iat (issued timestamp), and sub (subject/user) claims.
+        private async Task<IEnumerable<Claim>> CreateJwtClaims(ClaimsIdentity identity, User user, TimeSpan? expiration = null)
+        {
+            var tokenValidityKey = Guid.NewGuid().ToString();
+            var claims = identity.Claims.ToList();
+            var nameIdClaim = claims.First(c => c.Type == _identityOptions.ClaimsIdentity.UserIdClaimType);
+
+            if (_identityOptions.ClaimsIdentity.UserIdClaimType != JwtRegisteredClaimNames.Sub)
+            {
+                claims.Add(new Claim(JwtRegisteredClaimNames.Sub, nameIdClaim.Value));
+            }
+
+            var userIdentifier = new UserIdentifier(AbpSession.TenantId, Convert.ToInt64(nameIdClaim.Value));
+
             claims.AddRange(new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, nameIdClaim.Value),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.Now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.Now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+                new Claim(AppConsts.TokenValidityKey, tokenValidityKey),
+                new Claim(AppConsts.UserIdentifier, userIdentifier.ToUserIdentifierString())
             });
+
+            _cacheManager
+                .GetCache(AppConsts.TokenValidityKey)
+                .Set(tokenValidityKey, "");
+
+            await _userManager.AddTokenValidityKeyAsync(user, tokenValidityKey,
+                DateTime.UtcNow.Add(expiration ?? _configuration.Expiration));
 
             return claims;
         }
 
-        private string GetEncryptedAccessToken(string accessToken)
+        private string AddSingleSignInParametersToReturnUrl(string returnUrl, string signInToken, long userId, int? tenantId)
         {
-            return SimpleStringCipher.Instance.Encrypt(accessToken, AppConsts.DefaultPassPhrase);
+            returnUrl += (returnUrl.Contains("?") ? "&" : "?") +
+                         "accessToken=" + signInToken +
+                         "&userId=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(userId.ToString()));
+            if (tenantId.HasValue)
+            {
+                returnUrl += "&tenantId=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(tenantId.Value.ToString()));
+            }
+
+            return returnUrl;
         }
     }
 }
