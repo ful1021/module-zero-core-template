@@ -10,6 +10,8 @@ namespace AbpCompanyName.AbpProjectName.Roles.Dto
 
         public string DisplayName { get; set; }
 
+        public string Description { get; set; }
+
         public bool IsStatic { get; set; }
 
         public bool IsDefault { get; set; }

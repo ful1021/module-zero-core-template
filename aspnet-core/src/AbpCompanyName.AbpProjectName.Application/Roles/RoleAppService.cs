@@ -20,7 +20,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AbpCompanyName.AbpProjectName.Roles
 {
     [AbpAuthorize(PermissionNames.System_Roles)]
-    public class RoleAppService : AsyncCrudAppService<Role, RoleDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>, IRoleAppService
+    public class RoleAppService : AsyncCrudAppServiceBase<Role, RoleListDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>, IRoleAppService
     {
         private readonly RoleManager _roleManager;
         private readonly UserManager _userManager;
@@ -32,24 +32,24 @@ namespace AbpCompanyName.AbpProjectName.Roles
             _userManager = userManager;
         }
 
-        public override async Task<RoleDto> Create(CreateRoleDto input)
-        {
-            CheckCreatePermission();
+        //public override async Task<RoleDto> Create(CreateRoleDto input)
+        //{
+        //    CheckCreatePermission();
 
-            var role = ObjectMapper.Map<Role>(input);
-            role.SetNormalizedName();
+        //    var role = ObjectMapper.Map<Role>(input);
+        //    role.SetNormalizedName();
 
-            CheckErrors(await _roleManager.CreateAsync(role));
+        //    CheckErrors(await _roleManager.CreateAsync(role));
 
-            var grantedPermissions = PermissionManager
-                .GetAllPermissions()
-                .Where(p => input.GrantedPermissions.Contains(p.Name))
-                .ToList();
+        //    var grantedPermissions = PermissionManager
+        //        .GetAllPermissions()
+        //        .Where(p => input.GrantedPermissions.Contains(p.Name))
+        //        .ToList();
 
-            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
+        //    await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
 
-            return MapToEntityDto(role);
-        }
+        //    return MapToEntityDto(role);
+        //}
 
         public async Task<ListResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input)
         {
@@ -64,25 +64,25 @@ namespace AbpCompanyName.AbpProjectName.Roles
             return new ListResultDto<RoleListDto>(ObjectMapper.Map<List<RoleListDto>>(roles));
         }
 
-        public override async Task<RoleDto> Update(RoleDto input)
-        {
-            CheckUpdatePermission();
+        //public override async Task<RoleDto> Update(RoleDto input)
+        //{
+        //    CheckUpdatePermission();
 
-            var role = await _roleManager.GetRoleByIdAsync(input.Id);
+        //    var role = await _roleManager.GetRoleByIdAsync(input.Id);
 
-            ObjectMapper.Map(input, role);
+        //    ObjectMapper.Map(input, role);
 
-            CheckErrors(await _roleManager.UpdateAsync(role));
+        //    CheckErrors(await _roleManager.UpdateAsync(role));
 
-            var grantedPermissions = PermissionManager
-                .GetAllPermissions()
-                .Where(p => input.GrantedPermissions.Contains(p.Name))
-                .ToList();
+        //    var grantedPermissions = PermissionManager
+        //        .GetAllPermissions()
+        //        .Where(p => input.GrantedPermissions.Contains(p.Name))
+        //        .ToList();
 
-            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
+        //    await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
 
-            return MapToEntityDto(role);
-        }
+        //    return MapToEntityDto(role);
+        //}
 
         public override async Task Delete(EntityDto<int> input)
         {

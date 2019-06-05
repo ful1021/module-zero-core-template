@@ -18,8 +18,7 @@ namespace AbpCompanyName.AbpProjectName.ProxyScripting
             script.AppendLine(@"
 import request from '@/utils/request'
 import abp from '@/utils/abp'
-// const clonedeep = require('lodash.clonedeep')
-import { clonedeep } from '@/utils'
+import { extend } from '@/utils'
 ");
 
             foreach (var module in model.Modules.Values)
@@ -81,7 +80,8 @@ import { clonedeep } from '@/utils'
             script.AppendLine($"    {action.Name.ToCamelCase()}({parameterList}) {{");
 
             script.AppendLine("      return request(");
-            script.AppendLine("        clonedeep(");
+            script.AppendLine("        extend(");
+            script.AppendLine("          true,");
             script.AppendLine("          {");
 
             AddAjaxCallParameters(script, controller, action);
