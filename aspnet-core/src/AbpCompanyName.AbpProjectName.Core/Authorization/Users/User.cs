@@ -34,5 +34,11 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
             return user;
         }
+
+        public void Unlock()
+        {
+            AccessFailedCount = 0;
+            LockoutEndDateUtc = null;
+        }
     }
 }

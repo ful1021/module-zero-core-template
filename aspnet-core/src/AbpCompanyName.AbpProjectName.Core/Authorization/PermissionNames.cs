@@ -83,6 +83,21 @@
 		public const string System_Users_Delete = "System.Users.Delete";
 
 		/// <summary>
+		/// 设置_用户管理_模拟用户登录
+		/// </summary>
+		public const string System_Users_Impersonate = "System.Users.Impersonate";
+
+		/// <summary>
+		/// 设置_用户管理_重置密码
+		/// </summary>
+		public const string System_Users_ResetPassword = "System.Users.ResetPassword";
+
+		/// <summary>
+		/// 设置_用户管理_解锁
+		/// </summary>
+		public const string System_Users_Unlock = "System.Users.Unlock";
+
+		/// <summary>
 		/// 商品中心
 		/// </summary>
 		public const string ProductCenter = "ProductCenter";

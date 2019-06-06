@@ -11,5 +11,9 @@ namespace AbpCompanyName.AbpProjectName.Users
         Task<ListResultDto<RoleDto>> GetRoles();
 
         Task ChangeLanguage(ChangeUserLanguageDto input);
+
+        Task<bool> ResetPassword(ResetPasswordDto input);
+
+        Task UnlockUser(EntityDto<long> input);
     }
 }

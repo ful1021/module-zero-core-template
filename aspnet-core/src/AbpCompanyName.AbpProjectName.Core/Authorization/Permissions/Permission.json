@@ -16,7 +16,21 @@
       {
         "name": "Users",
         "displayName": "用户管理",
-        "defaultPermission": true
+        "defaultPermission": true,
+        "children": [
+          {
+            "name": "Impersonate",
+            "displayName": "模拟用户登录"
+          },
+          {
+            "name": "ResetPassword",
+            "displayName": "重置密码"
+          },
+          {
+            "name": "Unlock",
+            "displayName": "解锁"
+          }
+        ]
       }
     ]
   },

@@ -52,6 +52,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             _logInManager = logInManager;
         }
 
+        [AbpAuthorize(PermissionNames.System_Users_Create)]
         public override async Task<UserDto> Create(CreateUserDto input)
         {
             CheckCreatePermission();
@@ -75,6 +76,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             return MapToEntityDto(user);
         }
 
+        [AbpAuthorize(PermissionNames.System_Users_Edit)]
         public override async Task<UserDto> Update(UserDto input)
         {
             CheckUpdatePermission();
@@ -93,10 +95,23 @@ namespace AbpCompanyName.AbpProjectName.Users
             return await Get(input);
         }
 
+        [AbpAuthorize(PermissionNames.System_Users_Delete)]
         public override async Task Delete(EntityDto<long> input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
             await _userManager.DeleteAsync(user);
+        }
+
+        /// <summary>
+        /// 针对登陆密码输错次数过多，锁定的用户解锁
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [AbpAuthorize(PermissionNames.System_Users_Unlock)]
+        public async Task UnlockUser(EntityDto<long> input)
+        {
+            var user = await _userManager.GetUserByIdAsync(input.Id);
+            user.Unlock();
         }
 
         public async Task<ListResultDto<RoleDto>> GetRoles()
@@ -113,6 +128,8 @@ namespace AbpCompanyName.AbpProjectName.Users
                 input.LanguageName
             );
         }
+
+        #region 私有方法
 
         protected override User MapToEntity(CreateUserDto createInput)
         {
@@ -164,6 +181,8 @@ namespace AbpCompanyName.AbpProjectName.Users
             identityResult.CheckErrors(LocalizationManager);
         }
 
+        #endregion 私有方法
+
         public async Task<bool> ChangePassword(ChangePasswordDto input)
         {
             if (_abpSession.UserId == null)
@@ -186,6 +205,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             return true;
         }
 
+        [AbpAuthorize(PermissionNames.System_Users_ResetPassword)]
         public async Task<bool> ResetPassword(ResetPasswordDto input)
         {
             if (_abpSession.UserId == null)
@@ -218,7 +238,5 @@ namespace AbpCompanyName.AbpProjectName.Users
 
             return true;
         }
-
     }
 }
-
