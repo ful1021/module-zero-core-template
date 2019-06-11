@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using Abp.Authorization.Users;
+using Abp.Domain.Entities;
 using Abp.Extensions;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users
 {
-    public class User : AbpUser<User>
+    public class User : AbpUser<User>, IExtendableObject
     {
         public const string DefaultPassword = "123qwe";
 
         public string Introduction { get; set; }
 
         public UserType UserType { get; set; }
+
+        /// <summary>
+        /// A JSON formatted string to extend the containing object.
+        /// </summary>
+        public virtual string ExtensionData { get; set; }
 
         public static string CreateRandomPassword()
         {
