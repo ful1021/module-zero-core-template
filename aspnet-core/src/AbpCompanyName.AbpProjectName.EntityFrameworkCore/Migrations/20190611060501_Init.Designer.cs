@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AbpCompanyName.AbpProjectName.Migrations
 {
     [DbContext(typeof(AbpProjectNameDbContext))]
-    [Migration("20190527090835_Init")]
+    [Migration("20190611060501_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -966,6 +966,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<string>("EmailConfirmationCode")
                         .HasMaxLength(328);
+
+                    b.Property<string>("ExtensionData");
 
                     b.Property<string>("Introduction");
 

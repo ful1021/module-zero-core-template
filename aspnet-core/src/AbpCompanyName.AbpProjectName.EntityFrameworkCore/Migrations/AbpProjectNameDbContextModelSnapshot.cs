@@ -965,6 +965,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.Property<string>("EmailConfirmationCode")
                         .HasMaxLength(328);
 
+                    b.Property<string>("ExtensionData");
+
                     b.Property<string>("Introduction");
 
                     b.Property<bool>("IsActive");
