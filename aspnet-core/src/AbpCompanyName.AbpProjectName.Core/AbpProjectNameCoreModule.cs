@@ -6,6 +6,7 @@ using Abp.Zero.Configuration;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
 using AbpCompanyName.AbpProjectName.Configuration;
+using AbpCompanyName.AbpProjectName.Enumerations;
 using AbpCompanyName.AbpProjectName.Localization;
 using AbpCompanyName.AbpProjectName.MultiTenancy;
 using AbpCompanyName.AbpProjectName.Timing;
@@ -38,6 +39,7 @@ namespace AbpCompanyName.AbpProjectName
         public override void Initialize()
         {
             IocManager.RegisterAssemblyByConvention(typeof(AbpProjectNameCoreModule).GetAssembly());
+            IocManager.Resolve<IEnumDataConventionalRegistrar>().AssemblyConventionalRegister(typeof(AbpProjectNameCoreModule).GetAssembly());
         }
 
         public override void PostInitialize()
