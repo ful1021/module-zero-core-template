@@ -17,6 +17,7 @@
         "name": "Users",
         "displayName": "用户管理",
         "defaultPermission": true,
+        "importExport": true,
         "children": [
           {
             "name": "Impersonate",
@@ -41,12 +42,14 @@
       {
         "name": "Product",
         "displayName": "商品管理",
-        "defaultPermission": true
+        "defaultPermission": true,
+        "importExport": true
       },
       {
         "name": "Category",
         "displayName": "类目管理",
-        "defaultPermission": true
+        "defaultPermission": true,
+        "importExport": true
       }
     ]
   }

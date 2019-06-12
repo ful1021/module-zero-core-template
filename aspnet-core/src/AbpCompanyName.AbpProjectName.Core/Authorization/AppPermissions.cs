@@ -1,6 +1,6 @@
 ﻿namespace AbpCompanyName.AbpProjectName.Authorization
 {
-    public static class PermissionNames
+    public static class AppPermissions
     {
 		/// <summary>
 		/// 设置
@@ -83,6 +83,16 @@
 		public const string System_Users_Delete = "System.Users.Delete";
 
 		/// <summary>
+		/// 设置_用户管理_导入
+		/// </summary>
+		public const string System_Users_Import = "System.Users.Import";
+
+		/// <summary>
+		/// 设置_用户管理_导出
+		/// </summary>
+		public const string System_Users_Export = "System.Users.Export";
+
+		/// <summary>
 		/// 设置_用户管理_模拟用户登录
 		/// </summary>
 		public const string System_Users_Impersonate = "System.Users.Impersonate";
@@ -128,6 +138,16 @@
 		public const string ProductCenter_Product_Delete = "ProductCenter.Product.Delete";
 
 		/// <summary>
+		/// 商品中心_商品管理_导入
+		/// </summary>
+		public const string ProductCenter_Product_Import = "ProductCenter.Product.Import";
+
+		/// <summary>
+		/// 商品中心_商品管理_导出
+		/// </summary>
+		public const string ProductCenter_Product_Export = "ProductCenter.Product.Export";
+
+		/// <summary>
 		/// 商品中心_类目管理
 		/// </summary>
 		public const string ProductCenter_Category = "ProductCenter.Category";
@@ -151,6 +171,16 @@
 		/// 商品中心_类目管理_删除
 		/// </summary>
 		public const string ProductCenter_Category_Delete = "ProductCenter.Category.Delete";
+
+		/// <summary>
+		/// 商品中心_类目管理_导入
+		/// </summary>
+		public const string ProductCenter_Category_Import = "ProductCenter.Category.Import";
+
+		/// <summary>
+		/// 商品中心_类目管理_导出
+		/// </summary>
+		public const string ProductCenter_Category_Export = "ProductCenter.Category.Export";
 
     }
 }

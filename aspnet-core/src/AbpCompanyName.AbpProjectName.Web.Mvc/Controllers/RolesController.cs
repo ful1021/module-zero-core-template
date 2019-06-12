@@ -10,7 +10,7 @@ using AbpCompanyName.AbpProjectName.Web.Models.Roles;
 
 namespace AbpCompanyName.AbpProjectName.Web.Controllers
 {
-    [AbpMvcAuthorize(PermissionNames.System_Roles)]
+    [AbpMvcAuthorize(AppPermissions.System_Roles)]
     public class RolesController : AbpProjectNameControllerBase
     {
         private readonly IRoleAppService _roleAppService;

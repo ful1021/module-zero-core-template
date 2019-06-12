@@ -9,7 +9,7 @@ using AbpCompanyName.AbpProjectName.MultiTenancy.Dto;
 
 namespace AbpCompanyName.AbpProjectName.Web.Controllers
 {
-    [AbpMvcAuthorize(PermissionNames.System_Tenants)]
+    [AbpMvcAuthorize(AppPermissions.System_Tenants)]
     public class TenantsController : AbpProjectNameControllerBase
     {
         private readonly ITenantAppService _tenantAppService;

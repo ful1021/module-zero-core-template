@@ -26,7 +26,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Startup
                         L("Tenants"),
                         url: "Tenants",
                         icon: "business",
-                        requiredPermissionName: PermissionNames.System_Tenants
+                        requiredPermissionName: AppPermissions.System_Tenants
                     )
                 ).AddItem(
                     new MenuItemDefinition(
@@ -34,7 +34,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Startup
                         L("Users"),
                         url: "Users",
                         icon: "people",
-                        requiredPermissionName: PermissionNames.System_Users
+                        requiredPermissionName: AppPermissions.System_Users
                     )
                 ).AddItem(
                     new MenuItemDefinition(
@@ -42,7 +42,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Startup
                         L("Roles"),
                         url: "Roles",
                         icon: "local_offer",
-                        requiredPermissionName: PermissionNames.System_Roles
+                        requiredPermissionName: AppPermissions.System_Roles
                     )
                 )
                 .AddItem(

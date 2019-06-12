@@ -1089,6 +1089,23 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.ToTable("Core_Tenants");
                 });
 
+            modelBuilder.Entity("AbpCompanyName.AbpProjectName.Storage.BinaryObject", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<byte[]>("Bytes")
+                        .IsRequired();
+
+                    b.Property<int?>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("AppBinaryObjects");
+                });
+
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>
                 {
                     b.HasBaseType("Abp.Application.Features.FeatureSetting");

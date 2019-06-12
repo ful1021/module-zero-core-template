@@ -25,7 +25,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AbpCompanyName.AbpProjectName.Users
 {
-    [AbpAuthorize(PermissionNames.System_Users)]
+    [AbpAuthorize(AppPermissions.System_Users)]
     public class UserAppService : AsyncCrudAppServiceBase<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
         private readonly UserManager _userManager;
@@ -67,7 +67,7 @@ namespace AbpCompanyName.AbpProjectName.Users
 
         #endregion 查询
 
-        [AbpAuthorize(PermissionNames.System_Users_Create)]
+        [AbpAuthorize(AppPermissions.System_Users_Create)]
         public override async Task<UserDto> Create(CreateUserDto input)
         {
             CheckCreatePermission();
@@ -91,7 +91,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             return MapToEntityDto(user);
         }
 
-        [AbpAuthorize(PermissionNames.System_Users_Edit)]
+        [AbpAuthorize(AppPermissions.System_Users_Edit)]
         public override async Task<UserDto> Update(UserDto input)
         {
             CheckUpdatePermission();
@@ -110,7 +110,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             return await Get(input);
         }
 
-        [AbpAuthorize(PermissionNames.System_Users_Delete)]
+        [AbpAuthorize(AppPermissions.System_Users_Delete)]
         public override async Task Delete(EntityDto<long> input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
@@ -122,7 +122,7 @@ namespace AbpCompanyName.AbpProjectName.Users
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        [AbpAuthorize(PermissionNames.System_Users_Unlock)]
+        [AbpAuthorize(AppPermissions.System_Users_Unlock)]
         public async Task UnlockUser(EntityDto<long> input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
@@ -220,7 +220,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             return true;
         }
 
-        [AbpAuthorize(PermissionNames.System_Users_ResetPassword)]
+        [AbpAuthorize(AppPermissions.System_Users_ResetPassword)]
         public async Task<bool> ResetPassword(ResetPasswordDto input)
         {
             if (_abpSession.UserId == null)

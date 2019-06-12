@@ -14,6 +14,8 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore
 
         public virtual DbSet<BinaryObject> BinaryObjects { get; set; }
 
+        //public virtual DbSet<ExportingTask> ExportingTasks { get; set; }
+
         public AbpProjectNameDbContext(DbContextOptions<AbpProjectNameDbContext> options)
             : base(options)
         {
@@ -37,12 +39,10 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore
 
         private void CoreModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ChangeAbpTablePrefix<Tenant, Role, User>("Core_");
-        }
+            var prefix = "Core_";
+            modelBuilder.ChangeAbpTablePrefix<Tenant, Role, User>(prefix);
 
-        private void XXModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ChangeTablePrefix("xxx_", typeof(User));
+            //modelBuilder.ChangeTablePrefix(prefix, typeof(ExportingTask));
         }
     }
 }

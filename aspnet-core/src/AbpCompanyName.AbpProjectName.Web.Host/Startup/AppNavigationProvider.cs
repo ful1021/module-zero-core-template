@@ -16,9 +16,9 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
 
         private static MenuItemDefinition BuildSystemMenu()
         {
-            return NewMenuItem(PermissionNames.System, "设置", "/system", "lock")
-                .AddItem(NewMenuItem(PermissionNames.System_Roles, "角色管理", "role"))
-                .AddItem(NewMenuItem(PermissionNames.System_Users, "用户管理", "user"));
+            return NewMenuItem(AppPermissions.System, "设置", "/system", "lock")
+                .AddItem(NewMenuItem(AppPermissions.System_Roles, "角色管理", "role"))
+                .AddItem(NewMenuItem(AppPermissions.System_Users, "用户管理", "user"));
         }
 
         private static MenuItemDefinition NewMenuItem(string name, string displayName, string url = null, string icon = null)

@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AbpCompanyName.AbpProjectName.Roles
 {
-    [AbpAuthorize(PermissionNames.System_Roles)]
+    [AbpAuthorize(AppPermissions.System_Roles)]
     public class RoleAppService : AsyncCrudAppServiceBase<Role, RoleListDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>, IRoleAppService
     {
         private readonly RoleCache _roleCache;

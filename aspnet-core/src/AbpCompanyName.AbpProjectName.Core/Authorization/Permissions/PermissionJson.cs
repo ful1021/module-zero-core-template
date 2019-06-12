@@ -17,6 +17,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Permissions
         public int? MultiTenancySide { get; set; }
 
         public bool DefaultPermission { private get; set; }
+        public bool ImportExport { private get; set; }
         public List<PermissionJson> Children { private get; set; }
         public int Order { get; set; }
         public List<int> DisableOrder { get; set; }
@@ -31,7 +32,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Permissions
                 {
                     Name = "List",
                     DisplayName = "列表",
-                    Order = 5,
+                    Order = 0,
                     DefaultPermission = false
                 });
                 Children.Add(new PermissionJson
@@ -53,6 +54,23 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Permissions
                     Name = "Delete",
                     DisplayName = "删除",
                     Order = 30,
+                    DefaultPermission = false
+                });
+            }
+            if (ImportExport)
+            {
+                Children.Add(new PermissionJson
+                {
+                    Name = "Import",
+                    DisplayName = "导入",
+                    Order = 40,
+                    DefaultPermission = false
+                });
+                Children.Add(new PermissionJson
+                {
+                    Name = "Export",
+                    DisplayName = "导出",
+                    Order = 50,
                     DefaultPermission = false
                 });
             }
