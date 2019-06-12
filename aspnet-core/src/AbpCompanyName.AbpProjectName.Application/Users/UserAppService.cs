@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Entities;
@@ -17,6 +16,8 @@ using AbpCompanyName.AbpProjectName.Authorization;
 using AbpCompanyName.AbpProjectName.Authorization.Accounts;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
+using AbpCompanyName.AbpProjectName.Authorization.Users.Exporting;
+using AbpCompanyName.AbpProjectName.Dto;
 using AbpCompanyName.AbpProjectName.Roles.Dto;
 using AbpCompanyName.AbpProjectName.Users.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +26,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AbpCompanyName.AbpProjectName.Users
 {
     [AbpAuthorize(PermissionNames.System_Users)]
-    public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
+    public class UserAppService : AsyncCrudAppServiceBase<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
@@ -33,6 +34,7 @@ namespace AbpCompanyName.AbpProjectName.Users
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
+        private readonly UserListExcelExporter _userListExcelExporter;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -41,7 +43,9 @@ namespace AbpCompanyName.AbpProjectName.Users
             IRepository<Role> roleRepository,
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
-            LogInManager logInManager)
+            LogInManager logInManager,
+            UserListExcelExporter userListExcelExporter
+            )
             : base(repository)
         {
             _userManager = userManager;
@@ -50,7 +54,18 @@ namespace AbpCompanyName.AbpProjectName.Users
             _passwordHasher = passwordHasher;
             _abpSession = abpSession;
             _logInManager = logInManager;
+            _userListExcelExporter = userListExcelExporter;
         }
+
+        #region 查询
+
+        public async Task<FileDto> GetUsersToExcel(PagedUserResultRequestDto input)
+        {
+            var userListDtos = await GetAllList(input);
+            return _userListExcelExporter.ExportToFile(userListDtos.Items.ToList());
+        }
+
+        #endregion 查询
 
         [AbpAuthorize(PermissionNames.System_Users_Create)]
         public override async Task<UserDto> Create(CreateUserDto input)

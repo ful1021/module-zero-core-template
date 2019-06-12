@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -6,48 +7,34 @@ using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using Abp.Linq;
 using AutoMapper.QueryableExtensions;
 
 namespace AbpCompanyName.AbpProjectName
 {
-    public abstract class AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>
-        : AsyncCrudAppService<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>
-        where TEntity : class, IEntity<TPrimaryKey>
-        where TEntityQueryDto : class, IEntityDto<TPrimaryKey>
-        where TUpdateInput : IEntityDto<TPrimaryKey>
-        where TGetInput : IEntityDto<TPrimaryKey>
-        where TDeleteInput : IEntityDto<TPrimaryKey>
-        where TGetAllInput : IPagedResultRequest, ILimitedResultRequest
+    public abstract class AsyncCrudAppServiceBase<TEntity, TBasicEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>
+        : AsyncCrudAppService<TEntity, TBasicEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>,
+        IAsyncCrudAppService<TBasicEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>
+           where TEntity : class, IEntity<TPrimaryKey>
+           where TBasicEntityDto : IEntityDto<TPrimaryKey>
+           where TUpdateInput : IEntityDto<TPrimaryKey>
+           where TGetInput : IEntityDto<TPrimaryKey>
+           where TDeleteInput : IEntityDto<TPrimaryKey>
     {
+        protected virtual string GetAllListPermissionName { get; set; }
+
         /// <summary>
         /// 父类构造函数
         /// </summary>
         /// <param name="repository">仓储</param>
         protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository) : base(repository)
         {
+            AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
         }
 
-        public override Task<TEntityQueryDto> Get(TGetInput input)
-        {
-            CheckGetPermission();
+        #region 查询
 
-            var query = Repository.GetAll().Where(CreateEqualityExpressionForId(input.Id));
-            return AsyncQueryableExecuter.FirstOrDefaultAsync(ProjectTo(query));
-        }
-
-        protected Expression<Func<TEntity, bool>> CreateEqualityExpressionForId(TPrimaryKey id)
-        {
-            var lambdaParam = Expression.Parameter(typeof(TEntity));
-
-            var lambdaBody = Expression.Equal(
-                Expression.PropertyOrField(lambdaParam, "Id"),
-                Expression.Constant(id, typeof(TPrimaryKey))
-                );
-
-            return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
-        }
-
-        public override async Task<PagedResultDto<TEntityQueryDto>> GetAll(TGetAllInput input)
+        public override async Task<PagedResultDto<TBasicEntityDto>> GetAll(TGetAllInput input)
         {
             CheckGetAllPermission();
 
@@ -56,17 +43,17 @@ namespace AbpCompanyName.AbpProjectName
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(ProjectTo(query));
+            var entities = await ToListAsync(query);
 
             int totalCount = entities?.Count ?? 0;
             var pagedInput = input as IPagedResultRequest;
-            //没有分页参数,不需要统计总记录数
-            if (pagedInput != null)
+            //没有分页参数,不需要统计总记录数  或者 总条数 小于 每页大小，则代表只有1页数据
+            if (pagedInput != null || totalCount < pagedInput.MaxResultCount)
             {
                 totalCount = await AsyncQueryableExecuter.CountAsync(noPagerQuery);
             }
 
-            return new PagedResultDto<TEntityQueryDto>(totalCount, entities);
+            return new PagedResultDto<TBasicEntityDto>(totalCount, entities);
         }
 
         /// <summary>
@@ -74,34 +61,86 @@ namespace AbpCompanyName.AbpProjectName
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public virtual async Task<ListResultDto<TEntityQueryDto>> GetAllList(TGetAllInput input)
+        public virtual async Task<ListResultDto<TBasicEntityDto>> GetAllList(TGetAllInput input)
         {
+            CheckPermission(GetAllListPermissionName);
+
             var query = CreateFilteredQuery(input);
             query = ApplySorting(query, input);
 
-            var list = await AsyncQueryableExecuter.ToListAsync(ProjectTo(query));
+            var entities = await ToListAsync(query);
 
-            return new ListResultDto<TEntityQueryDto>(list);
+            return new ListResultDto<TBasicEntityDto>(entities);
         }
+
+        public override Task<TBasicEntityDto> Get(TGetInput input)
+        {
+            CheckGetPermission();
+
+            return FirstOrDefaultAsync(input);
+        }
+
+        #endregion 查询
+
+        #region ProjectTo
 
         /// <summary>
         /// 将实体模型中的每个元素映射到 TEntityQueryDto
         /// </summary>
         /// <returns></returns>
-        protected virtual Expression<Func<TEntity, TEntityQueryDto>> SelectMapTo()
+        protected virtual Expression<Func<TEntity, TBasicEntityDto>> SelectMapTo()
         {
             return null;
         }
 
-        private IQueryable<TEntityQueryDto> ProjectTo(IQueryable<TEntity> query)
+        private IQueryable<TBasicEntityDto> ProjectTo(IQueryable<TEntity> query)
         {
             var selectMapTo = SelectMapTo();
             if (selectMapTo == null)
             {
-                return query.ProjectTo<TEntityQueryDto>();
+                return query.ProjectTo<TBasicEntityDto>();
             }
             return query.Select(selectMapTo);
         }
+
+        protected virtual bool UserProjectTo { get; set; } = true;
+
+        protected virtual async Task<TBasicEntityDto> FirstOrDefaultAsync(TGetInput input)
+        {
+            if (UserProjectTo)
+            {
+                var query = Repository.GetAll().Where(CreateEqualityExpressionForId(input.Id));
+                return await AsyncQueryableExecuter.FirstOrDefaultAsync(ProjectTo(query));
+            }
+            var info = await Repository.FirstOrDefaultAsync(input.Id);
+            return MapToEntityDto(info);
+        }
+
+        protected virtual Expression<Func<TEntity, bool>> CreateEqualityExpressionForId(TPrimaryKey id)
+        {
+            var lambdaParam = Expression.Parameter(typeof(TEntity));
+
+            var leftExpression = Expression.PropertyOrField(lambdaParam, "Id");
+
+            Expression<Func<object>> closure = () => id;
+            var rightExpression = Expression.Convert(closure.Body, leftExpression.Type);
+
+            var lambdaBody = Expression.Equal(leftExpression, rightExpression);
+
+            return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
+        }
+
+        protected virtual async Task<List<TBasicEntityDto>> ToListAsync(IQueryable<TEntity> query)
+        {
+            if (UserProjectTo)
+            {
+                return await AsyncQueryableExecuter.ToListAsync(ProjectTo(query));
+            }
+            var entities = await AsyncQueryableExecuter.ToListAsync(query);
+            return entities.Select(MapToEntityDto).ToList();
+        }
+
+        #endregion ProjectTo
     }
 
     public abstract class AsyncCrudAppServiceBase<TEntity, TEntityQueryDto>
