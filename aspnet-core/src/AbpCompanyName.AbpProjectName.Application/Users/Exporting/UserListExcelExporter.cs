@@ -24,29 +24,41 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users.Exporting
             _abpSession = abpSession;
         }
 
+        //public FileDto ToFile(DataSet ds)
+        //{
+        //    if (ds == null || ds.Tables.Count <= 0)
+        //    {
+        //        return null;
+        //    }
+        //    return CreateExcelPackage("UserList.xlsx", excelPackage =>
+        //    {
+        //        DataTable osBillDt = ds.Tables[0];
+        //        DataTable osDeliveryDt = ds.Tables[1];
+
+        //        CreateSheet(excelPackage, osBillDt, "对账单");
+        //        CreateSheet(excelPackage, osDeliveryDt, "发货明细");
+        //    });
+        //}
+
+        //public FileDto ToFile(DataTable dt)
+        //{
+        //    return CreateExcelPackage("UserList.xlsx", excelPackage =>
+        //    {
+        //        CreateSheet(excelPackage, dt, "用户");
+        //    });
+        //}
+
         public FileDto ExportToFile(List<UserDto> userListDtos)
         {
-            return CreateExcelPackage(
-                "UserList.xlsx",
-                excelPackage =>
+            return CreateExcelPackage("UserList.xlsx", excelPackage =>
+            {
+                var sheet = CreateSheet(excelPackage, st =>
                 {
-                    var sheet = excelPackage.Workbook.Worksheets.Add("Users");
-                    sheet.OutLineApplyStyle = true;
+                    string[] headerTexts = new[] { "名字", "姓氏", "用户名", "电话号码", "邮箱地址", "邮箱地址验认", "角色", "激活", "创建时间" };
 
-                    AddHeader(
-                        sheet,
-                        "Name",
-                        "Surname",
-                        "UserName",
-                        "PhoneNumber",
-                        "EmailAddress",
-                        "Roles",
-                        "Active",
-                        "CreationTime"
-                        );
+                    st.AddHeader(headerTexts);
 
-                    AddObjects(
-                        sheet, 2, userListDtos,
+                    st.AddObjects(userListDtos,
                         _ => _.Name,
                         _ => _.Surname,
                         _ => _.UserName,
@@ -56,17 +68,13 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users.Exporting
                         _ => _.IsActive,
                         _ => _timeZoneConverter.Convert(_.CreationTime, _abpSession.TenantId, _abpSession.GetUserId())
                         );
+                }, "用户");
 
-                    //Formatting cells
+                //Formatting cells
 
-                    var creationTimeColumn = sheet.Column(9);
-                    creationTimeColumn.Style.Numberformat.Format = "yyyy-mm-dd";
-
-                    for (var i = 1; i <= 9; i++)
-                    {
-                        sheet.Column(i).AutoFit();
-                    }
-                });
+                var creationTimeColumn = sheet.Column(9);
+                creationTimeColumn.Style.Numberformat.Format = "yyyy-mm-dd";
+            });
         }
     }
 }

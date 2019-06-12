@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using Abp.AspNetZeroCore.Net;
-using Abp.Collections.Extensions;
+using System.Data;
 using Abp.Dependency;
 using AbpCompanyName.AbpProjectName.Dto;
+using AbpCompanyName.AbpProjectName.Net.MimeTypes;
 using AbpCompanyName.AbpProjectName.Storage;
 using OfficeOpenXml;
 
@@ -18,6 +17,26 @@ namespace AbpCompanyName.AbpProjectName.DataExporting.Excel.EpPlus
             _tempFileCacheManager = tempFileCacheManager;
         }
 
+        protected ExcelWorksheet CreateSheet(ExcelPackage excelPackage, DataTable table, string sheetName = "Sheet1", bool outLineApplyStyle = true)
+        {
+            var sheet = excelPackage.AddWorksheets(sheetName, outLineApplyStyle);
+
+            sheet.Cells["A1"].LoadFromDataTable(table, true);
+
+            return sheet;
+        }
+
+        protected ExcelWorksheet CreateSheet(ExcelPackage excelPackage, Action<ExcelWorksheet> creator, string sheetName = "Sheet1", bool outLineApplyStyle = true)
+        {
+            var sheet = excelPackage.AddWorksheets(sheetName, outLineApplyStyle);
+
+            creator(sheet);
+
+            sheet.AutoFit();
+
+            return sheet;
+        }
+
         protected FileDto CreateExcelPackage(string fileName, Action<ExcelPackage> creator)
         {
             var file = new FileDto(fileName, MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
@@ -29,41 +48,6 @@ namespace AbpCompanyName.AbpProjectName.DataExporting.Excel.EpPlus
             }
 
             return file;
-        }
-
-        protected void AddHeader(ExcelWorksheet sheet, params string[] headerTexts)
-        {
-            if (headerTexts.IsNullOrEmpty())
-            {
-                return;
-            }
-
-            for (var i = 0; i < headerTexts.Length; i++)
-            {
-                AddHeader(sheet, i + 1, headerTexts[i]);
-            }
-        }
-
-        protected void AddHeader(ExcelWorksheet sheet, int columnIndex, string headerText)
-        {
-            sheet.Cells[1, columnIndex].Value = headerText;
-            sheet.Cells[1, columnIndex].Style.Font.Bold = true;
-        }
-
-        protected void AddObjects<T>(ExcelWorksheet sheet, int startRowIndex, IList<T> items, params Func<T, object>[] propertySelectors)
-        {
-            if (items.IsNullOrEmpty() || propertySelectors.IsNullOrEmpty())
-            {
-                return;
-            }
-
-            for (var i = 0; i < items.Count; i++)
-            {
-                for (var j = 0; j < propertySelectors.Length; j++)
-                {
-                    sheet.Cells[i + startRowIndex, j + 1].Value = propertySelectors[j](items[i]);
-                }
-            }
         }
 
         protected void Save(ExcelPackage excelPackage, FileDto file)
