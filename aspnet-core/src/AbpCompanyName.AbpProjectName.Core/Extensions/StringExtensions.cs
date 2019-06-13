@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -311,38 +310,6 @@ namespace AbpCompanyName.AbpProjectName.Extensions
                 return false;//校验码验证
             }
             return true;//符合GB11643-1999标准
-        }
-
-        /// <summary>
-        /// 渠道套餐商品分解
-        /// </summary>
-        /// <param name="goods"></param>
-        /// <returns></returns>
-        public static Dictionary<string, int> ChannelPackageGoodsSplit(this string goods)
-        {
-            var dicGoods = new Dictionary<string, int>();
-            var goodsArray = goods.Split("+", StringSplitOptions.RemoveEmptyEntries);
-            if (goodsArray.Length > 0)
-            {
-                for (int i = 0; i < goodsArray.Length; i++)
-                {
-                    var goodsQtyArray = goodsArray[i].Split("*", StringSplitOptions.RemoveEmptyEntries);
-                    int qty = 1;
-                    if (goodsQtyArray.Length > 1)
-                        int.TryParse(goodsQtyArray[1], out qty);
-                    dicGoods.Add(goodsQtyArray[0], qty);
-                }
-            }
-            else
-            {
-                var goodsQtyArray = goods.Split("*", StringSplitOptions.RemoveEmptyEntries);
-                int qty = 1;
-                for (int i = 0; i < goodsQtyArray.Length; i++)
-                {
-                    dicGoods.Add(goodsQtyArray[i], qty);
-                }
-            }
-            return dicGoods;
         }
 
         /// <summary>

@@ -49,26 +49,59 @@ namespace AbpCompanyName.AbpProjectName.Controllers
         //    }
         //}
 
+        //[HttpPost]
+        //[AbpMvcAuthorize(AppPermissions.System_Users_Import)]
+        //public JsonResult ImportFromExcel()
+        //{
+        //    try
+        //    {
+        //        var list = RequestFileToList((worksheet, rowIdx) =>
+        //       {
+        //           var info = new ImportUserDto
+        //           {
+        //               UserName = worksheet.GetCheckValue(rowIdx, 1),
+
+        //               Name = worksheet.GetCheckValue(rowIdx, 2),
+
+        //               Surname = worksheet.TryToString(rowIdx, 3),
+        //               EmailAddress = worksheet.GetCheckValue(rowIdx, 4, "身份证号", a => !a.CheckIdCard18(), true),
+
+        //               PhoneNumber = worksheet.GetCheckValue(rowIdx, 5),
+        //               Password = worksheet.GetCheckValue(rowIdx, 6),
+        //               AssignedRoleNames = worksheet.TryToStringArry(7, ',')
+        //           };
+
+        //           return info;
+        //       });
+
+        //        return Json(new AjaxResponse(new { }));
+        //    }
+        //    catch (UserFriendlyException ex)
+        //    {
+        //        return Json(new AjaxResponse(new ErrorInfo(ex.Message)));
+        //    }
+        //}
+
         [HttpPost]
         [AbpMvcAuthorize(AppPermissions.System_Users_Import)]
         public JsonResult ImportFromExcel()
         {
             try
             {
-                var list = GetRequestFileStream().ProcessExcelFile((worksheet, rowIdx) =>
+                var list = RequestFileToList((reader, rowIdx) =>
                {
                    var info = new ImportUserDto
                    {
-                       UserName = worksheet.GetCheckValue(rowIdx, 1),
+                       UserName = reader.GetCheckValue(rowIdx, 1),
 
-                       Name = worksheet.GetCheckValue(rowIdx, 2),
+                       Name = reader.GetCheckValue(rowIdx, 2),
 
-                       Surname = worksheet.TryToString(rowIdx, 3),
-                       EmailAddress = worksheet.GetCheckValue(rowIdx, 4, "身份证号", a => !a.CheckIdCard18(), true),
+                       Surname = reader.TryToString(rowIdx, 3),
+                       EmailAddress = reader.GetCheckValue(rowIdx, 4, "身份证号", a => !a.CheckIdCard18(), true),
 
-                       PhoneNumber = worksheet.GetCheckValue(rowIdx, 5),
-                       Password = worksheet.GetCheckValue(rowIdx, 6),
-                       AssignedRoleNames = worksheet.TryToStringArry(7, ',')
+                       PhoneNumber = reader.GetCheckValue(rowIdx, 5),
+                       Password = reader.GetCheckValue(rowIdx, 6),
+                       AssignedRoleNames = reader.TryToStringArry(7, ',')
                    };
 
                    return info;
