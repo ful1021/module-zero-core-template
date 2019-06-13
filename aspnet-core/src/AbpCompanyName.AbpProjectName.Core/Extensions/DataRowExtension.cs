@@ -20,7 +20,7 @@ namespace AbpCompanyName.AbpProjectName.Extensions
         /// <param name="customValidateFunc">自定义验证方法</param>
         /// <param name="isNullable"></param>
         /// <returns></returns>
-        public static string GetValue(this DataRow row, int rowIndex, int columnIndex, string errorMsg = "", Func<string, bool> customValidateFunc = null, bool isNullable = false)
+        public static string GetCheckValue(this DataRow row, int rowIndex, int columnIndex, string errorMsg = "", Func<string, bool> customValidateFunc = null, bool isNullable = false)
         {
             var val = row[columnIndex].ToString().Trim();
             if (!isNullable)

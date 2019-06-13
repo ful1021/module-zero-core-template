@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using Abp.Collections.Extensions;
+using Abp.UI;
 using OfficeOpenXml;
 
 namespace AbpCompanyName.AbpProjectName.DataExporting.Excel.EpPlus
@@ -14,25 +15,29 @@ namespace AbpCompanyName.AbpProjectName.DataExporting.Excel.EpPlus
 
         public static DataTable ToDataTable(this Stream stream)
         {
-            ExcelPackage pck = new ExcelPackage(stream);
-            ExcelWorksheet worksheet = pck.Workbook.Worksheets[1];
-            return ExcelPackageToDataTable(pck, worksheet);
+            using (var pck = new ExcelPackage(stream))
+            {
+                ExcelWorksheet worksheet = pck.Workbook.Worksheets[1];
+                return ExcelPackageToDataTable(pck, worksheet);
+            }
         }
 
         public static DataSet ToDataSet(this Stream stream)
         {
-            ExcelPackage pck = new ExcelPackage(stream);
-            DataSet ds = new DataSet();
-            foreach (var item in pck.Workbook.Worksheets)
+            using (var pck = new ExcelPackage(stream))
             {
-                var dt = ExcelPackageToDataTable(pck, item);
-                dt.TableName = item.Name;
-                ds.Tables.Add(dt);
+                DataSet ds = new DataSet();
+                foreach (var item in pck.Workbook.Worksheets)
+                {
+                    var dt = ExcelPackageToDataTable(pck, item);
+                    dt.TableName = item.Name;
+                    ds.Tables.Add(dt);
+                }
+                return ds;
             }
-            return ds;
         }
 
-        public static DataTable ExcelPackageToDataTable(this ExcelPackage excelPackage, ExcelWorksheet worksheet)
+        private static DataTable ExcelPackageToDataTable(this ExcelPackage excelPackage, ExcelWorksheet worksheet)
         {
             DataTable dt = new DataTable();
 
@@ -101,6 +106,58 @@ namespace AbpCompanyName.AbpProjectName.DataExporting.Excel.EpPlus
 
         #endregion ExcelToDataTable
 
+        #region ExcelToList
+
+        public static List<T> ProcessExcelFile<T>(this Stream stream, Func<ExcelWorksheet, int, T> processExcelRow)
+        {
+            var entities = new List<T>();
+
+            using (stream)
+            {
+                using (var excelPackage = new ExcelPackage(stream))
+                {
+                    foreach (var worksheet in excelPackage.Workbook.Worksheets)
+                    {
+                        var entitiesInWorksheet = ProcessWorksheet(worksheet, processExcelRow);
+
+                        entities.AddRange(entitiesInWorksheet);
+                    }
+                }
+            }
+
+            return entities;
+        }
+
+        private static List<T> ProcessWorksheet<T>(ExcelWorksheet worksheet, Func<ExcelWorksheet, int, T> processExcelRow)
+        {
+            var entities = new List<T>();
+
+            for (var i = worksheet.Dimension.Start.Row + 1; i <= worksheet.Dimension.End.Row; i++)
+            {
+                try
+                {
+                    if (worksheet.IsRowEmpty(i))
+                    {
+                        continue;
+                    }
+                    var entity = processExcelRow(worksheet, i);
+
+                    if (entity != null)
+                    {
+                        entities.Add(entity);
+                    }
+                }
+                catch (Exception)
+                {
+                    //ignore
+                }
+            }
+
+            return entities;
+        }
+
+        #endregion ExcelToList
+
         #region ToExcel
 
         public static void AddHeader(this ExcelWorksheet sheet, params string[] headerTexts)
@@ -159,5 +216,88 @@ namespace AbpCompanyName.AbpProjectName.DataExporting.Excel.EpPlus
         }
 
         #endregion ToExcel
+
+        public static bool IsRowEmpty(this ExcelWorksheet worksheet, int row)
+        {
+            return worksheet.Cells[row, 1].Value == null || string.IsNullOrWhiteSpace(worksheet.Cells[row, 1].Value.ToString());
+        }
+
+        /// <summary>
+        /// 检验 并得到值
+        /// </summary>
+        /// <param name="worksheet"></param>
+        /// <param name="rowIndex">从1开始</param>
+        /// <param name="columnIndex">从1开始</param>
+        /// <param name="errorMsg"></param>
+        /// <param name="customValidateFunc">自定义验证方法</param>
+        /// <param name="isNullable"></param>
+        /// <returns></returns>
+        public static string GetCheckValue(this ExcelWorksheet worksheet, int rowIndex, int columnIndex, string errorMsg = "", Func<string, bool> customValidateFunc = null, bool isNullable = false)
+        {
+            object val = GetCellsVal(worksheet, rowIndex, columnIndex);
+            var strVal = val?.ToString().Trim();
+            if (!isNullable)
+            {
+                if (string.IsNullOrWhiteSpace(strVal))
+                {
+                    throw new UserFriendlyException($"对比模板，检查第 {columnIndex } 列，第 {rowIndex} 行 {errorMsg} 值不能为空");
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(strVal))
+            {
+                if (customValidateFunc?.Invoke(strVal) ?? false)
+                {
+                    throw new UserFriendlyException($"对比模板，检查第 {columnIndex } 列，第 {rowIndex} 行 {errorMsg} 值为 {strVal} 有误");
+                }
+            }
+            return strVal;
+        }
+
+        /// <summary>
+        /// 获取单元格值 转String
+        /// </summary>
+        /// <param name="worksheet"></param>
+        /// <param name="rowIndex">从1开始</param>
+        /// <param name="columnIndex">从1开始</param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string TryToString(this ExcelWorksheet worksheet, int rowIndex, int columnIndex, string value = "")
+        {
+            object val = GetCellsVal(worksheet, rowIndex, columnIndex);
+            return TryToString(val, value);
+        }
+
+        /// <summary>
+        /// 获取单元格值 转String[]
+        /// </summary>
+        /// <param name="worksheet"></param>
+        /// <param name="rowIndex">从1开始</param>
+        /// <param name="columnIndex">从1开始</param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static string[] TryToStringArry(this ExcelWorksheet worksheet, int rowIndex, int columnIndex, params char[] separator)
+        {
+            object val = GetCellsVal(worksheet, rowIndex, columnIndex);
+            var str = TryToString(val, "");
+            return str.Split(separator).Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToArray();
+        }
+
+        private static object GetCellsVal(this ExcelWorksheet worksheet, int rowIndex, int columnIndex)
+        {
+            if (worksheet.Cells.Columns >= columnIndex && worksheet.Cells.Rows >= rowIndex)
+            {
+                return worksheet.Cells[rowIndex, columnIndex].Value;
+            }
+            return null;
+        }
+
+        private static string TryToString(object val, string value)
+        {
+            if (val == null || val == DBNull.Value || string.IsNullOrWhiteSpace(val.ToString()) || val.ToString().ToLower() == "null")
+            {
+                return value;
+            }
+            return val.ToString();
+        }
     }
 }
