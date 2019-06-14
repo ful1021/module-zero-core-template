@@ -48,6 +48,8 @@ namespace AbpCompanyName.AbpProjectName.Users
             )
             : base(repository)
         {
+            UserProjectTo = false;
+
             _userManager = userManager;
             _roleManager = roleManager;
             _roleRepository = roleRepository;
@@ -161,9 +163,10 @@ namespace AbpCompanyName.AbpProjectName.Users
 
         protected override UserDto MapToEntityDto(User user)
         {
-            var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => r.NormalizedName);
+            var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => new { r.NormalizedName, r.DisplayName }).ToList();
             var userDto = base.MapToEntityDto(user);
-            userDto.RoleNames = roles.ToArray();
+            userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
+            userDto.RoleDisplayNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
             return userDto;
         }
 
