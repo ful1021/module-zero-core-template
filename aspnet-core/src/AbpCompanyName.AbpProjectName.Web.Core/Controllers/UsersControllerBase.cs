@@ -3,10 +3,10 @@ using Abp.BackgroundJobs;
 using Abp.UI;
 using Abp.Web.Models;
 using AbpCompanyName.AbpProjectName.Authorization;
-using AbpCompanyName.AbpProjectName.DataExporting.Excel.EpPlus;
 using AbpCompanyName.AbpProjectName.Extensions;
 using AbpCompanyName.AbpProjectName.Storage;
 using AbpCompanyName.AbpProjectName.Users.Importing;
+using AbpCompanyName.AbpProjectName.Validation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AbpCompanyName.AbpProjectName.Controllers
@@ -64,7 +64,7 @@ namespace AbpCompanyName.AbpProjectName.Controllers
         //               Name = worksheet.GetCheckValue(rowIdx, 2),
 
         //               Surname = worksheet.TryToString(rowIdx, 3),
-        //               EmailAddress = worksheet.GetCheckValue(rowIdx, 4, "身份证号", a => !a.CheckIdCard18(), true),
+        //               EmailAddress = reader.GetCheckValue(rowIdx, 4, "邮箱地址", a => !a.IsEmail()),
 
         //               PhoneNumber = worksheet.GetCheckValue(rowIdx, 5),
         //               Password = worksheet.GetCheckValue(rowIdx, 6),
@@ -97,7 +97,7 @@ namespace AbpCompanyName.AbpProjectName.Controllers
                        Name = reader.GetCheckValue(rowIdx, 2),
 
                        Surname = reader.TryToString(rowIdx, 3),
-                       EmailAddress = reader.GetCheckValue(rowIdx, 4, "身份证号", a => !a.CheckIdCard18(), true),
+                       EmailAddress = reader.GetCheckValue(rowIdx, 4, "邮箱地址", a => !a.IsEmail()),
 
                        PhoneNumber = reader.GetCheckValue(rowIdx, 5),
                        Password = reader.GetCheckValue(rowIdx, 6),
