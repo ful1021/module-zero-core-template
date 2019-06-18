@@ -5,11 +5,11 @@ using AbpCompanyName.AbpProjectName.DataDictionaries.Dto;
 
 namespace AbpCompanyName.AbpProjectName.DataDictionaries
 {
-    public class DataDictionaryAppService : AsyncCrudAppServiceBase<DataDictionary, DataDictionaryQueryDto, Guid>, IDataDictionaryAppService
+    public class DataDictionaryAppService : AsyncCrudAppServiceBase<DataDictionary, DataDictionaryQueryDto>, IDataDictionaryAppService
     {
-        private readonly IGeneralTreeManager<DataDictionary, Guid> _generalTreeManager;
+        private readonly IGeneralTreeManager<DataDictionary, int> _generalTreeManager;
 
-        public DataDictionaryAppService(IRepository<DataDictionary, Guid> repository, IGeneralTreeManager<DataDictionary, Guid> generalTreeManager)
+        public DataDictionaryAppService(IRepository<DataDictionary> repository, IGeneralTreeManager<DataDictionary, int> generalTreeManager)
             : base(repository)
         {
             _generalTreeManager = generalTreeManager;

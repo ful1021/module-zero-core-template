@@ -10,6 +10,6 @@ namespace AbpCompanyName.AbpProjectName.DataDictionaries
     {
         Task<PagedResultDto<DataDictionaryQueryDto>> GetAll(PagedAndSortedResultRequestDto input);
 
-        Task Delete(EntityDto<Guid> input);
+        Task Delete(EntityDto<int> input);
     }
 }
