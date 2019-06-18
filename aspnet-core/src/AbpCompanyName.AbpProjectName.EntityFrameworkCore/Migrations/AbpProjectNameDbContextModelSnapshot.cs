@@ -1094,7 +1094,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<long?>("CreatorUserId");
 
-                    b.Property<string>("Key");
+                    b.Property<string>("Key")
+                        .HasMaxLength(128);
 
                     b.Property<DateTime?>("LastModificationTime");
 
@@ -1102,7 +1103,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<int>("TableName");
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Title")
+                        .HasMaxLength(256);
 
                     b.Property<int>("Width");
 

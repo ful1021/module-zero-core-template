@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities.Auditing;
+﻿using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
 
-namespace AbpCompanyName.AbpProjectName.ExtendColumns
+namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
 {
-    public class ExtendColumn : AuditedAggregateRoot
+    [AutoMap(typeof(ExtendColumn))]
+    public class ExtendColumnDto : EntityDto
     {
-        public const int KeyMaxLength = 128;
-        public const int TitleMaxLength = 256;
-
         /// <summary>
         /// 支持扩展列的表
         /// </summary>
@@ -16,13 +14,11 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns
         /// <summary>
         /// 对应列内容的字段名
         /// </summary>
-        [MaxLength(KeyMaxLength)]
         public string Key { get; set; }
 
         /// <summary>
         /// 列头显示文字
         /// </summary>
-        [MaxLength(TitleMaxLength)]
         public string Title { get; set; }
 
         /// <summary>

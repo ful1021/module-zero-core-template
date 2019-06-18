@@ -1,11 +1,10 @@
-﻿using System;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Abp.GeneralTree;
 using AbpCompanyName.AbpProjectName.DataDictionaries.Dto;
 
 namespace AbpCompanyName.AbpProjectName.DataDictionaries
 {
-    public class DataDictionaryAppService : AsyncCrudAppServiceBase<DataDictionary, DataDictionaryQueryDto>, IDataDictionaryAppService
+    public class DataDictionaryAppService : AsyncCrudAppServiceBase<DataDictionary, DataDictionaryQueryDto, int, DataDictionaryGetAllInput, DataDictionaryDto, DataDictionaryDto>, IDataDictionaryAppService
     {
         private readonly IGeneralTreeManager<DataDictionary, int> _generalTreeManager;
 

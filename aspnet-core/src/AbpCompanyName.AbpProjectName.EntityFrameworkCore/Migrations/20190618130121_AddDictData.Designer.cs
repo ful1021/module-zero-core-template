@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AbpCompanyName.AbpProjectName.Migrations
 {
     [DbContext(typeof(AbpProjectNameDbContext))]
-    [Migration("20190618121946_AddDictData")]
+    [Migration("20190618130121_AddDictData")]
     partial class AddDictData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1096,7 +1096,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<long?>("CreatorUserId");
 
-                    b.Property<string>("Key");
+                    b.Property<string>("Key")
+                        .HasMaxLength(128);
 
                     b.Property<DateTime?>("LastModificationTime");
 
@@ -1104,7 +1105,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<int>("TableName");
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Title")
+                        .HasMaxLength(256);
 
                     b.Property<int>("Width");
 

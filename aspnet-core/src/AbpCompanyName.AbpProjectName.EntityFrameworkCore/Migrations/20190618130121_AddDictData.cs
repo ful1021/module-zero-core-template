@@ -51,8 +51,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     TableName = table.Column<int>(nullable: false),
-                    Key = table.Column<string>(nullable: true),
-                    Title = table.Column<string>(nullable: true),
+                    Key = table.Column<string>(maxLength: 128, nullable: true),
+                    Title = table.Column<string>(maxLength: 256, nullable: true),
                     Width = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

@@ -1,9 +1,11 @@
-﻿using AbpCompanyName.AbpProjectName.Domain.Entities;
-using AbpCompanyName.AbpProjectName.GeneralTree;
+﻿using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
+using AbpCompanyName.AbpProjectName.Domain.Entities;
 
 namespace AbpCompanyName.AbpProjectName.DataDictionaries.Dto
 {
-    public class DataDictionaryQueryDto : GeneralTreeDto<DataDictionary, int>
+    [AutoMap(typeof(DataDictionary))]
+    public class DataDictionaryDto : EntityDto
     {
         /// <summary>
         /// 类型编码
