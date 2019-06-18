@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="Abp.AutoMapper" Version="4.6.0" />
+    <PackageReference Include="Abp.GeneralTree" Version="2.4.3" />
     <PackageReference Include="Abp.ZeroCore.EntityFrameworkCore" Version="4.6.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
