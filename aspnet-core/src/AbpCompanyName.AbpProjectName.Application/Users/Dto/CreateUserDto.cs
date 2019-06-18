@@ -8,31 +8,9 @@ using AbpCompanyName.AbpProjectName.Authorization.Users;
 namespace AbpCompanyName.AbpProjectName.Users.Dto
 {
     [AutoMapTo(typeof(User))]
-    public class CreateUserDto : IShouldNormalize
+    public class CreateUserDto : UpdateUserDto, IShouldNormalize
     {
-        [Required]
-        [StringLength(AbpUserBase.MaxUserNameLength)]
-        public string UserName { get; set; }
-
-        [Required]
-        [StringLength(AbpUserBase.MaxNameLength)]
-        public string Name { get; set; }
-
-        [Required]
-        [StringLength(AbpUserBase.MaxSurnameLength)]
-        public string Surname { get; set; }
-
-        [StringLength(AbpUserBase.MaxPhoneNumberLength)]
-        public string PhoneNumber { get; set; }
-
-        [Required]
-        [EmailAddress]
-        [StringLength(AbpUserBase.MaxEmailAddressLength)]
-        public string EmailAddress { get; set; }
-
         public bool IsActive { get; set; }
-
-        public string[] RoleNames { get; set; }
 
         [Required]
         [StringLength(AbpUserBase.MaxPlainPasswordLength)]

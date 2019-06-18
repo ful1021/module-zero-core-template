@@ -22,11 +22,12 @@ using AbpCompanyName.AbpProjectName.Roles.Dto;
 using AbpCompanyName.AbpProjectName.Users.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace AbpCompanyName.AbpProjectName.Users
 {
     [AbpAuthorize(AppPermissions.System_Users)]
-    public class UserAppService : AsyncCrudAppServiceBase<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
+    public class UserAppService : AsyncCrudAppServiceBase<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UpdateUserDto>, IUserAppService
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
@@ -74,7 +75,7 @@ namespace AbpCompanyName.AbpProjectName.Users
         {
             CheckCreatePermission();
 
-            var user = ObjectMapper.Map<User>(input);
+            var user = MapToEntity(input);
 
             user.TenantId = AbpSession.TenantId;
             user.IsEmailConfirmed = true;
@@ -94,7 +95,7 @@ namespace AbpCompanyName.AbpProjectName.Users
         }
 
         [AbpAuthorize(AppPermissions.System_Users_Edit)]
-        public override async Task<UserDto> Update(UserDto input)
+        public override async Task<UserDto> Update(UpdateUserDto input)
         {
             CheckUpdatePermission();
 
@@ -155,7 +156,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             return user;
         }
 
-        protected override void MapToEntity(UserDto input, User user)
+        protected override void MapToEntity(UpdateUserDto input, User user)
         {
             ObjectMapper.Map(input, user);
             user.SetNormalizedNames();
@@ -167,6 +168,10 @@ namespace AbpCompanyName.AbpProjectName.Users
             var userDto = base.MapToEntityDto(user);
             userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
             userDto.RoleDisplayNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
+            if (!user.ExtensionData.IsNullOrWhiteSpace())
+            {
+                userDto.Extension = JsonConvert.DeserializeObject(user.ExtensionData);
+            }
             return userDto;
         }
 

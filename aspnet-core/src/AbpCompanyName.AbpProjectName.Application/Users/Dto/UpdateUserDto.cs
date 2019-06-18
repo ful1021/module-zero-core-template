@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.Authorization.Users;
@@ -8,7 +7,7 @@ using AbpCompanyName.AbpProjectName.Authorization.Users;
 namespace AbpCompanyName.AbpProjectName.Users.Dto
 {
     [AutoMapFrom(typeof(User))]
-    public class UserDto : EntityDto<long>
+    public class UpdateUserDto : EntityDto<long>
     {
         [Required]
         [StringLength(AbpUserBase.MaxUserNameLength)]
@@ -30,19 +29,8 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
         [StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public string FullName { get; set; }
-
-        public DateTime? LastLoginTime { get; set; }
-
-        public DateTime CreationTime { get; set; }
-
         public string[] RoleNames { get; set; }
 
-        public string[] RoleDisplayNames { get; set; }
         public string ExtensionData { get; set; }
-
-        public object Extension { get; set; }
     }
 }
