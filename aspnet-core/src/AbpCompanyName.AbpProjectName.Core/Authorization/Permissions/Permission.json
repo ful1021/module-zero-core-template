@@ -32,6 +32,11 @@
             "displayName": "解锁"
           }
         ]
+      },
+      {
+        "name": "ExtendColumns",
+        "displayName": "扩展字段",
+        "defaultPermission": true
       }
     ]
   },

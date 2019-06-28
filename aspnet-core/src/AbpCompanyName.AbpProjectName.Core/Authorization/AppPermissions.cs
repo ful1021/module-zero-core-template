@@ -108,6 +108,31 @@
 		public const string System_Users_Unlock = "System.Users.Unlock";
 
 		/// <summary>
+		/// 设置_扩展字段
+		/// </summary>
+		public const string System_ExtendColumns = "System.ExtendColumns";
+
+		/// <summary>
+		/// 设置_扩展字段_列表
+		/// </summary>
+		public const string System_ExtendColumns_List = "System.ExtendColumns.List";
+
+		/// <summary>
+		/// 设置_扩展字段_新增
+		/// </summary>
+		public const string System_ExtendColumns_Create = "System.ExtendColumns.Create";
+
+		/// <summary>
+		/// 设置_扩展字段_编辑
+		/// </summary>
+		public const string System_ExtendColumns_Edit = "System.ExtendColumns.Edit";
+
+		/// <summary>
+		/// 设置_扩展字段_删除
+		/// </summary>
+		public const string System_ExtendColumns_Delete = "System.ExtendColumns.Delete";
+
+		/// <summary>
 		/// 商品中心
 		/// </summary>
 		public const string ProductCenter = "ProductCenter";

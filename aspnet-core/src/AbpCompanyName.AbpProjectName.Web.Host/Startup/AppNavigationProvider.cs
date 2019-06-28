@@ -10,7 +10,8 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
         {
             var menu = context.Manager.MainMenu;
 
-            menu.AddItem(BuildSystemMenu())
+            menu
+                .AddItem(BuildSystemMenu())
                 ;
         }
 
@@ -18,12 +19,18 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
         {
             return NewMenuItem(AppPermissions.System, "设置", "/system", "lock")
                 .AddItem(NewMenuItem(AppPermissions.System_Roles, "角色管理", "role"))
-                .AddItem(NewMenuItem(AppPermissions.System_Users, "用户管理", "user"));
+                .AddItem(NewMenuItem(AppPermissions.System_Users, "用户管理", "user"))
+                .AddItem(NewMenuItem(AppPermissions.System_ExtendColumns, "扩展字段", "extend-column"))
+                ;
         }
 
-        private static MenuItemDefinition NewMenuItem(string name, string displayName, string url = null, string icon = null)
+        private static MenuItemDefinition NewMenuItem(string name, string displayName, string url = null, string icon = null, bool isNeedPermission = true, string requiredPermissionName = null)
         {
-            return new MenuItemDefinition(name, new FixedLocalizableString(displayName), icon, url, requiredPermissionName: name);
+            if (isNeedPermission && string.IsNullOrWhiteSpace(requiredPermissionName))
+            {
+                requiredPermissionName = name;
+            }
+            return new MenuItemDefinition(name, new FixedLocalizableString(displayName), icon, url, requiredPermissionName: requiredPermissionName);
         }
     }
 }
