@@ -4,14 +4,15 @@ using System.Drawing.Design;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms.Design;
+using AbpCompanyName.AbpProjectName.Helper;
 using CodeSmith.Engine;
 
-namespace CodeSmith
+namespace AbpCompanyName.AbpProjectName
 {
     /// <summary>
-    /// 公共代码帮助类  由于CodeSmith 不支持多个类继承，因此只有所有代码都写在这一个类中，继承CodeTemplate
+    /// 模板父类
     /// </summary>
-    public class CommonCode : CodeTemplate
+    public class BaseCodeTemplate : CodeTemplate
     {
         #region 设置公共属性
 
@@ -59,15 +60,15 @@ namespace CodeSmith
         /// <summary>
         /// 初始化模板
         /// </summary>
-        public virtual ClassNames Init(CommonCode comm)
+        public virtual ClassNames Init()
         {
             string currentAssemblyPath = GetCurrentAssemblyDirectory();
 
             string dllFolder = Path.GetFullPath(Path.Combine(currentAssemblyPath, "../../../AbpCompanyName.AbpProjectName.Core/bin/Debug/net461/"));
 
             string nameSpaceName = "AbpCompanyName.AbpProjectName";
-            string entityName = Util.TryToString(comm.GetProperty("EntityName"));
-            string vueSpaWebPageName = Util.TryToString(comm.GetProperty("VueSpaWebPageName"));
+            string entityName = Tool.TryToString(GetProperty("EntityName"));
+            string vueSpaWebPageName = Tool.TryToString(GetProperty("VueSpaWebPageName"));
             var names = GetAssemblyFileNames(dllFolder, nameSpaceName, entityName, vueSpaWebPageName);
             return names;
         }
@@ -133,7 +134,7 @@ namespace CodeSmith
                 AppServiceName = entityName + "AppService",
                 MgmtAppServiceName = entityName + "MgmtAppService",
                 BaseAppServiceName = entityName + "BaseAppService",
-                RepositoryName = Util.ToFirstLetterCamel(entityName) + "Repository",
+                RepositoryName = Tool.ToFirstLetterCamel(entityName) + "Repository",
                 DtoName = entityName + "Dto",
                 QueryDtoName = entityName + "QueryDto",
                 GetAllInputName = entityName + "GetAllInput",
@@ -153,7 +154,7 @@ namespace CodeSmith
 
                 WebControllerName = entityName + "Controller",
 
-                VueWebPageName = string.IsNullOrWhiteSpace(vueSpaWebPageName) ? Util.ToFirstLetterCamel(entityName) : vueSpaWebPageName
+                VueWebPageName = string.IsNullOrWhiteSpace(vueSpaWebPageName) ? Tool.ToFirstLetterCamel(entityName) : vueSpaWebPageName
             };
         }
 

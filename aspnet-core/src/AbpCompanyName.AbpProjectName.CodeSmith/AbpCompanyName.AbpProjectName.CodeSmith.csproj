@@ -8,7 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E6D7E7C7-8ABD-4396-B819-9BF243FB878C}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>AbpCompanyName.AbpProjectName.CodeSmith</RootNamespace>
+    <RootNamespace>AbpCompanyName.AbpProjectName</RootNamespace>
     <AssemblyName>AbpCompanyName.AbpProjectName.CodeSmith</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -71,9 +71,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\ClassNames.cs" />
-    <Compile Include="CommonCode.cs" />
+    <Compile Include="BaseCodeTemplate.cs" />
     <Compile Include="Helper\AssemblyFileHelper.cs" />
-    <Compile Include="Helper\Comm.cs" />
+    <Compile Include="Helper\Tool.cs" />
     <Compile Include="Helper\CSComment.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

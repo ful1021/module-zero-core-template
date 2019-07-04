@@ -1,4 +1,4 @@
-﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmith.CommonCode" Encoding="utf-8" %>
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
 
 <%--注册子模板--%>
 <%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
@@ -10,9 +10,9 @@
 
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
-<%@ Import Namespace="CodeSmith" %>
+<%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-ClassNames N = Init(this);
+ClassNames N = Init();
 %>
 
         /// <summary>
@@ -24,17 +24,17 @@ ClassNames N = Init(this);
         {
             //var filters = input.Filter.ToStringArray();
             <%foreach(var col in N.EntityDateTimeProps) {%>
-            var <%=Util.ToFirstLetterCamel(col.Name) %>Range = input.<%=col.Name %>.ToDateTimeRange();
+            var <%=Tool.ToFirstLetterCamel(col.Name) %>Range = input.<%=col.Name %>.ToDateTimeRange();
             <%} %>
             
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
                 <%foreach (var col in N.GetAllInputProps){%>
                 <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>                
-                .WhereIf(<%=Util.ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=Util.ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=Util.ToFirstLetterCamel(col.Name) %>Range.EndTime)
+                .WhereIf(<%=Tool.ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=Tool.ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=Tool.ToFirstLetterCamel(col.Name) %>Range.EndTime)
                 
                 <% continue;}%>
-                <%if(Util.TryToInt(AssemblyFileHelper.DefaultValue(col),-1)==0){ %>
+                <%if(Tool.TryToInt(AssemblyFileHelper.DefaultValue(col),-1)==0){ %>
                 
                 .WhereIf(input.<%=col.Name %>?.Start != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.Start.Value)
                 .WhereIf(input.<%=col.Name %>?.End != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.End.Value)

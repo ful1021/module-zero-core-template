@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace CodeSmith
+namespace AbpCompanyName.AbpProjectName.Helper
 {
     public class ClassNames
     {

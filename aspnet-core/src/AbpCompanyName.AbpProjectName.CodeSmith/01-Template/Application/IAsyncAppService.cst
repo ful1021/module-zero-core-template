@@ -1,4 +1,4 @@
-﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../CommonCode.cs" Inherits="CodeSmith.CommonCode" Encoding="utf-8" %>
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
 
 <%--注册子模板--%>
 <%@ Register Template="../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %>  
@@ -10,9 +10,9 @@
 
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
-<%@ Import Namespace="CodeSmith" %>
+<%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-ClassNames N = Init(this);
+ClassNames N = Init();
 %>
 using System.Threading.Tasks;
 using <%=N.EntityNamespace %>.Dtos;

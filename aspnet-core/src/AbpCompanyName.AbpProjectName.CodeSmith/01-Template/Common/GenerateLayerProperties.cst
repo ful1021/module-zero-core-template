@@ -1,4 +1,4 @@
-﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../CommonCode.cs" Inherits="CodeSmith.CommonCode" Encoding="utf-8" %>
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
 
 <%@ Property Name="CacheEntity" Type="System.Boolean" Category="04.代码生成层" Description="生成缓存数据实现" 
 Default="false"%>
@@ -27,4 +27,4 @@ Default="false"%>
 
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
-<%@ Import Namespace="CodeSmith" %>
+<%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>

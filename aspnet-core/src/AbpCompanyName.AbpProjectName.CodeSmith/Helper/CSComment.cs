@@ -9,7 +9,7 @@ using System.Xml;
 //源码来自：
 //https://github.com/blqw/blqw.CSComment
 
-namespace CodeSmith
+namespace AbpCompanyName.AbpProjectName.Helper
 {
     /// <summary> 用于描述一个成员的注释信息
     /// </summary>

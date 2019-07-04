@@ -2,7 +2,7 @@
 using System.IO;
 using CodeSmith;
 
-namespace AbpCompanyName.AbpProjectName.CodeSmith
+namespace AbpCompanyName.AbpProjectName
 {
     internal class Program
     {

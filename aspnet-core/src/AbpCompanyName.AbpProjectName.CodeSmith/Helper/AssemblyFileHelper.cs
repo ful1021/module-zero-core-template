@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace CodeSmith
+namespace AbpCompanyName.AbpProjectName.Helper
 {
     public class AssemblyFileHelper
     {
@@ -168,7 +168,7 @@ namespace CodeSmith
             List<PropertyInfo> list = new List<PropertyInfo>();
             foreach (var col in entityColumns)
             {
-                if (Util.IsIn(col.Name, "Id"))
+                if (Tool.IsIn(col.Name, "Id"))
                 {
                     continue;
                 }
@@ -433,17 +433,17 @@ namespace CodeSmith
 
         public static bool IsAbpCreationAuditedEntity(PropertyInfo prop)
         {
-            return Util.IsIn(prop.Name, "CreatorId", "CreationTime");
+            return Tool.IsIn(prop.Name, "CreatorId", "CreationTime");
         }
 
         public static bool IsAbpAuditedEntity(PropertyInfo prop)
         {
-            return Util.IsIn(prop.Name, "CreatorId", "CreationTime", "LastModifierId", "LastModificationTime");
+            return Tool.IsIn(prop.Name, "CreatorId", "CreationTime", "LastModifierId", "LastModificationTime");
         }
 
         public static bool IsAbpFullAuditedEntity(PropertyInfo prop)
         {
-            return Util.IsIn(prop.Name, "CreatorId", "CreationTime", "LastModifierId", "LastModificationTime", "IsDeleted", "DeleterId", "DeletionTime");
+            return Tool.IsIn(prop.Name, "CreatorId", "CreationTime", "LastModifierId", "LastModificationTime", "IsDeleted", "DeleterId", "DeletionTime");
         }
 
         #endregion Helper方法

@@ -2,12 +2,12 @@
 using System.Linq;
 using CodeSmith.Engine;
 
-namespace CodeSmith
+namespace AbpCompanyName.AbpProjectName.Helper
 {
     /// <summary>
     /// 工具类
     /// </summary>
-    public class Util
+    public class Tool
     {
         #region 字符串扩展方法
 
