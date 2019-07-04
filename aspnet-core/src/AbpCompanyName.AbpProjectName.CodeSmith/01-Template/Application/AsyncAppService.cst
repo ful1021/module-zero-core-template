@@ -1,0 +1,41 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../CommonCode.cs" Inherits="CodeSmith.CommonCode" Encoding="utf-8" %>
+
+<%--注册子模板--%>
+<%@ Register Template="../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %>  
+<%@ Register Template="SubTemplate/ConstructorWithPermission.cst" Name="ConstructorWithPermission" MergeProperties="True" %>  
+<%@ Register Template="SubTemplate/Constructor.cst" Name="Constructor" MergeProperties="True" %>  
+<%@ Register Template="SubTemplate/CreateFilteredQuery.cst" Name="CreateFilteredQuery" MergeProperties="True" %>  
+
+<%--引用.net框架程序集--%>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Linq" %>
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
+<%@ Import Namespace="CodeSmith" %>
+<%
+ClassNames N = Init(this);
+%>
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Abp.Domain.Repositories;
+using <%=N.EntityNamespace %>.Dto;
+
+namespace <%=N.EntityNamespace %>
+{
+    /// <summary>
+    /// <%=N.EntitySummary %>  服务实现
+    /// </summary>
+    public class <%=N.AppServiceName %> : AsyncCrudAppServiceBase<<%=N.EntityName %>, <%=N.QueryDtoName %>, <%=N.PkType %>, <%=N.GetAllInputName %>, <%=N.CreateInputName %>, <%=N.UpdateInputName %>>, I<%=N.AppServiceName %>
+    {
+<%
+RenderOtherTemplateResponse<Constructor>();
+%>
+
+<%
+RenderOtherTemplateResponse<CreateFilteredQuery>();
+%>
+    }
+}

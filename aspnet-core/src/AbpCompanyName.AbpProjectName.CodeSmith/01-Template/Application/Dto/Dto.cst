@@ -1,0 +1,32 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmith.CommonCode" Encoding="utf-8" %>
+
+<%--注册子模板--%>
+<%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
+<%@ Register Template="Sub/DtoNamespace.cst" Name="DtoNamespace" MergeProperties="True" %> 
+<%@ Register Template="Sub/DtoProp.cst" Name="DtoProp" MergeProperties="True" %> 
+
+<%--引用.net框架程序集--%>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Linq" %>
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
+<%@ Import Namespace="CodeSmith" %>
+<%
+ClassNames N = Init(this);
+%>
+<%
+RenderOtherTemplateResponse<DtoNamespace>();
+%>
+{
+    /// <summary>
+    /// <%=N.EntitySummary %> Dto
+    /// </summary>
+    public class <%=N.DtoName %> : EntityDto<<%=N.PkType %>>
+    {
+<%
+RenderOtherTemplateResponse<DtoProp>();
+%>
+    }    
+}

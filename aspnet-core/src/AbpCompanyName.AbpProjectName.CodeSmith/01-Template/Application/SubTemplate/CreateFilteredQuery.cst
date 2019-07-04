@@ -1,0 +1,51 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmith.CommonCode" Encoding="utf-8" %>
+
+<%--注册子模板--%>
+<%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
+
+<%--引用.net框架程序集--%>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Linq" %>
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
+<%@ Import Namespace="CodeSmith" %>
+<%
+ClassNames N = Init(this);
+%>
+
+        /// <summary>
+        /// 查询条件
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        protected override IQueryable<<%=N.EntityName %>> CreateFilteredQuery(<%=N.GetAllInputName %> input)
+        {
+            //var filters = input.Filter.ToStringArray();
+            <%foreach(var col in N.EntityDateTimeProps) {%>
+            var <%=Util.ToFirstLetterCamel(col.Name) %>Range = input.<%=col.Name %>.ToDateTimeRange();
+            <%} %>
+            
+            return base.CreateFilteredQuery(input)
+                //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
+                <%foreach (var col in N.GetAllInputProps){%>
+                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>                
+                .WhereIf(<%=Util.ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=Util.ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=Util.ToFirstLetterCamel(col.Name) %>Range.EndTime)
+                
+                <% continue;}%>
+                <%if(Util.TryToInt(AssemblyFileHelper.DefaultValue(col),-1)==0){ %>
+                
+                .WhereIf(input.<%=col.Name %>?.Start != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.Start.Value)
+                .WhereIf(input.<%=col.Name %>?.End != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.End.Value)
+                
+                <% continue;}%>
+                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("string")){ %>
+                .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
+                <% continue;}%>
+                <%if(col.PropertyType.IsValueType){ %>
+                .WhereIf(input.<%=col.Name %>.HasValue, a => a.<%=col.Name %> == input.<%=col.Name %>.Value)
+                <% continue;}%>
+                <%}%>
+                ;
+        }

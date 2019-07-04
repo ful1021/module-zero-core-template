@@ -1,0 +1,51 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmith.CommonCode" Encoding="utf-8" %>
+
+<%--注册子模板--%>
+<%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
+<%@ Register Template="Sub/DtoNamespace.cst" Name="DtoNamespace" MergeProperties="True" %> 
+
+<%--引用.net框架程序集--%>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Linq" %>
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
+<%@ Import Namespace="CodeSmith" %>
+<%
+ClassNames N = Init(this);
+%>
+<%
+RenderOtherTemplateResponse<DtoNamespace>();
+%>
+{
+    /// <summary>
+    /// <%=N.EntitySummary %>   获取所有 输入参数
+    /// </summary>
+    public class <%=N.GetAllInputName %> : PagedAndSortedResultRequestDto
+    {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public <%=N.GetAllInputName %>()
+        {
+            <%if(AssemblyFileHelper.IsExistsColByProp(N.EntityProps, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
+        }
+        
+        <%foreach (var col in N.GetAllInputProps){%>        
+        /// <summary>
+        /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
+        /// </summary>       
+        <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>
+        public DateTime[] <%=col.Name %> { get; set; }
+        
+        <% continue;}%>
+        <%if(Util.TryToInt(AssemblyFileHelper.DefaultValue(col),-1)==0){ %>
+        public NullableNumberRange <%=col.Name %> { get; set; }
+        
+        <% continue;}%>
+        public <%=AssemblyFileHelper.GetCSharpAppServiceInputType(col) %> <%=col.Name %> { get; set; }
+        
+        <%}%>
+    }
+}

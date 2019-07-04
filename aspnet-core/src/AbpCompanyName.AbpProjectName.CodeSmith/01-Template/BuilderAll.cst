@@ -1,0 +1,48 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../CommonCode.cs" Inherits="CodeSmith.CommonCode" Encoding="utf-8" %>
+
+<%--注册子模板--%>
+<%@ Register Template="Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %>  
+<%@ Register Template="Common/GenerateLayerProperties.cst" Name="GenerateLayerProperties" MergeProperties="True" %> 
+<%@ Register Template="Common/ConfigProperties.cst" Name="ConfigProperties" MergeProperties="True" %> 
+
+<%--引用.net框架程序集--%>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Linq" %>
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../bin/Debug" %>
+<%@ Import Namespace="CodeSmith" %>
+
+<%
+// 设定输出文件的顶级根目录
+if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirectory);
+
+var N = Init(this);
+{
+    var currClassTemplateName = "Application";
+
+    RenderToFile(AppIAsyncService
+    , currClassTemplateName + "\\IAsyncAppService.cst"
+    , OutputDirectory + "\\" + N.ApplicationContractsAssemblyName + "\\"+N.EntityNamespace.Replace(".","\\")
+    , "I" + N.AppServiceName);
+    
+    RenderToFile(AppAsyncService, currClassTemplateName + "\\AsyncAppService.cst"
+    , OutputDirectory + "\\" + N.ApplicationAssemblyName + "\\"+N.EntityNamespace.Replace(".","\\")
+    , N.AppServiceName);
+}
+{
+    var currClassTemplateName = "Application\\Dto";
+
+    var directory = OutputDirectory + "\\" + N.ApplicationContractsAssemblyName + "\\"+N.EntityNamespace.Replace(".","\\")+"\\Dtos";
+    
+    RenderToFile(AppGetAllDto, currClassTemplateName + "\\GetAllInput.cst", directory, N.GetAllInputName);
+    RenderToFile(AppQueryDto, currClassTemplateName + "\\QueryDto.cst", directory, N.QueryDtoName);
+    RenderToFile(AppDto, currClassTemplateName + "\\Dto.cst", directory, N.DtoName);
+    RenderToFile(AppDto, currClassTemplateName + "\\CreateInputDto.cst", directory, N.CreateInputName);
+}
+//指定使用资源管理器打开文件夹
+//System.Diagnostics.Process.Start("Explorer.exe", OutputDirectory);
+//System.AppDomain.Unload(System.AppDomain.CurrentDomain);
+%>
