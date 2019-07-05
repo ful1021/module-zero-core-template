@@ -2,6 +2,8 @@
 
 <%--注册子模板--%>
 <%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
+<%@ Register Template="../../Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %> 
+<%@ Register Template="../../Common/NameCoreProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
 
 <%--引用.net框架程序集--%>
 <%@ Import Namespace="System" %>
@@ -11,20 +13,17 @@
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
-<%
-var N = Init();
-%>
 
-        private readonly IRepository<<%=N.EntityName %>, <%=N.PkType %>> _<%=N.RepositoryName %>;
+        private readonly IRepository<<%=EntityName %>, <%=PkType %>> _<%=RepositoryCamelName %>;
         /// <summary>
         /// 构造函数
         /// </summary>
-        public <%=N.MgmtAppServiceName %>(IRepository<<%=N.EntityName %>, <%=N.PkType %>> <%=N.RepositoryName %>) : base(<%=N.RepositoryName %>)
+        public <%=ApplicationServiceName %>(IRepository<<%=EntityName %>, <%=PkType %>> <%=RepositoryCamelName %>) : base(<%=RepositoryName %>)
         {
             GetAllPermissionName = AppPermissions.;
             CreatePermissionName = AppPermissions._Create;
             UpdatePermissionName = AppPermissions._Edit;
             DeletePermissionName = AppPermissions._Delete;
             
-            _<%=N.RepositoryName %> = <%=N.RepositoryName %>;
+            _<%=RepositoryCamelName %> = <%=RepositoryCamelName %>;
         }

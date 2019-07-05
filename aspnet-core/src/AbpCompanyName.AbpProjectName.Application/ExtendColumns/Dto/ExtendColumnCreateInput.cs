@@ -1,14 +1,13 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Abp.Application.Services.Dto;
-using Abp.AutoMapper;
+using Abp.Runtime.Validation;
 
 namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
 {
     /// <summary>
     ///  新增输入参数
     /// </summary>
-    public class ExtendColumnDto : EntityDto<int>
+    public class ExtendColumnCreateInput : IShouldNormalize
     {
         /// <summary>
         /// 对应列内容的字段名
@@ -30,5 +29,9 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
         /// </summary>
         public int Width { get; set; }
 
+        
+        public void Normalize()
+        {
+        }
     }    
 }

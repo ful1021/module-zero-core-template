@@ -2,7 +2,7 @@
 
 <%--注册子模板--%>
 <%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
-<%@ Register Template="Sub/DtoNamespace.cst" Name="DtoNamespace" MergeProperties="True" %> 
+<%@ Register Template="../../Common/NameApplicationProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
 
 <%--引用.net框架程序集--%>
 <%@ Import Namespace="System" %>
@@ -12,19 +12,21 @@
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
-<%
-var N = Init();
-%>
-<%
-RenderToResponse<DtoNamespace>();
-%>
+using System;
+using System.ComponentModel.DataAnnotations;
+using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
+
+namespace <%=EntityNamespace %>.Dto
 {
     /// <summary>
-    /// <%=N.EntitySummary %>  查询Dto
+    /// <%=EntitySummary %>  查询Dto
     /// </summary>
-    public class <%=N.QueryDtoName %> : <%=N.DtoName %>
+    public class <%=QueryDtoName %> : <%=DtoName %>
     {
-        <%if(Tool.IsExistsColByProp(N.EntityProps, "CreationTime", true)){%>public DateTime CreationTime { get; set; }<%} %>
-        <%if(Tool.IsExistsColByProp(N.EntityProps, "CreatorId", true)){%>public Guid? CreatorId { get; set; }<%} %>
+        <%if(ICreationAudited){%>
+        public DateTime CreationTime { get; set; }
+        public long? CreatorUserId { get; set; }
+        <%} %>
     }    
 }

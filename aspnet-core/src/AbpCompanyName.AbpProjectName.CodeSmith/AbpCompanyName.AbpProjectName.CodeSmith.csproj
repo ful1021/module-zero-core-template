@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="Helper\ClassNames.cs" />
     <Compile Include="BaseCodeTemplate.cs" />
+    <Compile Include="Helper\EntityProperty.cs" />
     <Compile Include="Helper\Tool.cs" />
     <Compile Include="Helper\CSComment.cs" />
     <Compile Include="Program.cs" />
@@ -83,20 +84,21 @@
     <None Include="01-Template\Application\Dto\Dto.cst" />
     <None Include="01-Template\Application\Dto\GetAllInput.cst" />
     <None Include="01-Template\Application\Dto\QueryDto.cst" />
-    <None Include="01-Template\Application\Dto\Sub\DtoNamespace.cst" />
-    <None Include="01-Template\Application\Dto\Sub\DtoProp.cst" />
     <None Include="01-Template\Application\IAsyncAppService.cst" />
     <None Include="01-Template\Application\Sub\Constructor.cst" />
     <None Include="01-Template\Application\Sub\ConstructorWithPermission.cst" />
     <None Include="01-Template\Application\Sub\CreateFilteredQuery.cst" />
-    <None Include="01-Template\Builder_vue-element-admin.cst" />
-    <None Include="01-Template\BuilderAll.cst" />
     <None Include="01-Template\BuilderApplication.cst" />
+    <None Include="01-Template\Common\NameCoreProperties.cst" />
+    <None Include="01-Template\Common\NameApplicationProperties.cst" />
+    <None Include="01-Template\Common\OutputConfigProperties.cst" />
     <None Include="01-Template\Common\CommonProperties.cst" />
     <None Include="01-Template\Common\ConfigProperties.cst" />
+    <None Include="01-Template\Common\GenerateApplicationProperties.cst" />
     <None Include="01-Template\Common\GenerateLayerProperties.cst" />
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="01-Template\Core\" />

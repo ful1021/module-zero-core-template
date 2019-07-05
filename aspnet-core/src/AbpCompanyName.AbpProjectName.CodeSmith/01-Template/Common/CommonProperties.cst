@@ -1,6 +1,17 @@
 ﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
 
-<%@ Property Name="EntityName" Type="System.String" Category="01.数据源" Description="实体名称" Default="User" %>
+<%@ Property Name="IsAutoSetProp" Type="System.Boolean" Category="01.配置" Default="false" Description="是否自动设置属性" OnChanged="OnEntityChanged" %>
+
+<%@ Property Name="EntityName" Type="System.String" Category="02.实体类" Description="类名称" %>
+<%@ Property Name="EntityNamespace" Type="System.String" Category="02.实体类" Description="类命名空间" %>
+<%@ Property Name="EntitySummary" Type="System.String" Category="02.实体类" Description="类注释" %>
+<%@ Property Name="PkName" Type="System.String" Category="02.实体类" Description="主键名称" %>
+<%@ Property Name="PkType" Type="System.String" Category="02.实体类" Description="主键类型" %>
+<%@ Property Name="IHasCreationTime" Type="System.Boolean" Category="02.实体类" Description="是否继承 IHasCreationTime 接口" %>
+<%@ Property Name="ICreationAudited" Type="System.Boolean" Category="02.实体类" Description="是否继承 ICreationAudited 接口" %>
+<%@ Property Name="IHasModificationTime" Type="System.Boolean" Category="02.实体类" Description="是否继承 IHasModificationTime 接口" %>
+<%@ Property Name="IModificationAudited" Type="System.Boolean" Category="02.实体类" Description="是否继承 IHasModificationTime 接口" %>
+<%@ Property Name="IAudited" Type="System.Boolean" Category="02.实体类" Description="是否继承 IAudited 接口" %>
 
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>

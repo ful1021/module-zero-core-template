@@ -59,18 +59,6 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// <summary>
         /// 判断item是否存在list中
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="item"></param>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static bool IsIn<T>(T item, params T[] list)
-        {
-            return list.Contains(item);
-        }
-
-        /// <summary>
-        /// 判断item是否存在list中
-        /// </summary>
         /// <param name="item"></param>
         /// <param name="list"></param>
         /// <returns></returns>
@@ -111,6 +99,22 @@ namespace AbpCompanyName.AbpProjectName.Helper
                 }
             }
             return result ?? DateTime.MinValue;
+        }
+
+        /// <summary>
+        /// 字符串转换为 bool 类型
+        /// </summary>
+        public static bool TryToBool(object str, bool defaultResult = false)
+        {
+            var result = defaultResult;
+            if (str != null && !string.IsNullOrWhiteSpace(str.ToString()))
+            {
+                if (bool.TryParse(str.ToString(), out bool tmp))
+                {
+                    result = tmp;
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -158,36 +162,9 @@ namespace AbpCompanyName.AbpProjectName.Helper
             return "";
         }
 
-        public static bool IsList(PropertyInfo prop)
-        {
-            var fullType = prop.PropertyType.FullName;
-            return fullType.Contains("System.Collections.Generic.ICollection") || fullType.Contains("System.Collections.Generic.List");
-        }
-
         #endregion Helper方法
 
         #region GetSummary
-
-        public static Dictionary<PropertyInfo, string> GetPropertiesSummaryByType(Type type)
-        {
-            var props = GetProperties(type);
-            Dictionary<PropertyInfo, string> dict = new Dictionary<PropertyInfo, string>();
-            foreach (var item in props)
-            {
-                dict[item] = GetPropertySummary(item);
-            }
-            return dict;
-        }
-
-        public static Dictionary<PropertyInfo, string> GetPropertiesSummary(PropertyInfo[] props)
-        {
-            Dictionary<PropertyInfo, string> dict = new Dictionary<PropertyInfo, string>();
-            foreach (var item in props)
-            {
-                dict[item] = GetPropertySummary(item);
-            }
-            return dict;
-        }
 
         /// <summary>
         /// 得到反射字段 注释
@@ -295,12 +272,6 @@ namespace AbpCompanyName.AbpProjectName.Helper
 
         #region 列
 
-        public static PropertyInfo[] GetPropertiesByDll(string dllFile, string className)
-        {
-            var type = GetAssemblyType(dllFile, className);
-            return GetProperties(type);
-        }
-
         /// <summary>
         /// 反射获取PropertyInfo集合
         /// </summary>
@@ -317,30 +288,18 @@ namespace AbpCompanyName.AbpProjectName.Helper
         }
 
         /// <summary>
-        /// 默认Dto列
+        /// 得到反射字段 类型
         /// </summary>
-        /// <param name="entityColumns"></param>
         /// <returns></returns>
-        public static PropertyInfo[] GetDtoProperties(PropertyInfo[] entityColumns)
+        public static string GetPropertyType(Type type, string propertyName = "Id")
         {
-            List<PropertyInfo> list = new List<PropertyInfo>();
-            foreach (var col in entityColumns)
+            var props = GetProperties(type);
+            var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
+            if (propInfo != null)
             {
-                if (IsIn(col.Name, "Id"))
-                {
-                    continue;
-                }
-                if (IsAbpFullAuditedEntity(col))
-                {
-                    continue;
-                }
-                if (IsList(col))
-                {
-                    continue;
-                }
-                list.Add(col);
+                return GetCSharpType(propInfo);
             }
-            return list.ToArray();
+            return "";
         }
 
         /// <summary>
@@ -371,47 +330,12 @@ namespace AbpCompanyName.AbpProjectName.Helper
             List<PropertyInfo> list = new List<PropertyInfo>();
             foreach (var col in props)
             {
-                if (GetCSharpNullableTypeByProp(col).Contains("DateTime"))
+                if (GetCSharpNullableType(col).Contains("DateTime"))
                 {
                     list.Add(col);
                 }
             }
             return list.ToArray();
-        }
-
-        /// <summary>
-        /// GetAllInput 输入参数 列
-        /// </summary>
-        /// <param name="entityColumns"></param>
-        /// <returns></returns>
-        public static PropertyInfo[] GetAllInputColumns(PropertyInfo[] entityColumns)
-        {
-            var dtos = GetDtoProperties(entityColumns);
-            List<PropertyInfo> list = new List<PropertyInfo>();
-            foreach (var col in dtos)
-            {
-                if (IsAbpValueObject(col))
-                {
-                    continue;
-                }
-                list.Add(col);
-            }
-            return list.ToArray();
-        }
-
-        /// <summary>
-        /// 得到反射字段 类型
-        /// </summary>
-        /// <returns></returns>
-        public static string GetPropertyType(Type type, string propertyName = "Id")
-        {
-            var props = GetProperties(type);
-            var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
-            if (propInfo != null)
-            {
-                return GetCSharpTypeByProp(propInfo);
-            }
-            return "";
         }
 
         /// <summary>
@@ -422,7 +346,7 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// <param name="ignoreCase">是否忽略大小写</param>
         /// <param name="type">字段在C#中的类型字符串</param>
         /// <returns></returns>
-        public static bool IsExistsColByProp(PropertyInfo[] entityColumns, string name, bool ignoreCase = false, string type = null)
+        public static bool IsExistsProp(PropertyInfo[] entityColumns, string name, bool ignoreCase = false, string type = null)
         {
             var b = false;
             foreach (var col in entityColumns)
@@ -443,7 +367,7 @@ namespace AbpCompanyName.AbpProjectName.Helper
                 }
                 if (b && !string.IsNullOrWhiteSpace(type))
                 {
-                    b = GetCSharpTypeByProp(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
+                    b = GetCSharpType(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
                 }
                 if (b)
                 {
@@ -462,10 +386,10 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// </summary>
         /// <param name="structType"></param>
         /// <returns></returns>
-        public static string GetCSharpNullableTypeByProp(PropertyInfo prop)
+        public static string GetCSharpNullableType(PropertyInfo prop)
         {
             var propTypeFullName = prop.PropertyType.FullName;
-            var type = GetCSharpTypeByPropertyTypeFullName(propTypeFullName);
+            var type = GetCSharpTypeByString(propTypeFullName);
             if (type.Contains("Nullable"))
             {
                 if (propTypeFullName.Contains("Int32"))
@@ -498,12 +422,68 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// <summary>
         /// 根据列得到转换为C#后类型字符串
         /// </summary>
-        /// <param name="structType"></param>
+        /// <param name="prop"></param>
         /// <returns></returns>
-        public static string GetCSharpTypeByProp(PropertyInfo prop)
+        public static string GetCSharpType(PropertyInfo prop)
         {
-            var type = GetCSharpTypeByPropertyTypeFullName(prop.PropertyType.FullName);
+            var type = GetCSharpTypeByString(prop.PropertyType.FullName);
             return type.Replace(prop.Name, "");
+        }
+
+        public static bool IsList(PropertyInfo prop)
+        {
+            var fullType = prop.PropertyType.FullName;
+            return fullType.Contains("System.Collections.Generic.ICollection") || fullType.Contains("System.Collections.Generic.List");
+        }
+
+        /// <summary>
+        /// 判断指定 Property 是否为 DateTime 类型
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static bool IsDataTime(PropertyInfo prop)
+        {
+            return GetCSharpType(prop).Contains("DateTime");
+        }
+
+        /// <summary>
+        /// 判断指定 Property 是否为 int 类型
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static bool IsString(PropertyInfo prop)
+        {
+            return GetCSharpType(prop).Contains("string");
+        }
+
+        /// <summary>
+        /// 判断指定 Property 是否为 int 类型
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static bool IsInt(PropertyInfo prop)
+        {
+            return GetCSharpType(prop).Contains("int");
+        }
+
+        /// <summary>
+        /// 判断指定 Property 是否为 long 类型
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static bool IsLong(PropertyInfo prop)
+        {
+            return GetCSharpType(prop).Contains("long");
+        }
+
+        /// <summary>
+        /// 判断指定 Property 是否为 数字
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static bool IsNumber(PropertyInfo prop)
+        {
+            return TryToInt(DefaultValue(prop), -1) == 0;
         }
 
         /// <summary>
@@ -511,7 +491,7 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// </summary>
         /// <param name="structType"></param>
         /// <returns></returns>
-        public static string GetCSharpTypeByPropertyTypeFullName(string typeName)
+        public static string GetCSharpTypeByString(string typeName)
         {
             switch (typeName)
             {
@@ -549,7 +529,7 @@ namespace AbpCompanyName.AbpProjectName.Helper
         public static string GetCSharpAppServiceInputType(PropertyInfo prop)
         {
             var propTypeFullName = prop.PropertyType.FullName;
-            var type = GetCSharpNullableTypeByProp(prop);
+            var type = GetCSharpNullableType(prop);
             if (type != "string" && !IsAbpValueObject(prop) && !type.Contains("[]"))
             {
                 if (!type.EndsWith("?"))
@@ -571,6 +551,39 @@ namespace AbpCompanyName.AbpProjectName.Helper
 
         #region Abp扩展方法
 
+        public const string CreatorUserId = "CreatorUserId";
+        public const string CreationTime = "CreationTime";
+        public const string LastModificationTime = "LastModificationTime";
+        public const string LastModifierUserId = "LastModifierUserId";
+        public const string DeleterUserId = "DeleterUserId";
+        public const string DeletionTime = "DeletionTime";
+        public const string IsDeleted = "IsDeleted";
+
+        public static bool HasCreationTime(PropertyInfo[] props)
+        {
+            return IsExistsProp(props, CreationTime, true);
+        }
+
+        public static bool IsCreationAudited(PropertyInfo[] props)
+        {
+            return HasCreationTime(props) && IsExistsProp(props, CreatorUserId, true);
+        }
+
+        public static bool HasModificationTime(PropertyInfo[] props)
+        {
+            return IsExistsProp(props, LastModificationTime, true);
+        }
+
+        public static bool IsModificationAudited(PropertyInfo[] props)
+        {
+            return HasModificationTime(props) && IsExistsProp(props, LastModifierUserId, true);
+        }
+
+        public static bool IsAudited(PropertyInfo[] props)
+        {
+            return IsModificationAudited(props) && IsCreationAudited(props);
+        }
+
         public static bool IsAbpValueObject(PropertyInfo prop)
         {
             var fullType = prop.PropertyType.BaseType;
@@ -584,9 +597,9 @@ namespace AbpCompanyName.AbpProjectName.Helper
             return false;
         }
 
-        public static bool IsAbpCreationAuditedEntity(PropertyInfo prop)
+        public static bool IsInCreationAudited(PropertyInfo prop)
         {
-            return IsIn(prop.Name, "CreatorId", "CreationTime");
+            return IsIn(prop.Name, CreatorUserId, CreationTime);
         }
 
         /// <summary>
@@ -594,14 +607,14 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// </summary>
         /// <param name="prop"></param>
         /// <returns></returns>
-        public static bool IsAbpAuditedEntity(PropertyInfo prop)
+        public static bool IsInAudited(PropertyInfo prop)
         {
-            return IsIn(prop.Name, "CreatorId", "CreationTime", "LastModifierId", "LastModificationTime");
+            return IsIn(prop.Name, CreatorUserId, CreationTime, LastModifierUserId, LastModificationTime);
         }
 
-        public static bool IsAbpFullAuditedEntity(PropertyInfo prop)
+        public static bool IsInFullAudited(PropertyInfo prop)
         {
-            return IsIn(prop.Name, "CreatorId", "CreationTime", "LastModifierId", "LastModificationTime", "IsDeleted", "DeleterId", "DeletionTime");
+            return IsIn(prop.Name, CreatorUserId, CreationTime, LastModifierUserId, LastModificationTime, IsDeleted, DeletionTime, DeleterUserId);
         }
 
         #endregion Abp扩展方法

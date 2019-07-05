@@ -3,6 +3,9 @@ using Abp.Domain.Entities.Auditing;
 
 namespace AbpCompanyName.AbpProjectName.ExtendColumns
 {
+    /// <summary>
+    /// 扩展列
+    /// </summary>
     public class ExtendColumn : AuditedAggregateRoot
     {
         public const int KeyMaxLength = 128;

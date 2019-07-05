@@ -2,6 +2,7 @@
 
 <%--注册子模板--%>
 <%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
+<%@ Register Template="../../Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %>
 
 <%--引用.net框架程序集--%>
 <%@ Import Namespace="System" %>
@@ -12,35 +13,36 @@
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-var N = Init();
+var props = GetEntityProps();
+var getAllInputProps = GetAllInputProperties(props.EntityProps);
+var entityDateTimeProps = Tool.GetDateTimeProperties(getAllInputProps);
 %>
-
         /// <summary>
         /// 查询条件
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        protected override IQueryable<<%=N.EntityName %>> CreateFilteredQuery(<%=N.GetAllInputName %> input)
+        protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=GetAllInputName %> input)
         {
             //var filters = input.Filter.ToStringArray();
-            <%foreach(var col in N.EntityDateTimeProps) {%>
+            <%foreach(var col in entityDateTimeProps) {%>
             var <%=Tool.ToFirstLetterCamel(col.Name) %>Range = input.<%=col.Name %>.ToDateTimeRange();
             <%} %>
             
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
-                <%foreach (var col in N.GetAllInputProps){%>
-                <%if(Tool.GetCSharpTypeByProp(col).Contains("DateTime")){ %>                
+                <%foreach (var col in getAllInputProps){%>
+                <%if(Tool.IsDataTime(col)){ %>                
                 .WhereIf(<%=Tool.ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=Tool.ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=Tool.ToFirstLetterCamel(col.Name) %>Range.EndTime)
                 
                 <% continue;}%>
-                <%if(Tool.TryToInt(Tool.DefaultValue(col),-1)==0){ %>
+                <%if(Tool.IsNumber(col)){ %>
                 
                 .WhereIf(input.<%=col.Name %>?.Start != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.Start.Value)
                 .WhereIf(input.<%=col.Name %>?.End != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.End.Value)
                 
                 <% continue;}%>
-                <%if(Tool.GetCSharpTypeByProp(col).Contains("string")){ %>
+                <%if(Tool.IsString(col)){ %>
                 .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
                 <% continue;}%>
                 <%if(col.PropertyType.IsValueType){ %>

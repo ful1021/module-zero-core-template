@@ -15,54 +15,9 @@ namespace AbpCompanyName.AbpProjectName.Helper
         public string PkType { get; set; }
 
         /// <summary>
-        /// AppService 名称
-        /// </summary>
-        public string AppServiceName { get; set; }
-
-        /// <summary>
-        /// 管理后端 AppService 名称
-        /// </summary>
-        public string MgmtAppServiceName { get; set; }
-
-        /// <summary>
-        /// 父类 AppService 名称
-        /// </summary>
-        public string BaseAppServiceName { get; set; }
-
-        /// <summary>
         /// 仓储名称
         /// </summary>
         public string RepositoryName { get; set; }
-
-        /// <summary>
-        /// GetAllInput 类名
-        /// </summary>
-        public string GetAllInputName { get; set; }
-
-        /// <summary>
-        /// Dto 类名
-        /// </summary>
-        public string DtoName { get; set; }
-
-        /// <summary>
-        /// QueryDto 类名
-        /// </summary>
-        public string QueryDtoName { get; set; }
-
-        /// <summary>
-        /// CreateOrUpdateInput 类名
-        /// </summary>
-        public string CreateOrUpdateInputName { get; set; }
-
-        /// <summary>
-        /// CreateInput 类名
-        /// </summary>
-        public string CreateInputName { get; set; }
-
-        /// <summary>
-        /// UpdateInput 类名
-        /// </summary>
-        public string UpdateInputName { get; set; }
 
         /// <summary>
         /// Application Dll 文件完整路径名 D:\\code\Boss.Scm.Application.dll
@@ -144,29 +99,6 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// </summary>
         public string WebControllerName { get; set; }
 
-        /// <summary>
-        /// 实体 所有 属性
-        /// </summary>
-        public PropertyInfo[] EntityProps { get; set; }
-
-        /// <summary>
-        /// 实体 Dto 属性
-        /// </summary>
-        public PropertyInfo[] DtoProps { get; set; }
-
-        /// <summary>
-        /// 实体 GetAllInput 输入参数 属性
-        /// </summary>
-        public PropertyInfo[] GetAllInputProps { get; set; }
-
-        /// <summary>
-        /// 实体 时间类型 属性
-        /// </summary>
-        public PropertyInfo[] EntityDateTimeProps { get; set; }
-
-        /// <summary>
-        /// 实体 枚举类型 属性
-        /// </summary>
-        public PropertyInfo[] EntityEnumsProps { get; set; }
+      
     }
 }

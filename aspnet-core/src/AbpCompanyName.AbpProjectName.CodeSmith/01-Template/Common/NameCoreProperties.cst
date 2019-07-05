@@ -1,0 +1,10 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
+
+<%@ Property Name="IRepositoryName" Type="System.String" Category="命名" %>
+<%@ Property Name="RepositoryName" Type="System.String" Category="命名" %>
+<%@ Property Name="RepositoryCamelName" Type="System.String" Category="命名" %>
+
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
+<%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>

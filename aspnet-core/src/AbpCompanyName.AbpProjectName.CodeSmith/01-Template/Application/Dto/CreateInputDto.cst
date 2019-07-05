@@ -2,31 +2,42 @@
 
 <%--注册子模板--%>
 <%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
-<%@ Register Template="Sub/DtoNamespace.cst" Name="DtoNamespace" MergeProperties="True" %> 
-<%@ Register Template="Sub/DtoProp.cst" Name="DtoProp" MergeProperties="True" %> 
+<%@ Register Template="../../Common/NameApplicationProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
 
 <%--引用.net框架程序集--%>
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%@ Import Namespace="System.Linq" %>
+<%@ Import Namespace="System.Reflection" %>
 
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-var N = Init();
+var props = GetEntityProps();
+var dtoProps = GetDtoProperties(props.EntityProps);
 %>
-<%
-RenderToResponse<DtoNamespace>();
-%>
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Abp.Runtime.Validation;
+
+namespace <%=EntityNamespace %>.Dto
 {
     /// <summary>
-    /// <%=N.EntitySummary %> 新增输入参数
+    /// <%=EntitySummary %> 新增输入参数
     /// </summary>
-    public class <%=N.CreateInputName %> : EntityDto<<%=N.PkType %>>
+    public class <%=CreateInputName %> : IShouldNormalize
     {
-<%
-RenderToResponse<DtoProp>();
-%>
+        <%foreach (var col in dtoProps){%>
+        /// <summary>
+        /// <%=Tool.GetPropertySummary(col) %>
+        /// </summary>
+        public <%=Tool.GetCSharpNullableType(col) %> <%=col.Name %> { get; set; }
+
+        <%}%>
+        
+        public void Normalize()
+        {
+        }
     }    
 }

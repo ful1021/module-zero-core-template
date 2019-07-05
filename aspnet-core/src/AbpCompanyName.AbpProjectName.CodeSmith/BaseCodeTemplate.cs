@@ -1,9 +1,8 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Drawing.Design;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms.Design;
+using System.Reflection;
 using AbpCompanyName.AbpProjectName.Helper;
 using CodeSmith.Engine;
 
@@ -14,63 +13,185 @@ namespace AbpCompanyName.AbpProjectName
     /// </summary>
     public class BaseCodeTemplate : CodeTemplate
     {
-        #region 设置公共属性
+        public const string CompanyName = "AbpCompanyName";
+        public const string ProjectTemplateName = "AbpProjectName";
+        public const string SlnName = CompanyName + "." + ProjectTemplateName;
+        public const string ApplicationAssemblyName = SlnName + ".Application";
+        public const string CoreAssemblyName = SlnName + ".Core";
 
-        private string _outputDirectory = "";
-
-        /// <summary>
-        /// 输出根目录路径
-        /// </summary>
-        [Editor(typeof(FolderNameEditor), typeof(UITypeEditor))]
-        [Optional]
-        [NotChecked]
-        [Category("01.输出目录")]
-        [Description("输出文件的根目录")]
-        [DefaultValue("")]
-        public string OutputDirectory
+        public void OnEntityChanged(object sender, System.EventArgs args)
         {
-            get
+            var isAutoSetProp = Tool.TryToBool(GetProperty("IsAutoSetProp"));
+            if (!isAutoSetProp)
             {
-                return _outputDirectory.Trim();
+                return;
             }
-            set
-            {
-                _outputDirectory = value;
-                if (_outputDirectory.EndsWith("\\") == false)
-                {
-                    _outputDirectory += "\\";
-                }
-            }
+            string entityName = GetEntityName();
+            Type assType = GetEntityAssemblyType(entityName);
+
+            SetPropertyDirectory(assType, entityName);
+
+            #region 实体类
+
+            SetProperty("EntityNamespace", assType.Namespace);
+            SetProperty("EntitySummary", Tool.GetClassSummary(assType));
+
+            var pkName = "Id";
+            SetProperty("PkName", pkName);
+            SetProperty("PkType", Tool.GetPropertyType(assType, pkName));
+
+            var entityProps = Tool.GetProperties(assType);
+
+            SetProperty("IHasCreationTime", Tool.HasCreationTime(entityProps));
+            SetProperty("ICreationAudited", Tool.IsCreationAudited(entityProps));
+            SetProperty("IHasModificationTime", Tool.HasModificationTime(entityProps));
+            SetProperty("IModificationAudited", Tool.IsModificationAudited(entityProps));
+            SetProperty("IAudited", Tool.IsAudited(entityProps));
+
+            #endregion 实体类
+
+            SetProperty("CoreAssemblyName", CoreAssemblyName);
+
+            SetProperty("IRepositoryName", "I" + entityName + "Repository");
+            SetProperty("RepositoryName", entityName + "Repository");
+            SetProperty("RepositoryCamelName", Tool.ToFirstLetterCamel(entityName) + "Repository");
+
+            #region 命名 application
+
+            SetProperty("DtoName", entityName + "Dto");
+            SetProperty("QueryDtoName", entityName + "QueryDto");
+            SetProperty("GetAllInputName", entityName + "GetAllInput");
+            SetProperty("CreateOrUpdateInputName", entityName + "Dto");//CreateOrUpdateInput
+            SetProperty("CreateInputName", entityName + "CreateInput");
+            SetProperty("UpdateInputName", entityName + "Dto");// "UpdateInput"
+
+            SetProperty("ApplicationAssemblyName", ApplicationAssemblyName);
+
+            SetProperty("ApplicationServiceName", entityName + "AppService");
+            SetProperty("IApplicationServiceName", "I" + entityName + "AppService");
+
+            #endregion 命名 application
+
+            SetProperty("WebControllerName", entityName + "Controller");
         }
 
-        private string _creator = "付亮";
-
-        /// <summary>
-        /// 创建人
-        /// </summary>
-        [Category("其它选项")]
-        public string Creator
+        public void SetPropertyDirectory(Type assType, string entityName)
         {
-            get { return _creator.Trim(); }
-            set { _creator = value; }
+            var baseDirectory = Tool.TryToString(GetProperty("BaseDirectory"));
+            if (string.IsNullOrWhiteSpace(baseDirectory))
+            {
+                string currentAssemblyPath = GetCurrentAssemblyDirectory();
+                baseDirectory = CombinePath(currentAssemblyPath, "../../../");
+            }
+
+            var namespaces = assType.Namespace.Split('.').ToList();
+            namespaces.Remove(CompanyName);
+            namespaces.Remove(ProjectTemplateName);
+            var classPath = string.Join("\\", namespaces);
+
+            var directoryDto = CombinePath(baseDirectory, ApplicationAssemblyName, classPath, "Dto");
+            var directoryApplication = CombinePath(baseDirectory, ApplicationAssemblyName, classPath);
+            var directoryIApplication = CombinePath(baseDirectory, ApplicationAssemblyName, classPath);
+
+            SetProperty("DirectoryDto", directoryDto);
+            SetProperty("DirectoryApplication", directoryApplication);
+            SetProperty("DirectoryIApplication", directoryIApplication);
         }
 
-        #endregion 设置公共属性
+        public string CombinePath(params string[] paths)
+        {
+            return Path.GetFullPath(Path.Combine(paths));
+        }
 
-        /// <summary>
-        /// 初始化模板
-        /// </summary>
-        public virtual ClassNames Init()
+        public void OnBaseDirectoryChanged(object sender, System.EventArgs args)
+        {
+            string entityName = GetEntityName();
+            Type assType = GetEntityAssemblyType(entityName);
+
+            SetPropertyDirectory(assType, entityName);
+        }
+
+        public Type GetEntityAssemblyType(string entityName)
         {
             string currentAssemblyPath = GetCurrentAssemblyDirectory();
 
             string dllFolder = Path.GetFullPath(Path.Combine(currentAssemblyPath, "../../../AbpCompanyName.AbpProjectName.Web.Core/bin/Debug/net461/"));
 
-            string nameSpaceName = "AbpCompanyName.AbpProjectName";
-            string entityName = Tool.TryToString(GetProperty("EntityName"));
-            string vueSpaWebPageName = Tool.TryToString(GetProperty("VueSpaWebPageName"));
-            var names = GetAssemblyFileNames(dllFolder, nameSpaceName, entityName, vueSpaWebPageName);
-            return names;
+            var coreDllFile = Path.Combine(dllFolder, CoreAssemblyName + ".dll");
+
+            var assType = Tool.GetAssemblyType(coreDllFile, entityName);
+            return assType;
+        }
+
+        public string GetEntityName()
+        {
+            return Tool.TryToString(GetProperty("EntityName"));
+        }
+
+        /// <summary>
+        /// 获取实体属性
+        /// </summary>
+        public EntityProperty GetEntityProps()
+        {
+            string entityName = GetEntityName();
+            Type assType = GetEntityAssemblyType(entityName);
+
+            var entityProps = Tool.GetProperties(assType);
+            var entityDateTimeProps = Tool.GetDateTimeProperties(entityProps);
+            var entityEnumsProps = Tool.GetEnumProperties(entityProps);
+
+            return new EntityProperty
+            {
+                EntityProps = entityProps,
+                EntityDateTimeProps = entityDateTimeProps,
+                EntityEnumsProps = entityEnumsProps,
+            };
+        }
+
+        /// <summary>
+        /// 获取 GetAll 方法 属性
+        /// </summary>
+        /// <param name="entityColumns"></param>
+        /// <returns></returns>
+        public PropertyInfo[] GetAllInputProperties(PropertyInfo[] entityColumns)
+        {
+            List<PropertyInfo> list = new List<PropertyInfo>();
+            foreach (var col in entityColumns)
+            {
+                if (Tool.IsAbpValueObject(col))
+                {
+                    continue;
+                }
+                list.Add(col);
+            }
+            return list.ToArray();
+        }
+
+        /// <summary>
+        /// 获取 Dto 方法 属性
+        /// </summary>
+        /// <param name="entityColumns"></param>
+        /// <returns></returns>
+        public PropertyInfo[] GetDtoProperties(PropertyInfo[] entityColumns)
+        {
+            List<PropertyInfo> list = new List<PropertyInfo>();
+            foreach (var col in entityColumns)
+            {
+                if (Tool.IsIn(col.Name, "Id"))
+                {
+                    continue;
+                }
+                if (Tool.IsInFullAudited(col))
+                {
+                    continue;
+                }
+                if (Tool.IsList(col))
+                {
+                    continue;
+                }
+                list.Add(col);
+            }
+            return list.ToArray();
         }
 
         /// <summary>
@@ -80,79 +201,6 @@ namespace AbpCompanyName.AbpProjectName
         public string GetCurrentAssemblyDirectory()
         {
             return Path.GetDirectoryName(CodeTemplateInfo.AssemblyDependencies.FirstOrDefault(a => a.Contains("AbpCompanyName.AbpProjectName.CodeSmith")));
-        }
-
-        /// <summary>
-        /// 获取 AssemblyFile 各命名
-        /// </summary>
-        public static ClassNames GetAssemblyFileNames(string dllFolder, string nameSpaceName, string entityName, string vueSpaWebPageName = "")
-        {
-            var companyName = nameSpaceName.Split('.').FirstOrDefault();
-            var projectTemplateName = nameSpaceName.Split('.').LastOrDefault();
-
-            var applicationAssemblyName = companyName + "." + projectTemplateName + ".Application";
-            var coreAssemblyName = companyName + "." + projectTemplateName + ".Core";
-
-            var applicationDllFile = Path.Combine(dllFolder, applicationAssemblyName + ".dll");
-            var coreDllFile = Path.Combine(dllFolder, coreAssemblyName + ".dll");
-
-            Type assType = Tool.GetAssemblyType(coreDllFile, entityName);
-
-            var entityDirectoryName = assType.Namespace.Replace(companyName + "." + projectTemplateName, "").Replace(".", "\\");
-            var aplicationDirectoryPath = applicationAssemblyName + "\\" + entityDirectoryName;
-            var coreDirectoryPath = coreAssemblyName + "\\" + entityDirectoryName;
-
-            var entityProps = Tool.GetProperties(assType);
-            var dtoColumns = Tool.GetDtoProperties(entityProps);
-            var getAllInputColumns = Tool.GetAllInputColumns(entityProps);
-            var entityDateTimeProps = Tool.GetDateTimeProperties(getAllInputColumns);
-            var entityEnumsProps = Tool.GetEnumProperties(entityProps);
-
-            var pkName = "Id";
-            return new ClassNames()
-            {
-                PkName = pkName,
-                PkType = Tool.GetPropertyType(assType, pkName),
-
-                EntityName = entityName,
-                EntityConstsName = entityName + "Consts",
-                EntityNamespace = assType.Namespace,
-                EntitySummary = Tool.GetClassSummary(assType),
-                ApplicationDirectoryPath = aplicationDirectoryPath,
-                CoreDirectoryPath = coreDirectoryPath,
-                EntityProps = entityProps,
-                DtoProps = dtoColumns,
-                GetAllInputProps = getAllInputColumns,
-                EntityDateTimeProps = entityDateTimeProps,
-                EntityEnumsProps = entityEnumsProps,
-
-                DomainIRepositoryName = "I" + entityName + "Repository",
-                EntityFrameworkCoreRepositoryName = "EfCore" + entityName + "Repository",
-
-                AppServiceName = entityName + "AppService",
-                MgmtAppServiceName = entityName + "MgmtAppService",
-                BaseAppServiceName = entityName + "BaseAppService",
-                RepositoryName = Tool.ToFirstLetterCamel(entityName) + "Repository",
-                DtoName = entityName + "Dto",
-                QueryDtoName = entityName + "QueryDto",
-                GetAllInputName = entityName + "GetAllInput",
-                CreateOrUpdateInputName = entityName + "Dto",//"CreateOrUpdateInput",
-                CreateInputName = entityName + "CreateInput",
-                UpdateInputName = entityName + "Dto",// "UpdateInput",
-
-                ApplicationDllFile = applicationDllFile,
-                CoreDllFile = coreDllFile,
-
-                CompanyName = companyName,
-                ProjectTemplateName = projectTemplateName,
-
-                ApplicationAssemblyName = applicationAssemblyName,
-                CoreAssemblyName = coreAssemblyName,
-
-                WebControllerName = entityName + "Controller",
-
-                VueWebPageName = string.IsNullOrWhiteSpace(vueSpaWebPageName) ? Tool.ToFirstLetterCamel(entityName) : vueSpaWebPageName
-            };
         }
 
         #region 生成文件
@@ -198,14 +246,15 @@ namespace AbpCompanyName.AbpProjectName
         /// 需要在头部写命令注册：
         /// <%@ Register Template="BuildMenu.cst" Name="BuildMenuTemplate" MergeProperties="True" %>
         /// 调用：
-        /// RenderToResponse<BuildMenuTemplate>(BuildMenu);
+        /// RenderToResponse<BuildMenuTemplate>();
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RenderToResponse<T>() where T : CodeTemplate, new()
+        public void RenderToResponse<T>(Action<T> action = null) where T : CodeTemplate, new()
         {
-            T sm = new T();
-            this.CopyPropertiesTo(sm);
-            sm.Render(this.Response);
+            T temp = new T();
+            action?.Invoke(temp);
+            this.CopyPropertiesTo(temp);
+            temp.Render(this.Response);
         }
 
         /// <summary>

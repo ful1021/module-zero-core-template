@@ -2,6 +2,8 @@
 
 <%--注册子模板--%>
 <%@ Register Template="../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %>  
+<%@ Register Template="../Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %> 
+<%@ Register Template="../Common/NameCoreProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
 <%@ Register Template="Sub/ConstructorWithPermission.cst" Name="ConstructorWithPermission" MergeProperties="True" %>  
 <%@ Register Template="Sub/Constructor.cst" Name="Constructor" MergeProperties="True" %>  
 <%@ Register Template="Sub/CreateFilteredQuery.cst" Name="CreateFilteredQuery" MergeProperties="True" %>  
@@ -14,21 +16,20 @@
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
-<%
-var N = Init();
-%>
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Abp.Domain.Repositories;
-using <%=N.EntityNamespace %>.Dto;
+using Abp.Extensions;
+using Abp.Linq.Extensions;
+using <%=EntityNamespace %>.Dto;
+using AbpCompanyName.AbpProjectName.Extensions;
 
-namespace <%=N.EntityNamespace %>
+namespace <%=EntityNamespace %>
 {
     /// <summary>
-    /// <%=N.EntitySummary %>  服务实现
+    /// <%=EntitySummary %>  服务实现
     /// </summary>
-    public class <%=N.AppServiceName %> : AsyncCrudAppServiceBase<<%=N.EntityName %>, <%=N.QueryDtoName %>, <%=N.PkType %>, <%=N.GetAllInputName %>, <%=N.CreateInputName %>, <%=N.UpdateInputName %>>, I<%=N.AppServiceName %>
+    public class <%=ApplicationServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=QueryDtoName %>, <%=PkType %>, <%=GetAllInputName %>, <%=CreateInputName %>, <%=UpdateInputName %>>, I<%=ApplicationServiceName %>
     {
 <%
 RenderToResponse<Constructor>();

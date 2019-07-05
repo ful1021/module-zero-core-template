@@ -1,0 +1,11 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
+
+<%@ Property Name="BaseDirectory" Type="System.String" Category="输出目录" Description="输出文件的根目录" Editor="System.Windows.Forms.Design.FolderNameEditor" EditorBase="System.Drawing.Design.UITypeEditor"  Optional="True" OnChanged="OnBaseDirectoryChanged"  %>
+
+<%@ Property Name="DirectoryDto" Type="System.String" Category="输出目录" %>
+<%@ Property Name="DirectoryApplication" Type="System.String" Category="输出目录" %>
+<%@ Property Name="DirectoryIApplication" Type="System.String" Category="输出目录" %>
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
+<%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>

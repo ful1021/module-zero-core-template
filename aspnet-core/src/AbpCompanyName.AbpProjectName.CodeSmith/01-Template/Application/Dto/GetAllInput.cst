@@ -2,45 +2,50 @@
 
 <%--注册子模板--%>
 <%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
-<%@ Register Template="Sub/DtoNamespace.cst" Name="DtoNamespace" MergeProperties="True" %> 
+<%@ Register Template="../../Common/NameApplicationProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
 
 <%--引用.net框架程序集--%>
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%@ Import Namespace="System.Linq" %>
+<%@ Import Namespace="System.Reflection" %>
 
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-var N = Init();
+var props = GetEntityProps();
+var dtoProps = GetAllInputProperties(props.EntityProps);
 %>
-<%
-RenderToResponse<DtoNamespace>();
-%>
+using System;
+using System.ComponentModel.DataAnnotations;
+using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
+
+namespace <%=EntityNamespace %>.Dto
 {
     /// <summary>
-    /// <%=N.EntitySummary %>   获取所有 输入参数
+    /// <%=EntitySummary %>   获取所有 输入参数
     /// </summary>
-    public class <%=N.GetAllInputName %> : PagedAndSortedResultRequestDto
+    public class <%=GetAllInputName %> : PagedAndSortedResultRequestDto
     {
         /// <summary>
         /// 构造函数
         /// </summary>
-        public <%=N.GetAllInputName %>()
+        public <%=GetAllInputName %>()
         {
-            <%if(Tool.IsExistsColByProp(N.EntityProps, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
+            <%if(IHasCreationTime){%>Sorting = "CreationTime DESC";<%} %>
         }
         
-        <%foreach (var col in N.GetAllInputProps){%>        
+        <%foreach (var col in dtoProps){%>        
         /// <summary>
         /// <%=Tool.GetPropertySummary(col) %>
         /// </summary>       
-        <%if(Tool.GetCSharpTypeByProp(col).Contains("DateTime")){ %>
+        <%if(Tool.IsDataTime(col)){ %>
         public DateTime[] <%=col.Name %> { get; set; }
         
         <% continue;}%>
-        <%if(Tool.TryToInt(Tool.DefaultValue(col),-1)==0){ %>
+        <%if(Tool.IsInt(col)){ %>
         public int[] <%=col.Name %> { get; set; }
         
         <% continue;}%>
