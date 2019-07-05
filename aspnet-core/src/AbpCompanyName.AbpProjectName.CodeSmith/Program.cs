@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using CodeSmith;
 
 namespace AbpCompanyName.AbpProjectName
 {

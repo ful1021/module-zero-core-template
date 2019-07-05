@@ -13,10 +13,10 @@
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-ClassNames N = Init();
+var N = Init();
 %>
 <%
-RenderOtherTemplateResponse<DtoNamespace>();
+RenderToResponse<DtoNamespace>();
 %>
 {
     /// <summary>
@@ -29,22 +29,22 @@ RenderOtherTemplateResponse<DtoNamespace>();
         /// </summary>
         public <%=N.GetAllInputName %>()
         {
-            <%if(AssemblyFileHelper.IsExistsColByProp(N.EntityProps, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
+            <%if(Tool.IsExistsColByProp(N.EntityProps, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
         }
         
         <%foreach (var col in N.GetAllInputProps){%>        
         /// <summary>
-        /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
+        /// <%=Tool.GetPropertySummary(col) %>
         /// </summary>       
-        <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>
+        <%if(Tool.GetCSharpTypeByProp(col).Contains("DateTime")){ %>
         public DateTime[] <%=col.Name %> { get; set; }
         
         <% continue;}%>
-        <%if(Tool.TryToInt(AssemblyFileHelper.DefaultValue(col),-1)==0){ %>
-        public NullableNumberRange <%=col.Name %> { get; set; }
+        <%if(Tool.TryToInt(Tool.DefaultValue(col),-1)==0){ %>
+        public int[] <%=col.Name %> { get; set; }
         
         <% continue;}%>
-        public <%=AssemblyFileHelper.GetCSharpAppServiceInputType(col) %> <%=col.Name %> { get; set; }
+        public <%=Tool.GetCSharpAppServiceInputType(col) %> <%=col.Name %> { get; set; }
         
         <%}%>
     }

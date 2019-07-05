@@ -12,12 +12,12 @@
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-ClassNames N = Init();
+var N = Init();
 %>
         <%foreach (var col in N.DtoProps){%>
         /// <summary>
-        /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
+        /// <%=Tool.GetPropertySummary(col) %>
         /// </summary>
-        public <%=AssemblyFileHelper.GetCSharpNullableTypeByProp(col) %> <%=col.Name %> { get; set; }
+        public <%=Tool.GetCSharpNullableTypeByProp(col) %> <%=col.Name %> { get; set; }
         
         <%}%>

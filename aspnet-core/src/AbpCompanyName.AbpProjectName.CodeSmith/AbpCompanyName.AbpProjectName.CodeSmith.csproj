@@ -72,7 +72,6 @@
   <ItemGroup>
     <Compile Include="Helper\ClassNames.cs" />
     <Compile Include="BaseCodeTemplate.cs" />
-    <Compile Include="Helper\AssemblyFileHelper.cs" />
     <Compile Include="Helper\Tool.cs" />
     <Compile Include="Helper\CSComment.cs" />
     <Compile Include="Program.cs" />
@@ -87,9 +86,9 @@
     <None Include="01-Template\Application\Dto\Sub\DtoNamespace.cst" />
     <None Include="01-Template\Application\Dto\Sub\DtoProp.cst" />
     <None Include="01-Template\Application\IAsyncAppService.cst" />
-    <None Include="01-Template\Application\SubTemplate\Constructor.cst" />
-    <None Include="01-Template\Application\SubTemplate\ConstructorWithPermission.cst" />
-    <None Include="01-Template\Application\SubTemplate\CreateFilteredQuery.cst" />
+    <None Include="01-Template\Application\Sub\Constructor.cst" />
+    <None Include="01-Template\Application\Sub\ConstructorWithPermission.cst" />
+    <None Include="01-Template\Application\Sub\CreateFilteredQuery.cst" />
     <None Include="01-Template\Builder_vue-element-admin.cst" />
     <None Include="01-Template\BuilderAll.cst" />
     <None Include="01-Template\BuilderApplication.cst" />

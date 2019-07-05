@@ -90,11 +90,6 @@ namespace AbpCompanyName.AbpProjectName.Helper
         public string ApplicationAssemblyName { get; set; }
 
         /// <summary>
-        /// Application 接口契约 程序集名称，Boss.Scm.Application.Contracts
-        /// </summary>
-        public string ApplicationContractsAssemblyName { get; set; }
-
-        /// <summary>
         /// Core 程序集名称，Boss.Scm.Core
         /// </summary>
         public string CoreAssemblyName { get; set; }
@@ -118,11 +113,6 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// 实体类 命名空间： Boss.Scm.Orders
         /// </summary>
         public string EntityNamespace { get; set; }
-
-        /// <summary>
-        /// Ef DbContextName
-        /// </summary>
-        public string DbContextName { get; set; }
 
         /// <summary>
         /// EntityFrameworkCore层 仓储名称

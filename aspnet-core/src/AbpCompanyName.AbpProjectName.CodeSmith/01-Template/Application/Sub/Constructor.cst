@@ -12,7 +12,7 @@
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-ClassNames N = Init();
+var N = Init();
 %>
 
         private readonly IRepository<<%=N.EntityName %>, <%=N.PkType %>> _<%=N.RepositoryName %>;

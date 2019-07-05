@@ -12,7 +12,7 @@
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-ClassNames N = Init();
+var N = Init();
 %>
 
         /// <summary>
@@ -30,17 +30,17 @@ ClassNames N = Init();
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
                 <%foreach (var col in N.GetAllInputProps){%>
-                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>                
+                <%if(Tool.GetCSharpTypeByProp(col).Contains("DateTime")){ %>                
                 .WhereIf(<%=Tool.ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=Tool.ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=Tool.ToFirstLetterCamel(col.Name) %>Range.EndTime)
                 
                 <% continue;}%>
-                <%if(Tool.TryToInt(AssemblyFileHelper.DefaultValue(col),-1)==0){ %>
+                <%if(Tool.TryToInt(Tool.DefaultValue(col),-1)==0){ %>
                 
                 .WhereIf(input.<%=col.Name %>?.Start != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.Start.Value)
                 .WhereIf(input.<%=col.Name %>?.End != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.End.Value)
                 
                 <% continue;}%>
-                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("string")){ %>
+                <%if(Tool.GetCSharpTypeByProp(col).Contains("string")){ %>
                 .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
                 <% continue;}%>
                 <%if(col.PropertyType.IsValueType){ %>

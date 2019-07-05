@@ -13,10 +13,10 @@
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
 <%
-ClassNames N = Init();
+var N = Init();
 %>
 <%
-RenderOtherTemplateResponse<DtoNamespace>();
+RenderToResponse<DtoNamespace>();
 %>
 {
     /// <summary>
@@ -24,7 +24,7 @@ RenderOtherTemplateResponse<DtoNamespace>();
     /// </summary>
     public class <%=N.QueryDtoName %> : <%=N.DtoName %>
     {
-        <%if(AssemblyFileHelper.IsExistsColByProp(N.EntityProps, "CreationTime", true)){%>public DateTime CreationTime { get; set; }<%} %>
-        <%if(AssemblyFileHelper.IsExistsColByProp(N.EntityProps, "CreatorId", true)){%>public Guid? CreatorId { get; set; }<%} %>
+        <%if(Tool.IsExistsColByProp(N.EntityProps, "CreationTime", true)){%>public DateTime CreationTime { get; set; }<%} %>
+        <%if(Tool.IsExistsColByProp(N.EntityProps, "CreatorId", true)){%>public Guid? CreatorId { get; set; }<%} %>
     }    
 }

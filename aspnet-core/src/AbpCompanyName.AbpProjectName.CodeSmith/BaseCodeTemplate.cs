@@ -64,7 +64,7 @@ namespace AbpCompanyName.AbpProjectName
         {
             string currentAssemblyPath = GetCurrentAssemblyDirectory();
 
-            string dllFolder = Path.GetFullPath(Path.Combine(currentAssemblyPath, "../../../AbpCompanyName.AbpProjectName.Core/bin/Debug/net461/"));
+            string dllFolder = Path.GetFullPath(Path.Combine(currentAssemblyPath, "../../../AbpCompanyName.AbpProjectName.Web.Core/bin/Debug/net461/"));
 
             string nameSpaceName = "AbpCompanyName.AbpProjectName";
             string entityName = Tool.TryToString(GetProperty("EntityName"));
@@ -91,34 +91,33 @@ namespace AbpCompanyName.AbpProjectName
             var projectTemplateName = nameSpaceName.Split('.').LastOrDefault();
 
             var applicationAssemblyName = companyName + "." + projectTemplateName + ".Application";
-            var applicationContractsAssemblyName = applicationAssemblyName + ".Contracts";
             var coreAssemblyName = companyName + "." + projectTemplateName + ".Core";
 
             var applicationDllFile = Path.Combine(dllFolder, applicationAssemblyName + ".dll");
             var coreDllFile = Path.Combine(dllFolder, coreAssemblyName + ".dll");
 
-            Type assType = AssemblyFileHelper.GetAssemblyType(coreDllFile, entityName);
+            Type assType = Tool.GetAssemblyType(coreDllFile, entityName);
 
             var entityDirectoryName = assType.Namespace.Replace(companyName + "." + projectTemplateName, "").Replace(".", "\\");
             var aplicationDirectoryPath = applicationAssemblyName + "\\" + entityDirectoryName;
             var coreDirectoryPath = coreAssemblyName + "\\" + entityDirectoryName;
 
-            var entityProps = AssemblyFileHelper.GetProperties(assType);
-            var dtoColumns = AssemblyFileHelper.GetDtoProperties(entityProps);
-            var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityProps);
-            var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
-            var entityEnumsProps = AssemblyFileHelper.GetEnumProperties(entityProps);
+            var entityProps = Tool.GetProperties(assType);
+            var dtoColumns = Tool.GetDtoProperties(entityProps);
+            var getAllInputColumns = Tool.GetAllInputColumns(entityProps);
+            var entityDateTimeProps = Tool.GetDateTimeProperties(getAllInputColumns);
+            var entityEnumsProps = Tool.GetEnumProperties(entityProps);
 
             var pkName = "Id";
             return new ClassNames()
             {
                 PkName = pkName,
-                PkType = AssemblyFileHelper.GetPropertyType(assType, pkName),
+                PkType = Tool.GetPropertyType(assType, pkName),
 
                 EntityName = entityName,
                 EntityConstsName = entityName + "Consts",
                 EntityNamespace = assType.Namespace,
-                EntitySummary = AssemblyFileHelper.GetClassSummary(assType),
+                EntitySummary = Tool.GetClassSummary(assType),
                 ApplicationDirectoryPath = aplicationDirectoryPath,
                 CoreDirectoryPath = coreDirectoryPath,
                 EntityProps = entityProps,
@@ -127,7 +126,6 @@ namespace AbpCompanyName.AbpProjectName
                 EntityDateTimeProps = entityDateTimeProps,
                 EntityEnumsProps = entityEnumsProps,
 
-                DbContextName = projectTemplateName + "DbContext",
                 DomainIRepositoryName = "I" + entityName + "Repository",
                 EntityFrameworkCoreRepositoryName = "EfCore" + entityName + "Repository",
 
@@ -149,7 +147,6 @@ namespace AbpCompanyName.AbpProjectName
                 ProjectTemplateName = projectTemplateName,
 
                 ApplicationAssemblyName = applicationAssemblyName,
-                ApplicationContractsAssemblyName = applicationContractsAssemblyName,
                 CoreAssemblyName = coreAssemblyName,
 
                 WebControllerName = entityName + "Controller",
@@ -201,10 +198,10 @@ namespace AbpCompanyName.AbpProjectName
         /// 需要在头部写命令注册：
         /// <%@ Register Template="BuildMenu.cst" Name="BuildMenuTemplate" MergeProperties="True" %>
         /// 调用：
-        /// RenderOtherTemplateResponse<BuildMenuTemplate>(BuildMenu);
+        /// RenderToResponse<BuildMenuTemplate>(BuildMenu);
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RenderOtherTemplateResponse<T>() where T : CodeTemplate, new()
+        public void RenderToResponse<T>() where T : CodeTemplate, new()
         {
             T sm = new T();
             this.CopyPropertiesTo(sm);
