@@ -1,9 +1,12 @@
 ﻿using System;
 using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
 using Abp.Domain.Entities.Auditing;
+using AbpCompanyName.AbpProjectName.Authorization.Roles;
 
 namespace AbpCompanyName.AbpProjectName.Roles.Dto
 {
+    [AutoMapFrom(typeof(Role))]
     public class RoleListDto : EntityDto, IHasCreationTime
     {
         public string Name { get; set; }

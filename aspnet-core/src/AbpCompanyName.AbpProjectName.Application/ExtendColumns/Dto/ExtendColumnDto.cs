@@ -8,6 +8,7 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
     /// <summary>
     /// 扩展列 新增输入参数
     /// </summary>
+    [AutoMap(typeof(ExtendColumn))]
     public class ExtendColumnDto : EntityDto<int>
     {
         /// <summary>
@@ -30,5 +31,5 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
         /// </summary>
         public int Width { get; set; }
 
-    }    
+    }
 }

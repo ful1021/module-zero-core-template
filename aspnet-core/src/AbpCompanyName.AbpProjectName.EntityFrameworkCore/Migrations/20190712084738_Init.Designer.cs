@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AbpCompanyName.AbpProjectName.Migrations
 {
     [DbContext(typeof(AbpProjectNameDbContext))]
-    [Migration("20190618130121_AddDictData")]
-    partial class AddDictData
+    [Migration("20190712084738_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -487,7 +487,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("TenantId", "Name");
+                    b.HasIndex("TenantId", "Name", "UserId")
+                        .IsUnique();
 
                     b.ToTable("Core_Settings");
                 });
