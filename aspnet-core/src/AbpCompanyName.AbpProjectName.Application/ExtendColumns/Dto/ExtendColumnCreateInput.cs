@@ -5,7 +5,7 @@ using Abp.Runtime.Validation;
 namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
 {
     /// <summary>
-    ///  新增输入参数
+    /// 扩展列 新增输入参数
     /// </summary>
     public class ExtendColumnCreateInput : IShouldNormalize
     {

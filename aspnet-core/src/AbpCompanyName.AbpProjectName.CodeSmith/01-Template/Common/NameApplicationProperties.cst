@@ -1,16 +1,39 @@
 ﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
 
-<%@ Property Name="ApplicationAssemblyName" Type="System.String" Category="命名.Application" %>
+<%@ Property Name="Dto" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成Dto类" 
+Default="true"%>
+<%@ Property Name="DtoName" Type="System.String" Category="命名生成.Application.Dto" Description="Dto类名称，只有当Dto选中时有效" %>
 
-<%@ Property Name="DtoName" Type="System.String" Category="命名.Application.Dto" %>
-<%@ Property Name="QueryDtoName" Type="System.String" Category="命名.Application.Dto" %>
-<%@ Property Name="GetAllInputName" Type="System.String" Category="命名.Application.Dto" %>
-<%@ Property Name="CreateOrUpdateInputName" Type="System.String" Category="命名.Application.Dto" %>
-<%@ Property Name="CreateInputName" Type="System.String" Category="命名.Application.Dto" %>
-<%@ Property Name="UpdateInputName" Type="System.String" Category="命名.Application.Dto" %>
 
-<%@ Property Name="ApplicationServiceName" Type="System.String" Category="命名.Application" %>
-<%@ Property Name="IApplicationServiceName" Type="System.String" Category="命名.Application" %>
+<%@ Property Name="QueryDto" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成Get/GetAll方法的返回类" Default="true"%>
+<%@ Property Name="QueryDtoName" Type="System.String" Category="命名生成.Application.Dto" Description="QueryDto类名称，只有当QueryDto选中时有效" %>
+
+
+<%@ Property Name="CreateOrUpdate" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成CreateOrUpdate方法" Default="true"%>
+<%@ Property Name="CreateOrUpdateInputName" Type="System.String" Category="命名生成.Application.Dto" Description="CreateOrUpdateInput类名称，只有当CreateOrUpdate选中时有效" %>
+
+
+<%@ Property Name="Create" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成Create方法" Default="false"%>
+<%@ Property Name="CreateInputName" Type="System.String" Category="命名生成.Application.Dto" Description="CreateInput类名称，只有当Create选中时有效" %>
+
+
+<%@ Property Name="Update" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成Update方法" Default="false"%>
+<%@ Property Name="UpdateInputName" Type="System.String" Category="命名生成.Application.Dto" Description="UpdateInput类名称，只有当Update选中时有效" %>
+
+
+
+<%@ Property Name="GetAll" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成GetAll方法" Default="true"%>
+<%@ Property Name="GetAllInputName" Type="System.String" Category="命名生成.Application.Dto" Description="GetAllInput类名称，只有当GetAll选中时有效" %>
+
+
+
+<%@ Property Name="ApplicationService" Type="System.Boolean" Category="命名生成.Application" Description="生成应用服务" 
+Default="true"%>
+<%@ Property Name="IApplicationService" Type="System.Boolean" Category="命名生成.Application" Description="生成应用服务契约" 
+Default="true"%>
+
+<%@ Property Name="ApplicationServiceName" Type="System.String" Category="命名生成.Application" %>
+<%@ Property Name="IApplicationServiceName" Type="System.String" Category="命名生成.Application" %>
 
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>

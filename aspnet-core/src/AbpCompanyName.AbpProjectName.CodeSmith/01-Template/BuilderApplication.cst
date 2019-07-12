@@ -5,7 +5,6 @@
 <%@ Register Template="Common/OutputConfigProperties.cst" Name="OutputConfigProperties" MergeProperties="True" %>  
 <%@ Register Template="Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %> 
 <%@ Register Template="Common/NameCoreProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
-<%@ Register Template="Common/GenerateApplicationProperties.cst" Name="GenerateApplicationProperties" MergeProperties="True" %>
 
 <%--引用.net框架程序集--%>
 <%@ Import Namespace="System" %>
@@ -24,19 +23,19 @@ System.Diagnostics.Debugger.Break();
 {    
     var currClassTemplateName = "Application";
 
-    RenderToFile(IAsyncService
+    RenderToFile(IApplicationService
     , currClassTemplateName + "\\IAsyncAppService.cst"
     , DirectoryIApplication
     , IApplicationServiceName);
     
-    RenderToFile(AsyncService, currClassTemplateName + "\\AsyncAppService.cst"
+    RenderToFile(ApplicationService, currClassTemplateName + "\\AsyncAppService.cst"
     , DirectoryApplication
     , ApplicationServiceName);
 }
 {
     var temp = "Application\\Dto";
     
-    RenderToFile(GetAllDto
+    RenderToFile(GetAll
     , temp + "\\GetAllInput.cst"
     , DirectoryDto
     , GetAllInputName);
@@ -51,7 +50,7 @@ System.Diagnostics.Debugger.Break();
     , DirectoryDto
     , DtoName);
     
-    RenderToFile(CreateDto
+    RenderToFile(Create
     , temp + "\\CreateInputDto.cst"
     , DirectoryDto
     , CreateInputName);

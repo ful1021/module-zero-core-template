@@ -13,8 +13,9 @@
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
 <%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
-using System;
+using System.Threading.Tasks;
 using Abp.Application.Services;
+using Abp.Application.Services.Dto;
 using <%=EntityNamespace %>.Dto;
 
 namespace <%=EntityNamespace %>
@@ -22,7 +23,16 @@ namespace <%=EntityNamespace %>
     /// <summary>
     /// <%=EntitySummary %>  服务契约
     /// </summary>
-    public interface I<%=ApplicationServiceName %> : IAsyncCrudAppService<<%=QueryDtoName %>, <%=PkType %>, <%=GetAllInputName %>, <%=CreateInputName %>, <%=UpdateInputName %>>
+    public interface I<%=ApplicationServiceName %> : IApplicationService
     {
+        Task<PagedResultDto<<%=QueryDtoName %>> GetAll(<%=GetAllInputName %> input);
+
+        Task<<%=QueryDtoName %>> Get(EntityDto<<%=PkType %>> input);
+
+        //Task<<%=QueryDtoName %>> Create(<%=CreateInputName %> input);
+
+        //Task<<%=QueryDtoName %>> Update(<%=UpdateInputName %> input);
+
+        //Task Delete(EntityDto<<%=PkType %>> input);
     }
 }

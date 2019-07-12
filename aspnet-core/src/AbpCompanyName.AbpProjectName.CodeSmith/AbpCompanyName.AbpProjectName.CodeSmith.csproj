@@ -94,7 +94,6 @@
     <None Include="01-Template\Common\OutputConfigProperties.cst" />
     <None Include="01-Template\Common\CommonProperties.cst" />
     <None Include="01-Template\Common\ConfigProperties.cst" />
-    <None Include="01-Template\Common\GenerateApplicationProperties.cst" />
     <None Include="01-Template\Common\GenerateLayerProperties.cst" />
     <None Include="App.config" />
     <None Include="packages.config" />

@@ -29,6 +29,9 @@ namespace AbpCompanyName.AbpProjectName
             string entityName = GetEntityName();
             Type assType = GetEntityAssemblyType(entityName);
 
+            SetProperty("ApplicationAssemblyName", ApplicationAssemblyName);
+            SetProperty("CoreAssemblyName", CoreAssemblyName);
+
             SetPropertyDirectory(assType, entityName);
 
             #region 实体类
@@ -48,9 +51,7 @@ namespace AbpCompanyName.AbpProjectName
             SetProperty("IModificationAudited", Tool.IsModificationAudited(entityProps));
             SetProperty("IAudited", Tool.IsAudited(entityProps));
 
-            #endregion 实体类
-
-            SetProperty("CoreAssemblyName", CoreAssemblyName);
+            #endregion 实体类          
 
             SetProperty("IRepositoryName", "I" + entityName + "Repository");
             SetProperty("RepositoryName", entityName + "Repository");
@@ -64,8 +65,6 @@ namespace AbpCompanyName.AbpProjectName
             SetProperty("CreateOrUpdateInputName", entityName + "Dto");//CreateOrUpdateInput
             SetProperty("CreateInputName", entityName + "CreateInput");
             SetProperty("UpdateInputName", entityName + "Dto");// "UpdateInput"
-
-            SetProperty("ApplicationAssemblyName", ApplicationAssemblyName);
 
             SetProperty("ApplicationServiceName", entityName + "AppService");
             SetProperty("IApplicationServiceName", "I" + entityName + "AppService");
@@ -158,7 +157,19 @@ namespace AbpCompanyName.AbpProjectName
             List<PropertyInfo> list = new List<PropertyInfo>();
             foreach (var col in entityColumns)
             {
+                if (Tool.IsIn(col.Name, "Id"))
+                {
+                    continue;
+                }
+                if (Tool.IsInFullAudited(col))
+                {
+                    continue;
+                }
                 if (Tool.IsAbpValueObject(col))
+                {
+                    continue;
+                }
+                if (Tool.IsList(col))
                 {
                     continue;
                 }

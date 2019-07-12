@@ -1,5 +1,8 @@
 ﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
 
+<%@ Property Name="ApplicationAssemblyName" Type="System.String" Category="输出" %>
+<%@ Property Name="CoreAssemblyName" Type="System.String" Category="输出" %>
+
 <%@ Property Name="BaseDirectory" Type="System.String" Category="输出目录" Description="输出文件的根目录" Editor="System.Windows.Forms.Design.FolderNameEditor" EditorBase="System.Drawing.Design.UITypeEditor"  Optional="True" OnChanged="OnBaseDirectoryChanged"  %>
 
 <%@ Property Name="DirectoryDto" Type="System.String" Category="输出目录" %>

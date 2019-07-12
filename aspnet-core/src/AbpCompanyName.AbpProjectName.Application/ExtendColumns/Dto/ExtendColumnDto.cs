@@ -6,7 +6,7 @@ using Abp.AutoMapper;
 namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
 {
     /// <summary>
-    ///  新增输入参数
+    /// 扩展列 新增输入参数
     /// </summary>
     public class ExtendColumnDto : EntityDto<int>
     {
