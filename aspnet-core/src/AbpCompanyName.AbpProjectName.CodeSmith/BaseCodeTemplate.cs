@@ -16,12 +16,12 @@ namespace AbpCompanyName.AbpProjectName
         public const string CompanyName = "AbpCompanyName";
         public const string ProjectTemplateName = "AbpProjectName";
         public const string SlnName = CompanyName + "." + ProjectTemplateName;
-        public const string ApplicationAssemblyName = SlnName + ".Application";
-        public const string CoreAssemblyName = SlnName + ".Core";
+        public const string DtoAssemblyName = SlnName + ".Application";
+        public const string EntityAssemblyName = SlnName + ".Core";
 
         public void OnEntityChanged(object sender, System.EventArgs args)
         {
-            var isAutoSetProp = Tool.TryToBool(GetProperty("IsAutoSetProp"));
+            var isAutoSetProp = Tool.TryToBool(GetProperty("AutoSetProp"));
             if (!isAutoSetProp)
             {
                 return;
@@ -29,8 +29,14 @@ namespace AbpCompanyName.AbpProjectName
             string entityName = GetEntityName();
             Type assType = GetEntityAssemblyType(entityName);
 
-            SetProperty("ApplicationAssemblyName", ApplicationAssemblyName);
-            SetProperty("CoreAssemblyName", CoreAssemblyName);
+            string dllFolder = GetDllFolder();
+            var entityDllFile = Path.Combine(dllFolder, EntityAssemblyName + ".dll");
+            var dtoDllFile = Path.Combine(dllFolder, DtoAssemblyName + ".dll");
+            SetProperty("DtoAssemblyName", DtoAssemblyName);
+            SetProperty("DtoDllPath", dtoDllFile);
+
+            SetProperty("EntityAssemblyName", EntityAssemblyName);
+            SetProperty("EntityDllPath", entityDllFile);
 
             SetPropertyDirectory(assType, entityName);
 
@@ -51,7 +57,9 @@ namespace AbpCompanyName.AbpProjectName
             SetProperty("IModificationAudited", Tool.IsModificationAudited(entityProps));
             SetProperty("IAudited", Tool.IsAudited(entityProps));
 
-            #endregion 实体类          
+            #endregion 实体类
+
+
 
             SetProperty("IRepositoryName", "I" + entityName + "Repository");
             SetProperty("RepositoryName", entityName + "Repository");
@@ -88,9 +96,9 @@ namespace AbpCompanyName.AbpProjectName
             namespaces.Remove(ProjectTemplateName);
             var classPath = string.Join("\\", namespaces);
 
-            var directoryDto = CombinePath(baseDirectory, ApplicationAssemblyName, classPath, "Dto");
-            var directoryApplication = CombinePath(baseDirectory, ApplicationAssemblyName, classPath);
-            var directoryIApplication = CombinePath(baseDirectory, ApplicationAssemblyName, classPath);
+            var directoryDto = CombinePath(baseDirectory, DtoAssemblyName, classPath, "Dto");
+            var directoryApplication = CombinePath(baseDirectory, DtoAssemblyName, classPath);
+            var directoryIApplication = CombinePath(baseDirectory, DtoAssemblyName, classPath);
 
             SetProperty("DirectoryDto", directoryDto);
             SetProperty("DirectoryApplication", directoryApplication);
@@ -112,14 +120,20 @@ namespace AbpCompanyName.AbpProjectName
 
         public Type GetEntityAssemblyType(string entityName)
         {
-            string currentAssemblyPath = GetCurrentAssemblyDirectory();
+            string dllFolder = GetDllFolder();
 
-            string dllFolder = Path.GetFullPath(Path.Combine(currentAssemblyPath, "../../../AbpCompanyName.AbpProjectName.Web.Core/bin/Debug/net461/"));
-
-            var coreDllFile = Path.Combine(dllFolder, CoreAssemblyName + ".dll");
+            var coreDllFile = Path.Combine(dllFolder, EntityAssemblyName + ".dll");
 
             var assType = Tool.GetAssemblyType(coreDllFile, entityName);
             return assType;
+        }
+
+        private string GetDllFolder()
+        {
+            string currentAssemblyPath = GetCurrentAssemblyDirectory();
+
+            string dllFolder = Path.GetFullPath(Path.Combine(currentAssemblyPath, "../../../AbpCompanyName.AbpProjectName.Web.Core/bin/Debug/net461/"));
+            return dllFolder;
         }
 
         public string GetEntityName()

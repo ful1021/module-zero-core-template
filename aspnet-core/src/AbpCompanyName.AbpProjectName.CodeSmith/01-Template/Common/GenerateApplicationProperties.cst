@@ -1,7 +1,9 @@
 ﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
 
-<%@ Property Name="ApplicationServiceName" Type="System.String" Category="命名生成.Application" %>
-<%@ Property Name="IApplicationServiceName" Type="System.String" Category="命名生成.Application" %>
+<%@ Property Name="ApplicationService" Type="System.Boolean" Category="命名生成.Application" Description="生成应用服务" 
+Default="true"%>
+<%@ Property Name="IApplicationService" Type="System.Boolean" Category="命名生成.Application" Description="生成应用服务契约" 
+Default="true"%>
 
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>

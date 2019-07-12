@@ -3,13 +3,8 @@
 <%--注册子模板--%>
 <%@ Register Template="Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %>  
 <%@ Register Template="Common/OutputConfigProperties.cst" Name="OutputConfigProperties" MergeProperties="True" %>  
-
 <%@ Register Template="Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %>
-<%@ Register Template="Common/GenerateApplicationProperties.cst" Name="GenerateApplicationProperties" MergeProperties="True" %>
-
 <%@ Register Template="Common/NameDtoProperties.cst" Name="NameDtoProperties" MergeProperties="True" %>
-<%@ Register Template="Common/GenerateDtoProperties.cst" Name="GenerateDtoProperties" MergeProperties="True" %>
-
 <%@ Register Template="Common/NameCoreProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
 
 <%--引用.net框架程序集--%>
@@ -26,41 +21,7 @@ System.Diagnostics.Debugger.Launch();
 System.Diagnostics.Debugger.Break();  
 %>--%>
 <%
-{    
-    var currClassTemplateName = "Application";
 
-    RenderToFile(IApplicationService
-    , currClassTemplateName + "\\IAsyncAppService.cst"
-    , DirectoryIApplication
-    , IApplicationServiceName);
-    
-    RenderToFile(ApplicationService, currClassTemplateName + "\\AsyncAppService.cst"
-    , DirectoryApplication
-    , ApplicationServiceName);
-}
-{
-    var temp = "Application\\Dto";
-    
-    RenderToFile(GetAll
-    , temp + "\\GetAllInput.cst"
-    , DirectoryDto
-    , GetAllInputName);
-    
-    RenderToFile(QueryDto
-    , temp + "\\QueryDto.cst"
-    , DirectoryDto
-    , QueryDtoName);
-    
-    RenderToFile(Dto
-    , temp + "\\Dto.cst"
-    , DirectoryDto
-    , DtoName);
-    
-    RenderToFile(Create
-    , temp + "\\CreateInputDto.cst"
-    , DirectoryDto
-    , CreateInputName);
-}
 //指定使用资源管理器打开文件夹
 //System.Diagnostics.Process.Start("Explorer.exe", OutputDirectory);
 //System.AppDomain.Unload(System.AppDomain.CurrentDomain);

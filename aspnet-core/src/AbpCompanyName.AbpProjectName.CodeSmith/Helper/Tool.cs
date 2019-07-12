@@ -167,6 +167,21 @@ namespace AbpCompanyName.AbpProjectName.Helper
         #region GetSummary
 
         /// <summary>
+        /// 获取字段注释
+        /// </summary>
+        /// <param name="props"></param>
+        /// <returns></returns>
+        public static Dictionary<PropertyInfo, string> GetPropertySummaries(PropertyInfo[] props)
+        {
+            Dictionary<PropertyInfo, string> dict = new Dictionary<PropertyInfo, string>();
+            foreach (var item in props)
+            {
+                dict[item] = GetPropertySummary(item);
+            }
+            return dict;
+        }
+
+        /// <summary>
         /// 得到反射字段 注释
         /// </summary>
         /// <returns></returns>
@@ -285,6 +300,16 @@ namespace AbpCompanyName.AbpProjectName.Helper
             }
             PropertyInfo[] propertyinfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             return propertyinfo.OrderBy(a => a.Name).ToArray();
+        }
+
+        /// <summary>
+        /// 反射获取PropertyInfo集合
+        /// </summary>
+        /// <returns></returns>
+        public static PropertyInfo[] GetProperties(string dllFile, string className)
+        {
+            var type = GetAssemblyType(dllFile, className);
+            return GetProperties(type);
         }
 
         /// <summary>

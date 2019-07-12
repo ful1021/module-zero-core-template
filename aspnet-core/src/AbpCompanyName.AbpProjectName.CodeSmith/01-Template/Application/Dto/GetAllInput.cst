@@ -2,7 +2,7 @@
 
 <%--注册子模板--%>
 <%@ Register Template="../../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %> 
-<%@ Register Template="../../Common/NameApplicationProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
+<%@ Register Template="../../Common/NameDtoProperties.cst" Name="NameDtoProperties" MergeProperties="True" %> 
 
 <%--引用.net框架程序集--%>
 <%@ Import Namespace="System" %>

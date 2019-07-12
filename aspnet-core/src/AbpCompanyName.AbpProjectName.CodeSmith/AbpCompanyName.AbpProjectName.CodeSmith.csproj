@@ -88,20 +88,24 @@
     <None Include="01-Template\Application\Sub\Constructor.cst" />
     <None Include="01-Template\Application\Sub\ConstructorWithPermission.cst" />
     <None Include="01-Template\Application\Sub\CreateFilteredQuery.cst" />
+    <None Include="01-Template\BuilderVue-element-admin.cst" />
     <None Include="01-Template\BuilderApplication.cst" />
+    <None Include="01-Template\Common\GenerateDtoProperties.cst" />
+    <None Include="01-Template\Common\GenerateApplicationProperties.cst" />
+    <None Include="01-Template\Common\NameDtoProperties.cst" />
     <None Include="01-Template\Common\NameCoreProperties.cst" />
     <None Include="01-Template\Common\NameApplicationProperties.cst" />
     <None Include="01-Template\Common\OutputConfigProperties.cst" />
     <None Include="01-Template\Common\CommonProperties.cst" />
-    <None Include="01-Template\Common\ConfigProperties.cst" />
+    <None Include="01-Template\Common\ViewPageProperties.cst" />
     <None Include="01-Template\Common\GenerateLayerProperties.cst" />
+    <None Include="01-Template\vue-element-admin\Index.cst" />
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="01-Template\Core\" />
-    <Folder Include="01-Template\vue-element-admin\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

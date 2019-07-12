@@ -1,0 +1,191 @@
+﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
+
+<%--注册子模板--%>
+<%@ Register Template="../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %>  
+<%@ Register Template="../Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %> 
+<%@ Register Template="../Common/NameDtoProperties.cst" Name="NameDtoProperties" MergeProperties="True" %> 
+<%@ Register Template="../Common/NameCoreProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
+<%@ Register Template="../Common/ViewPageProperties.cst" Name="ViewPageProperties" MergeProperties="True" %>  
+
+<%--引用.net框架程序集--%>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Linq" %>
+<%@ Import Namespace="System.Reflection" %>
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
+<%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
+<%
+PropertyInfo[] queryDtoProps = null;
+PropertyInfo[] getAllInputProps = null;
+PropertyInfo[] createOrUpdateInputProps = null;
+var props = GetEntityProps();
+if(BasedDto)
+{
+    queryDtoProps = Tool.GetProperties(DtoDllPath, QueryDtoName);
+    getAllInputProps = Tool.GetProperties(DtoDllPath, GetAllInputName);
+    createOrUpdateInputProps = Tool.GetProperties(DtoDllPath, CreateOrUpdateInputName);
+} 
+else 
+{    
+    queryDtoProps = GetAllInputProperties(props.EntityProps);
+    getAllInputProps = GetAllInputProperties(props.EntityProps);
+    createOrUpdateInputProps = GetDtoProperties(props.EntityProps);
+}
+PropertyInfo[] enumsProps = props.EntityEnumsProps;
+PropertyInfo[] dateTimeProps = props.EntityDateTimeProps;
+
+var queryDtoColunms = Tool.GetPropertySummaries(queryDtoProps);
+var getAllInputColunms = Tool.GetPropertySummaries(getAllInputProps);
+var createOrUpdateInputColunms = Tool.GetPropertySummaries(createOrUpdateInputProps);
+
+%>
+<template>
+  <div class="app-container">
+    <div class="filter-container">
+    <%foreach(var col in getAllInputColunms){ %>
+    <%if(IsIn(col.Key.Name.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
+    <%if(dateTimeProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+      <el-input
+        v-model="filters.keyword"
+        placeholder="用户名、姓名、邮箱"
+        style="width: 300px;"
+        class="filter-item"
+      />
+    <% continue;}%>
+    <%
+    var enumProp = enumsProps.FirstOrDefault(a=>a.Name == col.Key.Name);
+    if(enumProp != null){
+    %>
+      <el-input
+        v-model="filters.keyword"
+        placeholder="用户名、姓名、邮箱"
+        style="width: 300px;"
+        class="filter-item"
+      />
+    <% continue;}%>
+      <el-input
+        v-model="filters.keyword"
+        placeholder="用户名、姓名、邮箱"
+        style="width: 300px;"
+        class="filter-item"
+      />
+    <%} %>
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="queryList">搜索</el-button>
+    </div>
+    <div class="filter-container">
+      <el-button
+        v-has:Create
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleAdd"
+      >新增</el-button>
+      <!-- <el-button
+        v-has:Edit
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="preEdit"
+      >修改</el-button>-->
+    </div>
+
+    <el-table
+      :key="tableKey"
+      v-loading="isShowLoading"
+      :data="tableData"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+      @selection-change="handleSelectAll"
+    >
+      <el-table-column type="selection" align="center" width="50" />
+      <el-table-column label="操作" width="120">
+        <template slot-scope="scope">
+          <el-dropdown trigger="click">
+            <el-button type="primary" size="small" icon="el-icon-s-tools">
+              操作
+              <i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown" style="width:150px">
+              <span v-has:Edit @click="handleEdit(scope.row)">
+                <el-dropdown-item>修改</el-dropdown-item>
+              </span>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </template>
+      </el-table-column>      
+      <el-table-column header-align="center" align="center" label="用户名" prop="userName" />
+      <el-table-column header-align="center" align="center" label="姓名" prop="name" />
+      <el-table-column
+        v-for="(item,index) in columnList"
+        :key="index"
+        header-align="center"
+        align="center"
+        :label="item.title"
+        :width="item.width"
+      >
+        <template slot-scope="scope">{{ scope.row[item.key] }}</template>
+      </el-table-column>
+      <el-table-column header-align="center" align="center" label="创建时间" prop="creationTime">
+        <template slot-scope="scope">
+          <span>{{ scope.row.creationTime | dateFormat('yyyy-MM-dd hh:mm') }}</span>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination
+      :total="pageConfig.total"
+      :page.sync="pageConfig.currentPage"
+      :limit.sync="filters.maxResultCount"
+      :page-sizes="pageConfig.pageSizes"
+      @pagination="pageChange"
+    />
+
+    <div v-if="addOrEditDialog.isShow">
+      <el-dialog :title="addOrEditDialog.title" :visible.sync="addOrEditDialog.isShow">
+        <add-or-edit
+          :edit-input="addOrEditDialog.input"
+          :is-add="addOrEditDialog.isAdd"
+          @queryList="queryList"
+          @close="addOrEditDialog.isShow=false"
+        />
+      </el-dialog>
+    </div>
+  </div>
+</template>
+
+<script>
+import query from '@/mixins/query'
+import { app } from '@/api/api'
+import AddOrEdit from './AddOrEdit'
+
+export default {
+  components: { AddOrEdit },
+  mixins: [query],
+  data() {
+    return {
+      columnList: [
+        {
+          title: '手机号',
+          key: 'phoneNumber'
+        },
+        {
+          title: '邮箱',
+          key: 'emailAddress'
+        }
+      ]
+    }
+  },
+  methods: {
+    queryList() {
+      this.getList(app.user.getAll)
+    }
+  }
+}
+</script>
+

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Extensions;
 using Abp.Web.Api.Modeling;
@@ -15,8 +17,7 @@ namespace AbpCompanyName.AbpProjectName.ProxyScripting
         {
             var script = new StringBuilder();
 
-            script.AppendLine(@"
-import request from '@/utils/request'
+            script.AppendLine(@"import request from '@/utils/request'
 import abp from '@/utils/abp'
 import { extend } from '@/utils'
 ");
@@ -93,11 +94,56 @@ import { extend } from '@/utils'
             script.AppendLine("    },");
         }
 
+        public static string GenerateUrlWithParameters(ActionApiDescriptionModel action)
+        {
+            //TODO: Can be optimized using StringBuilder?
+            var url = ReplacePathVariables(action.Url, action.Parameters);
+            url = AddQueryStringParameters(url, action.Parameters);
+            return url;
+        }
+
+        private static string AddQueryStringParameters(string url, IList<ParameterApiDescriptionModel> actionParameters)
+        {
+            var queryStringParameters = actionParameters
+                .Where(p => p.BindingSourceId.IsIn(ParameterBindingSources.ModelBinding, ParameterBindingSources.Query) && p.Name == p.NameOnMethod)
+                .ToArray();
+
+            if (!queryStringParameters.Any())
+            {
+                return url;
+            }
+
+            var qsBuilderParams = queryStringParameters
+                .Select(p => $"{{ name: '{p.Name.ToCamelCase()}', value: {ProxyScriptingJsFuncHelper.GetParamNameInJsFunc(p)} }}")
+                .JoinAsString(", ");
+
+            return url + $"' + abp.utils.buildQueryString([{qsBuilderParams}]) + '";
+        }
+
+        private static string ReplacePathVariables(string url, IList<ParameterApiDescriptionModel> actionParameters)
+        {
+            var pathParameters = actionParameters
+                .Where(p => p.BindingSourceId == ParameterBindingSources.Path)
+                .ToArray();
+
+            if (!pathParameters.Any())
+            {
+                return url;
+            }
+
+            foreach (var pathParameter in pathParameters)
+            {
+                url = url.Replace($"{{{pathParameter.Name}}}", $"' + {ProxyScriptingJsFuncHelper.GetParamNameInJsFunc(pathParameter)} + '");
+            }
+
+            return url;
+        }
+
         private static void AddAjaxCallParameters(StringBuilder script, ControllerApiDescriptionModel controller, ActionApiDescriptionModel action)
         {
             var httpMethod = action.HttpMethod?.ToUpperInvariant() ?? "POST";
 
-            script.AppendLine("            url: '/" + ProxyScriptingHelper.GenerateUrlWithParameters(action) + "',");
+            script.AppendLine("            url: '/" + GenerateUrlWithParameters(action) + "',");
             script.Append("            method: '" + httpMethod + "'");
 
             if (action.ReturnValue.Type == typeof(void))
@@ -113,11 +159,21 @@ import { extend } from '@/utils'
                 script.Append("            headers: " + headers);
             }
 
+            if (httpMethod.IsIn("GET", "DELETE"))
+            {
+                var methodParamNames = action.Parameters.Where(p => p.BindingSourceId.IsIn(ParameterBindingSources.ModelBinding, ParameterBindingSources.Query) && p.Name != p.NameOnMethod).Select(p => p.NameOnMethod).Distinct().FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(methodParamNames))
+                {
+                    var paramName = ProxyScriptingJsFuncHelper.NormalizeJsVariableName(methodParamNames.ToCamelCase());
+                    script.AppendLine(",");
+                    script.Append("            params: " + paramName);
+                }
+            }
             var body = ProxyScriptingHelper.GenerateBody(action);
             if (!body.IsNullOrEmpty())
             {
                 script.AppendLine(",");
-                script.Append("            data: JSON.stringify(" + body + ")");
+                script.Append("            data: " + body);
             }
             else
             {

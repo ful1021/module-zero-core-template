@@ -1,0 +1,14 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
+
+<%@ Property Name="Dto" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成Dto类" 
+Default="true"%>
+<%@ Property Name="QueryDto" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成Get/GetAll方法的返回类" Default="true"%>
+<%@ Property Name="CreateOrUpdate" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成CreateOrUpdate方法" Default="true"%>
+<%@ Property Name="Create" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成Create方法" Default="false"%>
+<%@ Property Name="Update" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成Update方法" Default="false"%>
+<%@ Property Name="GetAll" Type="System.Boolean" Category="命名生成.Application.Dto" Description="是否生成GetAll方法" Default="true"%>
+
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
+<%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>

@@ -2,7 +2,8 @@
 
 <%--注册子模板--%>
 <%@ Register Template="../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %>  
-<%@ Register Template="../Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %> 
+<%@ Register Template="../Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %>
+<%@ Register Template="../Common/NameDtoProperties.cst" Name="NameDtoProperties" MergeProperties="True" %>
 <%@ Register Template="../Common/NameCoreProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
 <%@ Register Template="Sub/ConstructorWithPermission.cst" Name="ConstructorWithPermission" MergeProperties="True" %>  
 <%@ Register Template="Sub/Constructor.cst" Name="Constructor" MergeProperties="True" %>  
