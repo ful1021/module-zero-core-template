@@ -31,5 +31,5 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
         /// </summary>
         public int Width { get; set; }
 
-    }
+    }    
 }

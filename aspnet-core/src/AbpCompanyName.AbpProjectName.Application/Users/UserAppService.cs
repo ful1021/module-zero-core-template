@@ -179,6 +179,7 @@ namespace AbpCompanyName.AbpProjectName.Users
         {
             return Repository.GetAllIncluding(x => x.Roles)
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
+                //.WhereIf(input.LastLoginTime.Length>0)
                 .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
         }
 

@@ -18,6 +18,7 @@ var props = GetEntityProps();
 var dtoProps = GetAllInputProperties(props.EntityProps);
 %>
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
@@ -47,6 +48,10 @@ namespace <%=EntityNamespace %>.Dto
         <% continue;}%>
         <%if(Tool.IsInt(col)){ %>
         public int[] <%=col.Name %> { get; set; }
+        
+        <% continue;}%>
+        <%if(Tool.IsValueType(col)){ %>
+        public List<<%=col.PropertyType.Name %>> <%=Tool.ToPlural(col.Name) %> { get; set; } = new List<<%=col.PropertyType.Name %>>();
         
         <% continue;}%>
         public <%=Tool.GetCSharpAppServiceInputType(col) %> <%=col.Name %> { get; set; }

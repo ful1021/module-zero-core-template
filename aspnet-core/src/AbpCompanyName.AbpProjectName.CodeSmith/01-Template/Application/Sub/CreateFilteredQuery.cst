@@ -16,7 +16,8 @@
 <%
 var props = GetEntityProps();
 var getAllInputProps = GetAllInputProperties(props.EntityProps);
-var entityDateTimeProps = Tool.GetDateTimeProperties(getAllInputProps);
+var dateTimeProps = Tool.GetDateTimeProperties(getAllInputProps);
+var stringProps = Tool.GetStringProperties(getAllInputProps);
 %>
         /// <summary>
         /// 查询条件
@@ -26,7 +27,10 @@ var entityDateTimeProps = Tool.GetDateTimeProperties(getAllInputProps);
         protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=GetAllInputName %> input)
         {
             //var filters = input.Filter.ToStringArray();
-            <%foreach(var col in entityDateTimeProps) {%>
+            <%foreach(var col in stringProps) {%>
+            var <%=Tool.ToFirstLetterCamel(Tool.ToPlural(col.Name)) %> = input.<%=col.Name %>.ToStringArray();
+            <%} %>
+            <%foreach(var col in dateTimeProps) {%>
             var <%=Tool.ToFirstLetterCamel(col.Name) %>Range = input.<%=col.Name %>.ToDateTimeRange();
             <%} %>
             
@@ -37,18 +41,13 @@ var entityDateTimeProps = Tool.GetDateTimeProperties(getAllInputProps);
                 .WhereIf(<%=Tool.ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=Tool.ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=Tool.ToFirstLetterCamel(col.Name) %>Range.EndTime)
                 
                 <% continue;}%>
-                <%if(Tool.IsNumber(col)){ %>
-                
-                .WhereIf(input.<%=col.Name %>?.Start != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.Start.Value)
-                .WhereIf(input.<%=col.Name %>?.End != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.End.Value)
-                
-                <% continue;}%>
                 <%if(Tool.IsString(col)){ %>
-                .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
+                .WhereIf(<%=Tool.ToFirstLetterCamel(Tool.ToPlural(col.Name)) %>.Any(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>) || <%=Tool.ToFirstLetterCamel(Tool.ToPlural(col.Name)) %>.Contains(a.<%=col.Name %>))
                 <% continue;}%>
-                <%if(col.PropertyType.IsValueType){ %>
-                .WhereIf(input.<%=col.Name %>.HasValue, a => a.<%=col.Name %> == input.<%=col.Name %>.Value)
+                <%if(Tool.IsValueType(col)){ %>
+                .WhereIf(input.<%=Tool.ToPlural(col.Name) %>.Any(), a => input.<%=Tool.ToPlural(col.Name) %>.Contains(a.<%=col.Name %>))
                 <% continue;}%>
+                .WhereIf(input.<%=col.Name %> != null, a => input.<%=col.Name %> == a.<%=col.Name %>)
                 <%}%>
                 ;
         }

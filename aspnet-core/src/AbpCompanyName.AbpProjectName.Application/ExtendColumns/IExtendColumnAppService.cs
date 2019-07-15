@@ -18,6 +18,6 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns
 
         Task<ExtendColumnQueryDto> Update(ExtendColumnDto input);
 
-        Task Delete(EntityDto<int> input);
+        //Task Delete(EntityDto<int> input);
     }
 }

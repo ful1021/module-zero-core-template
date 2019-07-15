@@ -14,10 +14,9 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns
     public class ExtendColumnAppService : AsyncCrudAppServiceBase<ExtendColumn, ExtendColumnQueryDto, int, ExtendColumnGetAllInput, ExtendColumnCreateInput, ExtendColumnDto>, IExtendColumnAppService
     {
         private readonly IRepository<ExtendColumn, int> _extendColumnRepository;
-
         /// <summary>
         /// 构造函数
-        /// </summary>
+        /// </summary>        
         public ExtendColumnAppService(IRepository<ExtendColumn, int> extendColumnRepository) : base(extendColumnRepository)
         {
             _extendColumnRepository = extendColumnRepository;
@@ -31,20 +30,14 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns
         protected override IQueryable<ExtendColumn> CreateFilteredQuery(ExtendColumnGetAllInput input)
         {
             //var filters = input.Filter.ToStringArray();
+            var keys = input.Key.ToStringArray();
             var titles = input.Title.ToStringArray();
-
+            
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
-                .WhereIf(!input.Key.IsNullOrWhiteSpace(), a => a.Key.Contains(input.Key))
-
-                //.WhereIf(input.TableName?.Start != null, a => a.TableName >= input.TableName.Start.Value)
-                //.WhereIf(input.TableName?.End != null, a => a.TableName >= input.TableName.End.Value)
-
+                .WhereIf(keys.Any(), a => a.Key.Contains(input.Key) || keys.Contains(a.Key))
+                .WhereIf(input.TableNames.Any(), a => input.TableNames.Contains(a.TableName))
                 .WhereIf(titles.Any(), a => a.Title.Contains(input.Title) || titles.Contains(a.Title))
-
-                //.WhereIf(input.Width?.Start != null, a => a.Width >= input.Width.Start.Value)
-                //.WhereIf(input.Width?.End != null, a => a.Width >= input.Width.End.Value)
-
                 ;
         }
     }

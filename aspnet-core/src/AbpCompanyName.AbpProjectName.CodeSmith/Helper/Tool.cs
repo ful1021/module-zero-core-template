@@ -334,15 +334,7 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// <returns></returns>
         public static PropertyInfo[] GetEnumProperties(PropertyInfo[] props)
         {
-            List<PropertyInfo> list = new List<PropertyInfo>();
-            foreach (var col in props)
-            {
-                if (col.PropertyType.IsEnum)
-                {
-                    list.Add(col);
-                }
-            }
-            return list.ToArray();
+            return GetProperties(props, col => IsEnum(col));
         }
 
         /// <summary>
@@ -352,10 +344,25 @@ namespace AbpCompanyName.AbpProjectName.Helper
         /// <returns></returns>
         public static PropertyInfo[] GetDateTimeProperties(PropertyInfo[] props)
         {
+            return GetProperties(props, col => IsDataTime(col));
+        }
+
+        /// <summary>
+        /// 所有string列
+        /// </summary>
+        /// <param name="props"></param>
+        /// <returns></returns>
+        public static PropertyInfo[] GetStringProperties(PropertyInfo[] props)
+        {
+            return GetProperties(props, col => IsString(col));
+        }
+
+        public static PropertyInfo[] GetProperties(PropertyInfo[] props, Func<PropertyInfo, bool> condition)
+        {
             List<PropertyInfo> list = new List<PropertyInfo>();
             foreach (var col in props)
             {
-                if (GetCSharpNullableType(col).Contains("DateTime"))
+                if (condition(col))
                 {
                     list.Add(col);
                 }
@@ -462,6 +469,26 @@ namespace AbpCompanyName.AbpProjectName.Helper
         }
 
         /// <summary>
+        /// 判断指定 Property 是否为 值 类型
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static bool IsValueType(PropertyInfo prop)
+        {
+            return prop.PropertyType.IsValueType;
+        }
+
+        /// <summary>
+        /// 判断指定 Property 是否为 枚举
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static bool IsEnum(PropertyInfo prop)
+        {
+            return prop.PropertyType.IsEnum;
+        }
+
+        /// <summary>
         /// 判断指定 Property 是否为 DateTime 类型
         /// </summary>
         /// <param name="prop"></param>
@@ -553,7 +580,6 @@ namespace AbpCompanyName.AbpProjectName.Helper
 
         public static string GetCSharpAppServiceInputType(PropertyInfo prop)
         {
-            var propTypeFullName = prop.PropertyType.FullName;
             var type = GetCSharpNullableType(prop);
             if (type != "string" && !IsAbpValueObject(prop) && !type.Contains("[]"))
             {

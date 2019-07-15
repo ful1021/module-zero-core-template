@@ -1,0 +1,141 @@
+﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../BaseCodeTemplate.cs" Inherits="AbpCompanyName.AbpProjectName.BaseCodeTemplate" Encoding="utf-8" %>
+
+<%--注册子模板--%>
+<%@ Register Template="../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %>  
+<%@ Register Template="../Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %> 
+<%@ Register Template="../Common/NameDtoProperties.cst" Name="NameDtoProperties" MergeProperties="True" %> 
+<%@ Register Template="../Common/NameCoreProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
+<%@ Register Template="../Common/ViewPageProperties.cst" Name="ViewPageProperties" MergeProperties="True" %>  
+
+<%--引用.net框架程序集--%>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Linq" %>
+<%@ Import Namespace="System.Reflection" %>
+
+<%--导入自定义程序集--%>
+<%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>
+<%@ Import Namespace="AbpCompanyName.AbpProjectName.Helper" %>
+<%
+PropertyInfo[] queryDtoProps = null;
+PropertyInfo[] getAllInputProps = null;
+PropertyInfo[] createOrUpdateInputProps = null;
+var props = GetEntityProps();
+if(BasedDto)
+{
+    queryDtoProps = Tool.GetProperties(DtoDllPath, QueryDtoName);
+    getAllInputProps = Tool.GetProperties(DtoDllPath, GetAllInputName);
+    createOrUpdateInputProps = Tool.GetProperties(DtoDllPath, CreateOrUpdateInputName);
+} 
+else 
+{    
+    queryDtoProps = GetAllInputProperties(props.EntityProps);
+    getAllInputProps = GetAllInputProperties(props.EntityProps);
+    createOrUpdateInputProps = GetDtoProperties(props.EntityProps);
+}
+PropertyInfo[] enumsProps = props.EntityEnumsProps;
+PropertyInfo[] dateTimeProps = props.EntityDateTimeProps;
+
+var queryDtoColunms = Tool.GetPropertySummaries(queryDtoProps);
+var getAllInputColunms = Tool.GetPropertySummaries(getAllInputProps);
+var createOrUpdateInputColunms = Tool.GetPropertySummaries(createOrUpdateInputProps);
+
+%>
+<template>
+  <div>
+    <el-form :ref="refFormName" :model="fromInput" label-width="100px">
+      <el-form-item
+        label="表"
+        prop="tableName"
+        :rules="{required: true, message: '请选择表', trigger: 'blur'}"
+      >
+        <el-select v-model="fromInput.tableName" filterable placeholder="请选择">
+          <el-option
+            v-for="(item,index) in comm.extendTableNameList"
+            :key="index"
+            :label="item.text"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item
+        prop="key"
+        label="字段名"
+        :rules="[{ required: true, message: '请输入字段名', trigger: 'blur' }]"
+      >
+        <el-input v-model="fromInput.key" />
+      </el-form-item>
+      <el-form-item
+        prop="title"
+        label="字段注释"
+        :rules="[{ required: true, message: '请输入字段注释', trigger: 'blur' }]"
+      >
+        <el-input v-model="fromInput.title" />
+      </el-form-item>
+    </el-form>
+    <div class="foot">
+      <el-button type="danger" @click="$emit('close')">取消</el-button>
+      <el-button type="primary" @click="saveHandler">保存</el-button>
+    </div>
+  </div>
+</template>
+
+<script>
+import { app } from '@/api/api'
+import action from '@/mixins/action'
+const defaultInput = {
+  id: 0,
+  key: '',
+  title: '',
+  tableName: ''
+}
+export default {
+  mixins: [action],
+  props: {
+    editInput: { type: Object, default: () => defaultInput }
+  },
+  data() {
+    return {
+      fromInput: {},
+      refFormName: 'dataForm'
+    }
+  },
+  mounted() {
+    if (this.isAdd) {
+      this.fromInput = Object.assign({}, defaultInput)
+    } else {
+      this.fromInput = this.editInput
+    }
+    this.comm.initEnum('ExtendTableName')
+  },
+  methods: {
+    saveHandler() {
+      let msg = '确定要修改？'
+      if (this.isAdd) {
+        msg = '确定要新增？'
+      }
+      this.validateConfirm(this.refFormName, async() => {
+        const input_data = Object.assign({}, this.fromInput)
+        if (this.isAdd) {
+          await app.extendColumn.create(input_data)
+        } else {
+          await app.extendColumn.update(input_data)
+        }
+        this.$notify.success({
+          title: '成功',
+          message:
+            '操作成功'
+        })
+        this.$emit('close')
+        this.$emit('queryList')
+      }, msg)
+    }
+  }
+}
+</script>
+<style scoped>
+.foot {
+  text-align: center;
+  margin-top: 30px;
+}
+</style>

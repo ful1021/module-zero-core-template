@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AbpCompanyName.AbpProjectName.Enumerations;
 
 namespace AbpCompanyName.AbpProjectName.ExtendColumns
 {
+    [EnumData]
     public enum ExtendTableName
     {
+        /// <summary>
+        /// 用户表
+        /// </summary>
         User = 1
     }
 }

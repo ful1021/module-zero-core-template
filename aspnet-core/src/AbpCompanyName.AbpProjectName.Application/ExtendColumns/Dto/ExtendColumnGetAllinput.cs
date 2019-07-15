@@ -1,4 +1,8 @@
-﻿using Abp.Application.Services.Dto;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
 
 namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
 {
@@ -14,20 +18,26 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
         {
             Sorting = "CreationTime DESC";
         }
-
+        
         /// <summary>
         /// 对应列内容的字段名
-        /// </summary>
+        /// </summary>       
         public string Key { get; set; }
-
+        
         /// <summary>
         /// 支持扩展列的表
-        /// </summary>
-        public AbpCompanyName.AbpProjectName.ExtendColumns.ExtendTableName? TableName { get; set; }
-
+        /// </summary>       
+        public List<ExtendTableName> TableNames { get; set; } = new List<ExtendTableName>();
+        
         /// <summary>
         /// 列头显示文字
-        /// </summary>
+        /// </summary>       
         public string Title { get; set; }
+        
+        /// <summary>
+        /// 列宽
+        /// </summary>       
+        public int[] Width { get; set; }
+        
     }
 }

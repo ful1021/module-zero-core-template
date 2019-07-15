@@ -99,6 +99,7 @@
     <None Include="01-Template\Common\CommonProperties.cst" />
     <None Include="01-Template\Common\ViewPageProperties.cst" />
     <None Include="01-Template\Common\GenerateLayerProperties.cst" />
+    <None Include="01-Template\vue-element-admin\AddOrEdit.cst" />
     <None Include="01-Template\vue-element-admin\Index.cst" />
     <None Include="App.config" />
     <None Include="packages.config" />

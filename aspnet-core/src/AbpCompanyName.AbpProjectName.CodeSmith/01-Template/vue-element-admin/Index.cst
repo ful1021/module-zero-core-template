@@ -45,12 +45,11 @@ var createOrUpdateInputColunms = Tool.GetPropertySummaries(createOrUpdateInputPr
   <div class="app-container">
     <div class="filter-container">
     <%foreach(var col in getAllInputColunms){ %>
-    <%if(IsIn(col.Key.Name.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
+    <%if(Tool.IsIn(col.Key.Name.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
     <%if(dateTimeProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
       <el-input
-        v-model="filters.keyword"
-        placeholder="用户名、姓名、邮箱"
-        style="width: 300px;"
+        v-model="filters.<%=Tool.ToFirstLetterCamel(col.Key.Name) %>"
+        placeholder="<%=col.Value %>"
         class="filter-item"
       />
     <% continue;}%>
@@ -59,16 +58,14 @@ var createOrUpdateInputColunms = Tool.GetPropertySummaries(createOrUpdateInputPr
     if(enumProp != null){
     %>
       <el-input
-        v-model="filters.keyword"
-        placeholder="用户名、姓名、邮箱"
-        style="width: 300px;"
+        v-model="filters.<%=Tool.ToFirstLetterCamel(col.Key.Name) %>"
+        placeholder="<%=col.Value %>"
         class="filter-item"
       />
     <% continue;}%>
       <el-input
-        v-model="filters.keyword"
-        placeholder="用户名、姓名、邮箱"
-        style="width: 300px;"
+        v-model="filters.<%=Tool.ToFirstLetterCamel(col.Key.Name) %>"
+        placeholder="<%=col.Value %>"
         class="filter-item"
       />
     <%} %>
@@ -118,24 +115,25 @@ var createOrUpdateInputColunms = Tool.GetPropertySummaries(createOrUpdateInputPr
             </el-dropdown-menu>
           </el-dropdown>
         </template>
-      </el-table-column>      
-      <el-table-column header-align="center" align="center" label="用户名" prop="userName" />
-      <el-table-column header-align="center" align="center" label="姓名" prop="name" />
-      <el-table-column
-        v-for="(item,index) in columnList"
-        :key="index"
-        header-align="center"
-        align="center"
-        :label="item.title"
-        :width="item.width"
-      >
-        <template slot-scope="scope">{{ scope.row[item.key] }}</template>
       </el-table-column>
-      <el-table-column header-align="center" align="center" label="创建时间" prop="creationTime">
+    <%foreach(var col in queryDtoColunms) {%>
+    <%if(Tool.IsIn(col.Key.Name.ToLower(),"id")){continue;} %>
+    <%if(enumsProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+      <el-table-column header-align="center" align="center" label="<%=col.Value %>" prop="<%=Tool.ToFirstLetterCamel(col.Key.Name) %>">
         <template slot-scope="scope">
-          <span>{{ scope.row.creationTime | dateFormat('yyyy-MM-dd hh:mm') }}</span>
+          <span>{{ scope.row.<%=Tool.ToFirstLetterCamel(col.Key.Name) %> | enumValue(<%=Tool.ToFirstLetterCamel(col.Key.PropertyType.Name) %>List }}</span>
         </template>
       </el-table-column>
+    <% continue;} %>
+    <%if(dateTimeProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+      <el-table-column header-align="center" align="center" label="<%=col.Value %>" prop="<%=Tool.ToFirstLetterCamel(col.Key.Name) %>">
+        <template slot-scope="scope">
+          <span>{{ scope.row.<%=Tool.ToFirstLetterCamel(col.Key.Name) %> | dateFormat('yyyy-MM-dd hh:mm') }}</span>
+        </template>
+      </el-table-column>
+    <% continue;} %>
+      <el-table-column header-align="center" align="center" label="<%=col.Value %>" prop="<%=Tool.ToFirstLetterCamel(col.Key.Name) %>" />
+    <%} %>
     </el-table>
 
     <pagination
@@ -169,16 +167,6 @@ export default {
   mixins: [query],
   data() {
     return {
-      columnList: [
-        {
-          title: '手机号',
-          key: 'phoneNumber'
-        },
-        {
-          title: '邮箱',
-          key: 'emailAddress'
-        }
-      ]
     }
   },
   methods: {
