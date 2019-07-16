@@ -59,8 +59,6 @@ namespace AbpCompanyName.AbpProjectName
 
             #endregion 实体类
 
-
-
             SetProperty("IRepositoryName", "I" + entityName + "Repository");
             SetProperty("RepositoryName", entityName + "Repository");
             SetProperty("RepositoryCamelName", Tool.ToFirstLetterCamel(entityName) + "Repository");
@@ -78,6 +76,8 @@ namespace AbpCompanyName.AbpProjectName
             SetProperty("IApplicationServiceName", "I" + entityName + "AppService");
 
             #endregion 命名 application
+
+            SetProperty("JsApplicationServiceName", Tool.ToFirstLetterCamel(entityName));
 
             SetProperty("WebControllerName", entityName + "Controller");
         }

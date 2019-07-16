@@ -4,16 +4,19 @@
 
 <%@ Property Name="EntityName" Type="System.String" Category="01.配置" Description="类名称" %>
 <%@ Property Name="EntitySummary" Type="System.String" Category="01.配置" Description="类注释" %>
-<%@ Property Name="EntityNamespace" Type="System.String" Category="01.配置" Description="类命名空间" %>
 
+
+<%@ Property Name="EntityNamespace" Type="System.String" Category="项目.实体" Description="类命名空间" %>
 
 <%@ Property Name="PkName" Type="System.String" Category="项目.实体" Description="主键名称" %>
 <%@ Property Name="PkType" Type="System.String" Category="项目.实体" Description="主键类型" %>
+
 <%@ Property Name="IHasCreationTime" Type="System.Boolean" Category="项目.实体" Description="是否继承 IHasCreationTime 接口" %>
 <%@ Property Name="ICreationAudited" Type="System.Boolean" Category="项目.实体" Description="是否继承 ICreationAudited 接口" %>
 <%@ Property Name="IHasModificationTime" Type="System.Boolean" Category="项目.实体" Description="是否继承 IHasModificationTime 接口" %>
 <%@ Property Name="IModificationAudited" Type="System.Boolean" Category="项目.实体" Description="是否继承 IHasModificationTime 接口" %>
 <%@ Property Name="IAudited" Type="System.Boolean" Category="项目.实体" Description="是否继承 IAudited 接口" %>
+
 
 
 <%@ Property Name="EntityAssemblyName" Type="System.String" Category="项目" Description="实体类所在程序集名称" %>

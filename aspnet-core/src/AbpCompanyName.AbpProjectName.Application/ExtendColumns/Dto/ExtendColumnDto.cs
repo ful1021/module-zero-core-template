@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 
 namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
@@ -8,7 +6,7 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
     /// <summary>
     /// 扩展列 新增输入参数
     /// </summary>
-    [AutoMap(typeof(ExtendColumn))]
+    [AutoMapTo(typeof(ExtendColumn))]
     public class ExtendColumnDto : EntityDto<int>
     {
         /// <summary>
@@ -19,7 +17,7 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
         /// <summary>
         /// 支持扩展列的表
         /// </summary>
-        public AbpCompanyName.AbpProjectName.ExtendColumns.ExtendTableName TableName { get; set; }
+        public ExtendTableName TableName { get; set; }
 
         /// <summary>
         /// 列头显示文字
@@ -30,6 +28,5 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
         /// 列宽
         /// </summary>
         public int Width { get; set; }
-
-    }    
+    }
 }

@@ -44,20 +44,23 @@ var createOrUpdateInputColunms = Tool.GetPropertySummaries(createOrUpdateInputPr
 <template>
   <div>
     <el-form :ref="refFormName" :model="fromInput" label-width="100px">
+    <%foreach(var col in createOrUpdateInputColunms) {%>
+    <%if(Tool.IsIn(col.Key.Name.ToLower(),"id")){continue;} %>
       <el-form-item
         label="表"
-        prop="tableName"
+        prop="<%=col.Key.Name %>"
         :rules="{required: true, message: '请选择表', trigger: 'blur'}"
       >
-        <el-select v-model="fromInput.tableName" filterable placeholder="请选择">
+        <el-select v-model="fromInput.<%=col.Key.Name %>" filterable placeholder="请选择">
           <el-option
-            v-for="(item,index) in comm.extendTableNameList"
+            v-for="(item,index) in biz.extendTableNameList"
             :key="index"
             :label="item.text"
             :value="item.value"
           />
         </el-select>
       </el-form-item>
+      <%} %>
       <el-form-item
         prop="key"
         label="字段名"

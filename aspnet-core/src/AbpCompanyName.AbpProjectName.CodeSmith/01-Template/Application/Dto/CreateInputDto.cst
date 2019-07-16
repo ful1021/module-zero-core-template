@@ -26,6 +26,7 @@ namespace <%=EntityNamespace %>.Dto
     /// <summary>
     /// <%=EntitySummary %> 新增输入参数
     /// </summary>
+    [AutoMapTo(typeof(<%=EntityName %>))]
     public class <%=CreateInputName %> : IShouldNormalize
     {
         <%foreach (var col in dtoProps){%>

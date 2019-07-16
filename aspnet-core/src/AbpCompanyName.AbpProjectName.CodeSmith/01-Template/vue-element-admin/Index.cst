@@ -4,7 +4,6 @@
 <%@ Register Template="../Common/CommonProperties.cst" Name="CommonProperties" MergeProperties="True" %>  
 <%@ Register Template="../Common/NameApplicationProperties.cst" Name="NameApplicationProperties" MergeProperties="True" %> 
 <%@ Register Template="../Common/NameDtoProperties.cst" Name="NameDtoProperties" MergeProperties="True" %> 
-<%@ Register Template="../Common/NameCoreProperties.cst" Name="NameCoreProperties" MergeProperties="True" %> 
 <%@ Register Template="../Common/ViewPageProperties.cst" Name="ViewPageProperties" MergeProperties="True" %>  
 
 <%--引用.net框架程序集--%>
@@ -33,9 +32,6 @@ else
     getAllInputProps = GetAllInputProperties(props.EntityProps);
     createOrUpdateInputProps = GetDtoProperties(props.EntityProps);
 }
-PropertyInfo[] enumsProps = props.EntityEnumsProps;
-PropertyInfo[] dateTimeProps = props.EntityDateTimeProps;
-
 var queryDtoColunms = Tool.GetPropertySummaries(queryDtoProps);
 var getAllInputColunms = Tool.GetPropertySummaries(getAllInputProps);
 var createOrUpdateInputColunms = Tool.GetPropertySummaries(createOrUpdateInputProps);
@@ -46,17 +42,14 @@ var createOrUpdateInputColunms = Tool.GetPropertySummaries(createOrUpdateInputPr
     <div class="filter-container">
     <%foreach(var col in getAllInputColunms){ %>
     <%if(Tool.IsIn(col.Key.Name.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
-    <%if(dateTimeProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+    <%if(Tool.IsDataTime(col.Key)){ %>
       <el-input
         v-model="filters.<%=Tool.ToFirstLetterCamel(col.Key.Name) %>"
         placeholder="<%=col.Value %>"
         class="filter-item"
       />
     <% continue;}%>
-    <%
-    var enumProp = enumsProps.FirstOrDefault(a=>a.Name == col.Key.Name);
-    if(enumProp != null){
-    %>
+    <%if(Tool.IsEnum(col.Key)){ %>
       <el-input
         v-model="filters.<%=Tool.ToFirstLetterCamel(col.Key.Name) %>"
         placeholder="<%=col.Value %>"
@@ -118,14 +111,14 @@ var createOrUpdateInputColunms = Tool.GetPropertySummaries(createOrUpdateInputPr
       </el-table-column>
     <%foreach(var col in queryDtoColunms) {%>
     <%if(Tool.IsIn(col.Key.Name.ToLower(),"id")){continue;} %>
-    <%if(enumsProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+    <%if(Tool.IsEnum(col.Key)){ %>
       <el-table-column header-align="center" align="center" label="<%=col.Value %>" prop="<%=Tool.ToFirstLetterCamel(col.Key.Name) %>">
         <template slot-scope="scope">
           <span>{{ scope.row.<%=Tool.ToFirstLetterCamel(col.Key.Name) %> | enumValue(<%=Tool.ToFirstLetterCamel(col.Key.PropertyType.Name) %>List }}</span>
         </template>
       </el-table-column>
     <% continue;} %>
-    <%if(dateTimeProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+    <%if(Tool.IsDataTime(col.Key)){ %>
       <el-table-column header-align="center" align="center" label="<%=col.Value %>" prop="<%=Tool.ToFirstLetterCamel(col.Key.Name) %>">
         <template slot-scope="scope">
           <span>{{ scope.row.<%=Tool.ToFirstLetterCamel(col.Key.Name) %> | dateFormat('yyyy-MM-dd hh:mm') }}</span>
@@ -171,7 +164,7 @@ export default {
   },
   methods: {
     queryList() {
-      this.getList(app.user.getAll)
+      this.getList(app.<%=JsApplicationServiceName %>.getAll)
     }
   }
 }

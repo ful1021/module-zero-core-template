@@ -2,8 +2,7 @@
 
 <%@ Property Name="BasedDto" Type="System.Boolean" Category="01.配置" Default="false" Description="是否基于Dto类生成，如果为ture，需要先编译Dto类对应的程序集" %>
 
-<%@ Property Name="VueSpaWebPageName" Type="System.String" Category="03.生成配置" Description="生成VueSpaWeb名称" Optional="True" %>
-<%@ Property Name="VueSpaWebPagePath" Type="System.String" Category="03.生成配置" Description="生成VueSpaWeb路径" Optional="True" %>
+<%@ Property Name="JsApplicationServiceName" Type="System.String" Category="命名生成.ViewPage" Optional="True" %>
 
 <%--导入自定义程序集--%>
 <%@ Assembly Name="AbpCompanyName.AbpProjectName.CodeSmith" Path="../../bin/Debug" %>

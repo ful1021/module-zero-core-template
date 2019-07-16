@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Abp.AutoMapper;
 using Abp.Runtime.Validation;
 
 namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
@@ -7,6 +8,7 @@ namespace AbpCompanyName.AbpProjectName.ExtendColumns.Dto
     /// <summary>
     /// 扩展列 新增输入参数
     /// </summary>
+    [AutoMap(typeof(ExtendColumn))]
     public class ExtendColumnCreateInput : IShouldNormalize
     {
         /// <summary>
