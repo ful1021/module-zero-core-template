@@ -40,7 +40,7 @@ function Rename {
 		$NewProjectName
 	)
 	# file extensions to deal with
-	$include=@("*.cs","*.cshtml","*.asax","*.ps1","*.ts","*.csproj","*.sln","*.xaml","*.json","*.js","*.xml","*.config","Dockerfile")
+	$include=@("*.cs","*.cshtml","*.asax","*.ps1","*.ts","*.csproj","*.sln","*.xaml","*.json","*.js","*.xml","*.config","Dockerfile","*.cst")
 
 	$elapsed = [System.Diagnostics.Stopwatch]::StartNew()
 
