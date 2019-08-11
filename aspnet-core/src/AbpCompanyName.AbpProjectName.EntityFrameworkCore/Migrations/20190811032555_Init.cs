@@ -9,19 +9,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AppBinaryObjects",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    TenantId = table.Column<int>(nullable: true),
-                    Bytes = table.Column<byte[]>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppBinaryObjects", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Core_AuditLogs",
                 columns: table => new
                 {
@@ -70,38 +57,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Core_DataDictionaries",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CreationTime = table.Column<DateTime>(nullable: false),
-                    CreatorUserId = table.Column<long>(nullable: true),
-                    LastModificationTime = table.Column<DateTime>(nullable: true),
-                    LastModifierUserId = table.Column<long>(nullable: true),
-                    Code = table.Column<string>(maxLength: 128, nullable: true),
-                    Name = table.Column<string>(maxLength: 256, nullable: true),
-                    FullName = table.Column<string>(nullable: true),
-                    NameTextType = table.Column<int>(nullable: false),
-                    Sort = table.Column<int>(nullable: false),
-                    ExtensionData = table.Column<string>(nullable: true),
-                    Level = table.Column<int>(nullable: false),
-                    ParentId = table.Column<int>(nullable: true),
-                    TypeCode = table.Column<string>(maxLength: 128, nullable: true),
-                    TypeName = table.Column<string>(maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Core_DataDictionaries", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Core_DataDictionaries_Core_DataDictionaries_ParentId",
-                        column: x => x.ParentId,
-                        principalTable: "Core_DataDictionaries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Core_Editions",
                 columns: table => new
                 {
@@ -145,26 +100,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Core_ExtendColumns",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CreationTime = table.Column<DateTime>(nullable: false),
-                    CreatorUserId = table.Column<long>(nullable: true),
-                    LastModificationTime = table.Column<DateTime>(nullable: true),
-                    LastModifierUserId = table.Column<long>(nullable: true),
-                    TableName = table.Column<int>(nullable: false),
-                    Key = table.Column<string>(maxLength: 128, nullable: true),
-                    Title = table.Column<string>(maxLength: 256, nullable: true),
-                    Width = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Core_ExtendColumns", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Core_Languages",
                 columns: table => new
                 {
@@ -178,7 +113,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     DeleterUserId = table.Column<long>(nullable: true),
                     DeletionTime = table.Column<DateTime>(nullable: true),
                     TenantId = table.Column<int>(nullable: true),
-                    Name = table.Column<string>(maxLength: 10, nullable: false),
+                    Name = table.Column<string>(maxLength: 128, nullable: false),
                     DisplayName = table.Column<string>(maxLength: 64, nullable: false),
                     Icon = table.Column<string>(maxLength: 128, nullable: true),
                     IsDisabled = table.Column<bool>(nullable: false)
@@ -199,7 +134,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     TenantId = table.Column<int>(nullable: true),
-                    LanguageName = table.Column<string>(maxLength: 10, nullable: false),
+                    LanguageName = table.Column<string>(maxLength: 128, nullable: false),
                     Source = table.Column<string>(maxLength: 128, nullable: false),
                     Key = table.Column<string>(maxLength: 256, nullable: false),
                     Value = table.Column<string>(maxLength: 67108864, nullable: false)
@@ -801,11 +736,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppBinaryObjects_TenantId",
-                table: "AppBinaryObjects",
-                column: "TenantId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Core_AuditLogs_TenantId_ExecutionDuration",
                 table: "Core_AuditLogs",
                 columns: new[] { "TenantId", "ExecutionDuration" });
@@ -824,11 +754,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                 name: "IX_Core_BackgroundJobs_IsAbandoned_NextTryTime",
                 table: "Core_BackgroundJobs",
                 columns: new[] { "IsAbandoned", "NextTryTime" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Core_DataDictionaries_ParentId",
-                table: "Core_DataDictionaries",
-                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Core_EntityChanges_EntityChangeSetId",
@@ -1125,22 +1050,13 @@ namespace AbpCompanyName.AbpProjectName.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AppBinaryObjects");
-
-            migrationBuilder.DropTable(
                 name: "Core_AuditLogs");
 
             migrationBuilder.DropTable(
                 name: "Core_BackgroundJobs");
 
             migrationBuilder.DropTable(
-                name: "Core_DataDictionaries");
-
-            migrationBuilder.DropTable(
                 name: "Core_EntityPropertyChanges");
-
-            migrationBuilder.DropTable(
-                name: "Core_ExtendColumns");
 
             migrationBuilder.DropTable(
                 name: "Core_Features");

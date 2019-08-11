@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AbpCompanyName.AbpProjectName.Migrations
 {
     [DbContext(typeof(AbpProjectNameDbContext))]
-    [Migration("20190712084738_Init")]
+    [Migration("20190811032555_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -623,7 +623,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(10);
+                        .HasMaxLength(128);
 
                     b.Property<int?>("TenantId");
 
@@ -650,7 +650,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<string>("LanguageName")
                         .IsRequired()
-                        .HasMaxLength(10);
+                        .HasMaxLength(128);
 
                     b.Property<DateTime?>("LastModificationTime");
 
@@ -1042,80 +1042,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.ToTable("Core_Users");
                 });
 
-            modelBuilder.Entity("AbpCompanyName.AbpProjectName.DataDictionaries.DataDictionary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(128);
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<long?>("CreatorUserId");
-
-                    b.Property<string>("ExtensionData");
-
-                    b.Property<string>("FullName");
-
-                    b.Property<DateTime?>("LastModificationTime");
-
-                    b.Property<long?>("LastModifierUserId");
-
-                    b.Property<int>("Level");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256);
-
-                    b.Property<int>("NameTextType");
-
-                    b.Property<int?>("ParentId");
-
-                    b.Property<int>("Sort");
-
-                    b.Property<string>("TypeCode")
-                        .HasMaxLength(128);
-
-                    b.Property<string>("TypeName")
-                        .HasMaxLength(256);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
-
-                    b.ToTable("Core_DataDictionaries");
-                });
-
-            modelBuilder.Entity("AbpCompanyName.AbpProjectName.ExtendColumns.ExtendColumn", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<long?>("CreatorUserId");
-
-                    b.Property<string>("Key")
-                        .HasMaxLength(128);
-
-                    b.Property<DateTime?>("LastModificationTime");
-
-                    b.Property<long?>("LastModifierUserId");
-
-                    b.Property<int>("TableName");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(256);
-
-                    b.Property<int>("Width");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Core_ExtendColumns");
-                });
-
             modelBuilder.Entity("AbpCompanyName.AbpProjectName.MultiTenancy.Tenant", b =>
                 {
                     b.Property<int>("Id")
@@ -1164,23 +1090,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.HasIndex("TenancyName");
 
                     b.ToTable("Core_Tenants");
-                });
-
-            modelBuilder.Entity("AbpCompanyName.AbpProjectName.Storage.BinaryObject", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<byte[]>("Bytes")
-                        .IsRequired();
-
-                    b.Property<int?>("TenantId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("AppBinaryObjects");
                 });
 
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>
@@ -1331,13 +1240,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.HasOne("AbpCompanyName.AbpProjectName.Authorization.Users.User", "LastModifierUser")
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
-                });
-
-            modelBuilder.Entity("AbpCompanyName.AbpProjectName.DataDictionaries.DataDictionary", b =>
-                {
-                    b.HasOne("AbpCompanyName.AbpProjectName.DataDictionaries.DataDictionary", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId");
                 });
 
             modelBuilder.Entity("AbpCompanyName.AbpProjectName.MultiTenancy.Tenant", b =>
