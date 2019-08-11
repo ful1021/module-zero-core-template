@@ -250,3 +250,8 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+src/AbpCompanyName.AbpProjectName.Web.Host/App_Data/Logs/
+src/AbpCompanyName.AbpProjectName.Web.Mvc/App_Data/Logs/
+src/AbpCompanyName.AbpProjectName.Migrator/Logs/Logs.txt
+build/outputs
