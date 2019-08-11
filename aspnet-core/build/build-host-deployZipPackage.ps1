@@ -3,8 +3,8 @@
 $buildFolder = (Get-Item -Path "./" -Verbose).FullName
 $slnFolder = Join-Path $buildFolder "../"
 $outputFolder = Join-Path $buildFolder "outputs/HostZip"
-$slnName = "AbpCompanyName.AbpZeroTemplate.Web.Host.sln"
-$zipPackageFullName = Join-Path $outputFolder "AbpCompanyName.AbpZeroTemplate.Web.Host.zip"
+$slnName = "AbpCompanyName.AbpProjectName.Web.Host.sln"
+$zipPackageFullName = Join-Path $outputFolder "AbpCompanyName.AbpProjectName.Web.Host.zip"
 
 ## CLEAR ######################################################################
 
