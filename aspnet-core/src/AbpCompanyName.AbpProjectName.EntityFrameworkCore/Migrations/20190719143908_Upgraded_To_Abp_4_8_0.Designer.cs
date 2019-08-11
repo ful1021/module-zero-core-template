@@ -4,14 +4,16 @@ using AbpCompanyName.AbpProjectName.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AbpCompanyName.AbpProjectName.Migrations
 {
     [DbContext(typeof(AbpProjectNameDbContext))]
-    partial class AbpProjectNameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190719143908_Upgraded_To_Abp_4_8_0")]
+    partial class Upgraded_To_Abp_4_8_0
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +51,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Core_Editions");
+                    b.ToTable("AbpEditions");
                 });
 
             modelBuilder.Entity("Abp.Application.Features.FeatureSetting", b =>
@@ -77,7 +79,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Core_Features");
+                    b.ToTable("AbpFeatures");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("FeatureSetting");
                 });
@@ -134,7 +136,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("Core_AuditLogs");
+                    b.ToTable("AbpAuditLogs");
                 });
 
             modelBuilder.Entity("Abp.Authorization.PermissionSetting", b =>
@@ -162,7 +164,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "Name");
 
-                    b.ToTable("Core_Permissions");
+                    b.ToTable("AbpPermissions");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("PermissionSetting");
                 });
@@ -192,7 +194,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "ClaimType");
 
-                    b.ToTable("Core_RoleClaims");
+                    b.ToTable("AbpRoleClaims");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserAccount", b =>
@@ -239,7 +241,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "UserName");
 
-                    b.ToTable("Core_UserAccounts");
+                    b.ToTable("AbpUserAccounts");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserClaim", b =>
@@ -267,7 +269,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "ClaimType");
 
-                    b.ToTable("Core_UserClaims");
+                    b.ToTable("AbpUserClaims");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserLogin", b =>
@@ -296,7 +298,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "LoginProvider", "ProviderKey");
 
-                    b.ToTable("Core_UserLogins");
+                    b.ToTable("AbpUserLogins");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserLoginAttempt", b =>
@@ -334,7 +336,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenancyName", "UserNameOrEmailAddress", "Result");
 
-                    b.ToTable("Core_UserLoginAttempts");
+                    b.ToTable("AbpUserLoginAttempts");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserOrganizationUnit", b =>
@@ -361,7 +363,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("Core_UserOrganizationUnits");
+                    b.ToTable("AbpUserOrganizationUnits");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserRole", b =>
@@ -388,7 +390,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("Core_UserRoles");
+                    b.ToTable("AbpUserRoles");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserToken", b =>
@@ -418,7 +420,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("Core_UserTokens");
+                    b.ToTable("AbpUserTokens");
                 });
 
             modelBuilder.Entity("Abp.BackgroundJobs.BackgroundJobInfo", b =>
@@ -453,7 +455,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("IsAbandoned", "NextTryTime");
 
-                    b.ToTable("Core_BackgroundJobs");
+                    b.ToTable("AbpBackgroundJobs");
                 });
 
             modelBuilder.Entity("Abp.Configuration.Setting", b =>
@@ -488,7 +490,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.HasIndex("TenantId", "Name", "UserId")
                         .IsUnique();
 
-                    b.ToTable("Core_Settings");
+                    b.ToTable("AbpSettings");
                 });
 
             modelBuilder.Entity("Abp.EntityHistory.EntityChange", b =>
@@ -517,7 +519,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("EntityTypeFullName", "EntityId");
 
-                    b.ToTable("Core_EntityChanges");
+                    b.ToTable("AbpEntityChanges");
                 });
 
             modelBuilder.Entity("Abp.EntityHistory.EntityChangeSet", b =>
@@ -558,7 +560,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("Core_EntityChangeSets");
+                    b.ToTable("AbpEntityChangeSets");
                 });
 
             modelBuilder.Entity("Abp.EntityHistory.EntityPropertyChange", b =>
@@ -587,7 +589,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("EntityChangeId");
 
-                    b.ToTable("Core_EntityPropertyChanges");
+                    b.ToTable("AbpEntityPropertyChanges");
                 });
 
             modelBuilder.Entity("Abp.Localization.ApplicationLanguage", b =>
@@ -629,7 +631,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "Name");
 
-                    b.ToTable("Core_Languages");
+                    b.ToTable("AbpLanguages");
                 });
 
             modelBuilder.Entity("Abp.Localization.ApplicationLanguageText", b =>
@@ -668,7 +670,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "Source", "LanguageName", "Key");
 
-                    b.ToTable("Core_LanguageTexts");
+                    b.ToTable("AbpLanguageTexts");
                 });
 
             modelBuilder.Entity("Abp.Notifications.NotificationInfo", b =>
@@ -712,7 +714,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Core_Notifications");
+                    b.ToTable("AbpNotifications");
                 });
 
             modelBuilder.Entity("Abp.Notifications.NotificationSubscriptionInfo", b =>
@@ -746,7 +748,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "NotificationName", "EntityTypeName", "EntityId", "UserId");
 
-                    b.ToTable("Core_NotificationSubscriptions");
+                    b.ToTable("AbpNotificationSubscriptions");
                 });
 
             modelBuilder.Entity("Abp.Notifications.TenantNotificationInfo", b =>
@@ -785,7 +787,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Core_TenantNotifications");
+                    b.ToTable("AbpTenantNotifications");
                 });
 
             modelBuilder.Entity("Abp.Notifications.UserNotificationInfo", b =>
@@ -807,7 +809,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("UserId", "State", "CreationTime");
 
-                    b.ToTable("Core_UserNotifications");
+                    b.ToTable("AbpUserNotifications");
                 });
 
             modelBuilder.Entity("Abp.Organizations.OrganizationUnit", b =>
@@ -848,7 +850,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "Code");
 
-                    b.ToTable("Core_OrganizationUnits");
+                    b.ToTable("AbpOrganizationUnits");
                 });
 
             modelBuilder.Entity("Abp.Organizations.OrganizationUnitRole", b =>
@@ -875,7 +877,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "RoleId");
 
-                    b.ToTable("Core_OrganizationUnitRoles");
+                    b.ToTable("AbpOrganizationUnitRoles");
                 });
 
             modelBuilder.Entity("AbpCompanyName.AbpProjectName.Authorization.Roles.Role", b =>
@@ -933,7 +935,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "NormalizedName");
 
-                    b.ToTable("Core_Roles");
+                    b.ToTable("AbpRoles");
                 });
 
             modelBuilder.Entity("AbpCompanyName.AbpProjectName.Authorization.Users.User", b =>
@@ -965,10 +967,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<string>("EmailConfirmationCode")
                         .HasMaxLength(328);
-
-                    b.Property<string>("ExtensionData");
-
-                    b.Property<string>("Introduction");
 
                     b.Property<bool>("IsActive");
 
@@ -1023,8 +1021,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                         .IsRequired()
                         .HasMaxLength(256);
 
-                    b.Property<int>("UserType");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorUserId");
@@ -1037,81 +1033,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "NormalizedUserName");
 
-                    b.ToTable("Core_Users");
-                });
-
-            modelBuilder.Entity("AbpCompanyName.AbpProjectName.DataDictionaries.DataDictionary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(128);
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<long?>("CreatorUserId");
-
-                    b.Property<string>("ExtensionData");
-
-                    b.Property<string>("FullName");
-
-                    b.Property<DateTime?>("LastModificationTime");
-
-                    b.Property<long?>("LastModifierUserId");
-
-                    b.Property<int>("Level");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256);
-
-                    b.Property<int>("NameTextType");
-
-                    b.Property<int?>("ParentId");
-
-                    b.Property<int>("Sort");
-
-                    b.Property<string>("TypeCode")
-                        .HasMaxLength(128);
-
-                    b.Property<string>("TypeName")
-                        .HasMaxLength(256);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
-
-                    b.ToTable("Core_DataDictionaries");
-                });
-
-            modelBuilder.Entity("AbpCompanyName.AbpProjectName.ExtendColumns.ExtendColumn", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<long?>("CreatorUserId");
-
-                    b.Property<string>("Key")
-                        .HasMaxLength(128);
-
-                    b.Property<DateTime?>("LastModificationTime");
-
-                    b.Property<long?>("LastModifierUserId");
-
-                    b.Property<int>("TableName");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(256);
-
-                    b.Property<int>("Width");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Core_ExtendColumns");
+                    b.ToTable("AbpUsers");
                 });
 
             modelBuilder.Entity("AbpCompanyName.AbpProjectName.MultiTenancy.Tenant", b =>
@@ -1161,24 +1083,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenancyName");
 
-                    b.ToTable("Core_Tenants");
-                });
-
-            modelBuilder.Entity("AbpCompanyName.AbpProjectName.Storage.BinaryObject", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<byte[]>("Bytes")
-                        .IsRequired();
-
-                    b.Property<int?>("TenantId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("AppBinaryObjects");
+                    b.ToTable("AbpTenants");
                 });
 
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>
@@ -1189,7 +1094,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("EditionId", "Name");
 
-                    b.ToTable("Core_Features");
+                    b.ToTable("AbpFeatures");
 
                     b.HasDiscriminator().HasValue("EditionFeatureSetting");
                 });
@@ -1200,7 +1105,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("TenantId", "Name");
 
-                    b.ToTable("Core_Features");
+                    b.ToTable("AbpFeatures");
 
                     b.HasDiscriminator().HasValue("TenantFeatureSetting");
                 });
@@ -1213,7 +1118,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Core_Permissions");
+                    b.ToTable("AbpPermissions");
 
                     b.HasDiscriminator().HasValue("RolePermissionSetting");
                 });
@@ -1226,7 +1131,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Core_Permissions");
+                    b.ToTable("AbpPermissions");
 
                     b.HasDiscriminator().HasValue("UserPermissionSetting");
                 });
@@ -1329,13 +1234,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.HasOne("AbpCompanyName.AbpProjectName.Authorization.Users.User", "LastModifierUser")
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
-                });
-
-            modelBuilder.Entity("AbpCompanyName.AbpProjectName.DataDictionaries.DataDictionary", b =>
-                {
-                    b.HasOne("AbpCompanyName.AbpProjectName.DataDictionaries.DataDictionary", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId");
                 });
 
             modelBuilder.Entity("AbpCompanyName.AbpProjectName.MultiTenancy.Tenant", b =>
