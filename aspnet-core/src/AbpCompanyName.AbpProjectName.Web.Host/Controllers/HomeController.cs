@@ -1,25 +1,35 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Abp;
 using Abp.Extensions;
 using Abp.Notifications;
 using Abp.Timing;
 using AbpCompanyName.AbpProjectName.Controllers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AbpCompanyName.AbpProjectName.Web.Host.Controllers
 {
     public class HomeController : AbpProjectNameControllerBase
     {
+        private readonly IHostingEnvironment _env;
         private readonly INotificationPublisher _notificationPublisher;
 
-        public HomeController(INotificationPublisher notificationPublisher)
+        public HomeController(INotificationPublisher notificationPublisher, IHostingEnvironment env)
         {
             _notificationPublisher = notificationPublisher;
+            _env = env;
         }
 
         public IActionResult Index()
         {
-            return Redirect("/swagger");
+            if (_env.IsDevelopment())
+            {
+                return Redirect("/swagger");
+            }
+            else
+            {
+                return Json(new { _env.EnvironmentName });
+            }
         }
 
         /// <summary>
