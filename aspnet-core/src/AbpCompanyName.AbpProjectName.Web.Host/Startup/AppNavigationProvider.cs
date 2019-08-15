@@ -17,7 +17,7 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
 
         private static MenuItemDefinition BuildSystemMenu()
         {
-            return NewMenuItem(AppPermissions.System, "设置", "/system", "lock")
+            return NewMenuItem(AppPermissions.System, "设置", "/system", "el-icon-setting")
                 .AddItem(NewMenuItem(AppPermissions.System_Roles, "角色管理", "role"))
                 .AddItem(NewMenuItem(AppPermissions.System_Users, "用户管理", "user"))
                 //.AddItem(NewMenuItem(AppPermissions.System_ExtendColumns, "扩展字段", "extend-column"))
