@@ -18,8 +18,7 @@ namespace AbpCompanyName.AbpProjectName.ProxyScripting
             var script = new StringBuilder();
 
             script.AppendLine(@"import request from '@/utils/request'
-import abp from '@/utils/abp'
-import { extend } from '@/utils'
+import { extend, buildQueryString } from '@/utils'
 ");
 
             foreach (var module in model.Modules.Values)
@@ -117,7 +116,7 @@ import { extend } from '@/utils'
                 .Select(p => $"{{ name: '{p.Name.ToCamelCase()}', value: {ProxyScriptingJsFuncHelper.GetParamNameInJsFunc(p)} }}")
                 .JoinAsString(", ");
 
-            return url + $"' + abp.utils.buildQueryString([{qsBuilderParams}]) + '";
+            return url + $"' + buildQueryString([{qsBuilderParams}]) + '";
         }
 
         private static string ReplacePathVariables(string url, IList<ParameterApiDescriptionModel> actionParameters)

@@ -2,6 +2,8 @@
   {
     "name": "System",
     "displayName": "设置",
+    "url": "/system",
+    "icon": "user",
     "children": [
       {
         "name": "Tenants",
@@ -11,11 +13,13 @@
       {
         "name": "Roles",
         "displayName": "角色管理",
+        "url": "roles",
         "defaultPermission": true
       },
       {
         "name": "Users",
         "displayName": "用户管理",
+        "url": "users",
         "defaultPermission": true,
         "importExport": true,
         "children": [

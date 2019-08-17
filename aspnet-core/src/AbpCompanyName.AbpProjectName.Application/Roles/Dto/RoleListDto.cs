@@ -6,7 +6,7 @@ using AbpCompanyName.AbpProjectName.Authorization.Roles;
 
 namespace AbpCompanyName.AbpProjectName.Roles.Dto
 {
-    [AutoMapFrom(typeof(Role))]
+    [AutoMap(typeof(Role))]
     public class RoleListDto : EntityDto, IHasCreationTime
     {
         public string Name { get; set; }

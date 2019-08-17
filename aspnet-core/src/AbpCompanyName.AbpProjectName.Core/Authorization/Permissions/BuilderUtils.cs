@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Abp.Application.Navigation;
 using Abp.Authorization;
 using Abp.Localization;
 using Abp.MultiTenancy;
@@ -13,7 +14,47 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Permissions
     {
         public const string RootNamespace = "AbpCompanyName.AbpProjectName.Authorization.Permissions";
 
-        public static void Build(this IPermissionDefinitionContext context, string name)
+        public static void BuildMenus(string jsonName, MenuDefinition menu)
+        {
+            var list = GetPermissionJson(jsonName);
+            foreach (var item in list)
+            {
+                var itemMenu = GenerateMenuItem(item, item.Name);
+                if (itemMenu != null)
+                {
+                    menu.AddItem(itemMenu);
+                }
+            }
+        }
+
+        private static MenuItemDefinition GenerateMenuItem(PermissionJson permission, string name, MenuItemDefinition parentMenu = null)
+        {
+            if (string.IsNullOrWhiteSpace(permission.Url) || string.IsNullOrWhiteSpace(name))
+            {
+                return null;
+            }
+            var menu = new MenuItemDefinition(name, new FixedLocalizableString(permission.DisplayName), permission.Icon, permission.Url, requiredPermissionName: name);
+            var children = permission.GetChildren();
+            if (children.Any())
+            {
+                parentMenu = menu;
+                parentMenu.CustomData = new
+                {
+                    GrantedPermissions = children.Select(a => $"{name}.{a.Name}").Distinct()
+                };
+                foreach (var item in children)
+                {
+                    var itemMenu = GenerateMenuItem(item, $"{name}.{item.Name}", parentMenu);
+                    if (itemMenu != null && parentMenu != null)
+                    {
+                        parentMenu.AddItem(itemMenu);
+                    }
+                }
+            }
+            return menu;
+        }
+
+        public static void BuildPermission(this IPermissionDefinitionContext context, string name)
         {
             var list = GetPermissionJson(name);
             foreach (var item in list)
@@ -30,6 +71,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Permissions
 
         public static List<PermissionJson> GetPermissionJson(string name)
         {
+            //var asm = Assembly.GetEntryAssembly();
             var asm = Assembly.GetExecutingAssembly();//读取嵌入式资源
             var sm = asm.GetManifestResourceStream(RootNamespace + "." + name + ".json");
             var list = GetPermissionJson(sm);

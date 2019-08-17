@@ -14,14 +14,14 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <noWarn>1591</noWarn>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <Compile Remove="Logs\**" />
-    <Content Remove="Logs\**" />
-    <EmbeddedResource Remove="Logs\**" />
-    <None Remove="Logs\**" />
+    <Compile Remove="App_Data\**" />
+    <Content Remove="App_Data\**" />
+    <EmbeddedResource Remove="App_Data\**" />
+    <None Remove="App_Data\**" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Content Remove="wwwroot\swagger\ui\index.html" />
   </ItemGroup>

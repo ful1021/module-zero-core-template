@@ -1,12 +1,22 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Abp.Application.Navigation;
 using Abp.Auditing;
+using Abp.Runtime.Session;
 using AbpCompanyName.AbpProjectName.Sessions.Dto;
 
 namespace AbpCompanyName.AbpProjectName.Sessions
 {
     public class SessionAppService : AbpProjectNameAppServiceBase, ISessionAppService
     {
+        protected IUserNavigationManager UserNavigationManager { get; }
+
+        public SessionAppService(IUserNavigationManager userNavigationManager)
+        {
+            UserNavigationManager = userNavigationManager;
+        }
+
         [DisableAuditing]
         public async Task<GetCurrentLoginInformationsOutput> GetCurrentLoginInformations()
         {
@@ -36,9 +46,31 @@ namespace AbpCompanyName.AbpProjectName.Sessions
                 output.Name = user.Name;
                 output.Introduction = user.Introduction;
                 output.Roles = role;
+
+                output.Session = new
+                {
+                    UserId = AbpSession.UserId,
+                    TenantId = AbpSession.TenantId,
+                    ImpersonatorUserId = AbpSession.ImpersonatorUserId,
+                    ImpersonatorTenantId = AbpSession.ImpersonatorTenantId,
+                    MultiTenancySide = AbpSession.MultiTenancySide
+                };
             }
 
             return output;
+        }
+
+        [DisableAuditing]
+        public async Task<Dictionary<string, UserMenu>> GetMenusAsync()
+        {
+            var userMenus = await UserNavigationManager.GetMenusAsync(AbpSession.ToUserIdentifier());
+            return userMenus.ToDictionary(userMenu => userMenu.Name, userMenu => userMenu);
+        }
+
+        [DisableAuditing]
+        public async Task<UserMenu> GetMenuAsync(string menuName)
+        {
+            return await UserNavigationManager.GetMenuAsync(menuName, AbpSession.ToUserIdentifier());
         }
     }
 }

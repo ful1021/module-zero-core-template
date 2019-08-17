@@ -12,6 +12,8 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Permissions
 
         public string Name { get; set; }
         public string DisplayName { get; set; }
+        public string Url { get; set; }
+        public string Icon { get; set; }
         public string Description { get; set; }
 
         public int? MultiTenancySide { get; set; }

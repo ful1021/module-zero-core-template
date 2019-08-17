@@ -10,6 +10,8 @@ namespace AbpCompanyName.AbpProjectName.Sessions.Dto
 
         public TenantLoginInfoDto Tenant { get; set; }
 
+        public object Session { get; set; }
+
         public IList<string> Roles { get; set; }
         public string Introduction { get; set; }
         public string Avatar { get; set; }
