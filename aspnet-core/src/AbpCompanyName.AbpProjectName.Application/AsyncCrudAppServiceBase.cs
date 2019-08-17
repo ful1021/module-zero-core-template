@@ -103,7 +103,7 @@ namespace AbpCompanyName.AbpProjectName
             return query.Select(selectMapTo);
         }
 
-        protected virtual bool UserProjectTo { get; set; } = true;
+        protected virtual bool UserProjectTo { get; set; } = false;
 
         protected virtual async Task<TBasicEntityDto> FirstOrDefaultAsync(TGetInput input)
         {

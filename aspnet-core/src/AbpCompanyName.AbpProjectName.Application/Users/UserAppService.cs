@@ -49,8 +49,6 @@ namespace AbpCompanyName.AbpProjectName.Users
             )
             : base(repository)
         {
-            UserProjectTo = false;
-
             _userManager = userManager;
             _roleManager = roleManager;
             _roleRepository = roleRepository;
