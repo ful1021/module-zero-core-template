@@ -17,7 +17,8 @@ namespace AbpCompanyName.AbpProjectName.ProxyScripting
         {
             var script = new StringBuilder();
 
-            script.AppendLine(@"import request from '@/utils/request'
+            script.AppendLine(@"// 动态生成by  /AbpServiceProxies/GetAll?type=vue
+import request from '@/utils/request'
 import { extend, buildQueryString } from '@/utils'
 ");
 
