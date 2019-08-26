@@ -10,12 +10,7 @@ namespace AbpCompanyName.AbpProjectName.EntityFrameworkCore
     public class AbpProjectNameDbContext : AbpZeroDbContext<Tenant, Role, User, AbpProjectNameDbContext>
     {
         /* Define a DbSet for each entity of the application */
-
-        //public virtual DbSet<BinaryObject> BinaryObjects { get; set; }
-        //public virtual DbSet<ExtendColumn> ExtendColumns { get; set; }
-        //public virtual DbSet<DataDictionary> DataDictionaries { get; set; }
-        //public virtual DbSet<ExportingTask> ExportingTasks { get; set; }
-
+        
         public AbpProjectNameDbContext(DbContextOptions<AbpProjectNameDbContext> options)
             : base(options)
         {

@@ -18,10 +18,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="4.5.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AbpCompanyName.AbpProjectName.Core\AbpCompanyName.AbpProjectName.Core.csproj" />
   </ItemGroup>
 

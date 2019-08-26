@@ -13,7 +13,5 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Accounts
         Task<ImpersonateOutput> Impersonate(ImpersonateInput input);
 
         Task<ImpersonateOutput> BackToImpersonator();
-
-        Task<SwitchToLinkedAccountOutput> SwitchToLinkedAccount(SwitchToLinkedAccountInput input);
     }
 }

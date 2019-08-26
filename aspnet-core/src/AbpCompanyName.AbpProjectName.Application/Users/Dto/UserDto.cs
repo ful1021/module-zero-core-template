@@ -22,9 +22,6 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
         [StringLength(AbpUserBase.MaxSurnameLength)]
         public string Surname { get; set; }
 
-        [StringLength(AbpUserBase.MaxPhoneNumberLength)]
-        public string PhoneNumber { get; set; }
-
         [Required]
         [EmailAddress]
         [StringLength(AbpUserBase.MaxEmailAddressLength)]
@@ -39,10 +36,5 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
         public DateTime CreationTime { get; set; }
 
         public string[] RoleNames { get; set; }
-
-        public string[] RoleDisplayNames { get; set; }
-        public string ExtensionData { get; set; }
-
-        public object Extension { get; set; }
     }
 }

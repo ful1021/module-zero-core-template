@@ -49,8 +49,7 @@ namespace AbpCompanyName.AbpProjectName
 
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(
-                     typeof(AbpProjectNameApplicationModule).GetAssembly(),
-                     useConventionalHttpVerbs: false
+                     typeof(AbpProjectNameApplicationModule).GetAssembly()
                  );
 
             //Uncomment this line to use Redis cache instead of in-memory cache.

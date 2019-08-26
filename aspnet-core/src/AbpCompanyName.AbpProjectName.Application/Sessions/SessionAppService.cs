@@ -44,7 +44,6 @@ namespace AbpCompanyName.AbpProjectName.Sessions
 
                 output.Avatar = "//hbimg.huabanimg.com/9fd86985ec36de14e4a4040b2008f6d0df93515618f4-wm0Y66_fw658";// user.ProfilePicture;
                 output.Name = user.Name;
-                output.Introduction = user.Introduction;
                 output.Roles = role;
 
                 output.Session = new

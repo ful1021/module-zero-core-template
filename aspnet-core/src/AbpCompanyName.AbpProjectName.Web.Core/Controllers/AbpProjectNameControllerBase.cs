@@ -4,9 +4,7 @@ using System.IO;
 using System.Linq;
 using Abp.AspNetCore.Mvc.Controllers;
 using Abp.IdentityFramework;
-using Abp.IO.Extensions;
 using Abp.UI;
-using AbpCompanyName.AbpProjectName.Storage;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Identity;
 
@@ -45,16 +43,16 @@ namespace AbpCompanyName.AbpProjectName.Controllers
             return stream;
         }
 
-        protected BinaryObject RequestFileToBinaryObject()
-        {
-            byte[] fileBytes;
-            using (var stream = GetRequestFileStream())
-            {
-                fileBytes = stream.GetAllBytes();
-            }
-            var fileObject = new BinaryObject(AbpSession.TenantId, fileBytes);
-            return fileObject;
-        }
+        //protected BinaryObject RequestFileToBinaryObject()
+        //{
+        //    byte[] fileBytes;
+        //    using (var stream = GetRequestFileStream())
+        //    {
+        //        fileBytes = stream.GetAllBytes();
+        //    }
+        //    var fileObject = new BinaryObject(AbpSession.TenantId, fileBytes);
+        //    return fileObject;
+        //}
 
         //protected List<TEntity> RequestFileToList<TEntity>(Func<ExcelWorksheet, int, TEntity> processExcelRow)
         //{

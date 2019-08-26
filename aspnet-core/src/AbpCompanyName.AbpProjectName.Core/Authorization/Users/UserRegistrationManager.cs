@@ -37,7 +37,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             AbpSession = NullAbpSession.Instance;
         }
 
-        public async Task<User> RegisterAsync(string name, string surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed, string extensionData = null)
+        public async Task<User> RegisterAsync(string name, string surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed)
         {
             CheckForTenant();
 
@@ -52,12 +52,11 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
                 IsActive = true,
                 UserName = userName,
                 IsEmailConfirmed = isEmailConfirmed,
-                Roles = new List<UserRole>(),
-                ExtensionData = extensionData
+                Roles = new List<UserRole>()
             };
 
             user.SetNormalizedNames();
-
+           
             foreach (var defaultRole in await _roleManager.Roles.Where(r => r.IsDefault).ToListAsync())
             {
                 user.Roles.Add(new UserRole(tenant.Id, user.Id, defaultRole.Id));

@@ -8,7 +8,5 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
     {
         public string Keyword { get; set; }
         public bool? IsActive { get; set; }
-
-        public DateTime[] LastLoginTime { get; set; }
     }
 }

@@ -1,7 +1,5 @@
-using System;
 using System.Threading.Tasks;
 using Abp.Configuration;
-using Abp.Runtime.Session;
 using Abp.UI;
 using Abp.Zero.Configuration;
 using AbpCompanyName.AbpProjectName.Authorization.Accounts.Dto;
@@ -18,17 +16,14 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Accounts
 
         private readonly UserRegistrationManager _userRegistrationManager;
         private readonly IImpersonationManager _impersonationManager;
-        private readonly IUserLinkManager _userLinkManager;
 
         public AccountAppService(
             UserRegistrationManager userRegistrationManager,
-            IImpersonationManager impersonationManager,
-            IUserLinkManager userLinkManager
+            IImpersonationManager impersonationManager
             )
         {
             _userRegistrationManager = userRegistrationManager;
             _impersonationManager = impersonationManager;
-            _userLinkManager = userLinkManager;
         }
 
         public async Task<IsTenantAvailableOutput> IsTenantAvailable(IsTenantAvailableInput input)
@@ -55,8 +50,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Accounts
                 input.EmailAddress,
                 input.UserName,
                 input.Password,
-                true, // Assumed email address is always confirmed. Change this if you want to implement email confirmation.
-                input.ExtensionData
+                true // Assumed email address is always confirmed. Change this if you want to implement email confirmation.
             );
 
             var isEmailConfirmationRequiredForLogin = await SettingManager.GetSettingValueAsync<bool>(AbpZeroSettingNames.UserManagement.IsEmailConfirmationRequiredForLogin);
@@ -85,20 +79,6 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Accounts
             };
         }
 
-        public virtual async Task<SwitchToLinkedAccountOutput> SwitchToLinkedAccount(SwitchToLinkedAccountInput input)
-        {
-            if (!await _userLinkManager.AreUsersLinked(AbpSession.ToUserIdentifier(), input.ToUserIdentifier()))
-            {
-                throw new Exception(L("This account is not linked to your account"));
-            }
-
-            return new SwitchToLinkedAccountOutput
-            {
-                SwitchAccountToken = await _userLinkManager.GetAccountSwitchToken(input.TargetUserId, input.TargetTenantId),
-                TenancyName = await GetTenancyNameOrNullAsync(input.TargetTenantId)
-            };
-        }
-
         private async Task<Tenant> GetActiveTenantAsync(int tenantId)
         {
             var tenant = await TenantManager.FindByIdAsync(tenantId);
@@ -118,17 +98,6 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Accounts
         private async Task<string> GetTenancyNameOrNullAsync(int? tenantId)
         {
             return tenantId.HasValue ? (await GetActiveTenantAsync(tenantId.Value)).TenancyName : null;
-        }
-
-        private async Task<User> GetUserByChecking(string inputEmailAddress)
-        {
-            var user = await UserManager.FindByEmailAsync(inputEmailAddress);
-            if (user == null)
-            {
-                throw new UserFriendlyException(L("InvalidEmailAddress"));
-            }
-
-            return user;
         }
     }
 }

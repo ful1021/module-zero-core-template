@@ -16,13 +16,10 @@ using AbpCompanyName.AbpProjectName.Authorization;
 using AbpCompanyName.AbpProjectName.Authorization.Accounts;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
-using AbpCompanyName.AbpProjectName.Authorization.Users.Exporting;
-using AbpCompanyName.AbpProjectName.Dto;
 using AbpCompanyName.AbpProjectName.Roles.Dto;
 using AbpCompanyName.AbpProjectName.Users.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace AbpCompanyName.AbpProjectName.Users
 {
@@ -35,7 +32,6 @@ namespace AbpCompanyName.AbpProjectName.Users
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
-        private readonly UserListExcelExporter _userListExcelExporter;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -44,9 +40,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             IRepository<Role> roleRepository,
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
-            LogInManager logInManager,
-            UserListExcelExporter userListExcelExporter
-            )
+            LogInManager logInManager)
             : base(repository)
         {
             _userManager = userManager;
@@ -55,25 +49,14 @@ namespace AbpCompanyName.AbpProjectName.Users
             _passwordHasher = passwordHasher;
             _abpSession = abpSession;
             _logInManager = logInManager;
-            _userListExcelExporter = userListExcelExporter;
         }
-
-        #region 查询
-
-        public async Task<FileDto> GetUsersToExcel(PagedUserResultRequestDto input)
-        {
-            var userListDtos = await GetAllList(input);
-            return _userListExcelExporter.ExportToFile(userListDtos.Items.ToList());
-        }
-
-        #endregion 查询
 
         [AbpAuthorize(AppPermissions.System_Users_Create)]
         public override async Task<UserDto> Create(CreateUserDto input)
         {
             CheckCreatePermission();
 
-            var user = MapToEntity(input);
+            var user = ObjectMapper.Map<User>(input);
 
             user.TenantId = AbpSession.TenantId;
             user.IsEmailConfirmed = true;
@@ -165,11 +148,6 @@ namespace AbpCompanyName.AbpProjectName.Users
             var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => new { r.NormalizedName, r.DisplayName }).ToList();
             var userDto = base.MapToEntityDto(user);
             userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
-            userDto.RoleDisplayNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
-            if (!user.ExtensionData.IsNullOrWhiteSpace())
-            {
-                userDto.Extension = JsonConvert.DeserializeObject(user.ExtensionData);
-            }
             return userDto;
         }
 
@@ -177,7 +155,6 @@ namespace AbpCompanyName.AbpProjectName.Users
         {
             return Repository.GetAllIncluding(x => x.Roles)
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
-                //.WhereIf(input.LastLoginTime.Length>0)
                 .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
         }
 

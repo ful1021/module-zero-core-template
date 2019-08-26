@@ -34,8 +34,6 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Accounts.Dto
         [DisableAuditing]
         public string CaptchaResponse { get; set; }
 
-        public string ExtensionData { get; set; }
-
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (!UserName.IsNullOrEmpty())
