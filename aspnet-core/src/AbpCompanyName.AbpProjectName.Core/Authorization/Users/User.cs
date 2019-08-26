@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Abp.Authorization.Users;
-using Abp.Domain.Entities;
 using Abp.Extensions;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users
@@ -30,12 +29,6 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             user.SetNormalizedNames();
 
             return user;
-        }
-
-        public void Unlock()
-        {
-            AccessFailedCount = 0;
-            LockoutEndDateUtc = null;
         }
     }
 }

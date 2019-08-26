@@ -6,14 +6,14 @@ using AbpCompanyName.AbpProjectName.Users.Dto;
 
 namespace AbpCompanyName.AbpProjectName.Users
 {
-    public interface IUserAppService : IAsyncCrudAppService<UserDto, long, PagedUserResultRequestDto, CreateUserDto, UpdateUserDto>
+    public interface IUserAppService : IApplicationService
     {
+        Task<PagedResultDto<UserDto>> GetAll(PagedUserResultRequestDto input);
+
+        Task<UserDto> Create(CreateUserDto input);
+
         Task<ListResultDto<RoleDto>> GetRoles();
 
         Task ChangeLanguage(ChangeUserLanguageDto input);
-
-        Task<bool> ResetPassword(ResetPasswordDto input);
-
-        Task UnlockUser(EntityDto<long> input);
     }
 }

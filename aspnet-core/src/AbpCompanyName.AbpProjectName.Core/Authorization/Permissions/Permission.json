@@ -1,6 +1,6 @@
 ﻿[
   {
-    "name": "System",
+    "name": "Pages",
     "displayName": "设置",
     "url": "/system",
     "icon": "user",
@@ -36,29 +36,6 @@
             "displayName": "解锁"
           }
         ]
-      },
-      {
-        "name": "ExtendColumns",
-        "displayName": "扩展字段",
-        "defaultPermission": true
-      }
-    ]
-  },
-  {
-    "name": "ProductCenter",
-    "displayName": "商品中心",
-    "children": [
-      {
-        "name": "Product",
-        "displayName": "商品管理",
-        "defaultPermission": true,
-        "importExport": true
-      },
-      {
-        "name": "Category",
-        "displayName": "类目管理",
-        "defaultPermission": true,
-        "importExport": true
       }
     ]
   }
