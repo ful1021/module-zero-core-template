@@ -966,10 +966,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.Property<string>("EmailConfirmationCode")
                         .HasMaxLength(328);
 
-                    b.Property<string>("ExtensionData");
-
-                    b.Property<string>("Introduction");
-
                     b.Property<bool>("IsActive");
 
                     b.Property<bool>("IsDeleted");
@@ -1022,8 +1018,6 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(256);
-
-                    b.Property<int>("UserType");
 
                     b.HasKey("Id");
 

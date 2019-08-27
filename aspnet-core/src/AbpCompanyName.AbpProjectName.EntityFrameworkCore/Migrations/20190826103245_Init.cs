@@ -366,10 +366,7 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     IsActive = table.Column<bool>(nullable: false),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: false),
                     NormalizedEmailAddress = table.Column<string>(maxLength: 256, nullable: false),
-                    ConcurrencyStamp = table.Column<string>(maxLength: 128, nullable: true),
-                    Introduction = table.Column<string>(nullable: true),
-                    UserType = table.Column<int>(nullable: false),
-                    ExtensionData = table.Column<string>(nullable: true)
+                    ConcurrencyStamp = table.Column<string>(maxLength: 128, nullable: true)
                 },
                 constraints: table =>
                 {
