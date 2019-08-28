@@ -157,7 +157,7 @@ namespace AbpCompanyName.AbpProjectName.Roles
 
         public async Task CreateOrUpdateRole(CreateOrUpdateRoleInput input)
         {
-            if (input.Id.HasValue && input.Id > 0)
+            if (input.Role.Id.HasValue)
             {
                 await UpdateRoleAsync(input);
             }
@@ -167,21 +167,22 @@ namespace AbpCompanyName.AbpProjectName.Roles
             }
         }
 
+        [AbpAuthorize(PermissionNames.Pages_Roles_Edit)]
         protected virtual async Task UpdateRoleAsync(CreateOrUpdateRoleInput input)
         {
-            Debug.Assert(input.Id != null, "input.Role.Id should be set.");
+            Debug.Assert(input.Role.Id != null, "input.Role.Id should be set.");
 
-            var role = await _roleManager.GetRoleByIdAsync(input.Id.Value);
-            role.DisplayName = input.DisplayName;
-            role.Description = input.Description;
-            role.IsDefault = input.IsDefault;
+            var role = await _roleManager.GetRoleByIdAsync(input.Role.Id.Value);
+            role.DisplayName = input.Role.DisplayName;
+            role.IsDefault = input.Role.IsDefault;
 
             await UpdateGrantedPermissionsAsync(role, input.GrantedPermissionNames);
         }
 
+        [AbpAuthorize(PermissionNames.Pages_Roles_Create)]
         protected virtual async Task CreateRoleAsync(CreateOrUpdateRoleInput input)
         {
-            var role = new Role(AbpSession.TenantId, input.DisplayName) { IsDefault = input.IsDefault, Description = input.Description };
+            var role = new Role(AbpSession.TenantId, input.Role.DisplayName) { IsDefault = input.Role.IsDefault };
             CheckErrors(await _roleManager.CreateAsync(role));
             await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
             await UpdateGrantedPermissionsAsync(role, input.GrantedPermissionNames);
