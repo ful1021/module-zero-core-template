@@ -30,7 +30,7 @@ namespace <%=EntityNamespace %>
     /// <summary>
     /// <%=EntitySummary %>  服务实现
     /// </summary>
-    public class <%=ApplicationServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=QueryDtoName %>, <%=PkType %>, <%=GetAllInputName %>, <%=CreateInputName %>, <%=UpdateInputName %>>, I<%=ApplicationServiceName %>
+    public class <%=ApplicationServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=QueryDtoName %>, <%=QueryDtoName %>, <%=PkType %>, <%=GetAllInputName %>, <%=CreateInputName %>, <%=UpdateInputName %>>, I<%=ApplicationServiceName %>
     {
 <%
 RenderToResponse<Constructor>();

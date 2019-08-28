@@ -1,40 +1,118 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Abp.Linq;
+using Abp.Linq.Extensions;
 using AutoMapper.QueryableExtensions;
 
 namespace AbpCompanyName.AbpProjectName
 {
-    public abstract class AsyncCrudAppServiceBase<TEntity, TBasicEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>
-        : AsyncCrudAppService<TEntity, TBasicEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>,
-        IAsyncCrudAppService<TBasicEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>
-           where TEntity : class, IEntity<TPrimaryKey>
-           where TBasicEntityDto : IEntityDto<TPrimaryKey>
-           where TUpdateInput : IEntityDto<TPrimaryKey>
-           where TGetInput : IEntityDto<TPrimaryKey>
-           where TDeleteInput : IEntityDto<TPrimaryKey>
+    public abstract class AsyncCrudAppServiceBase<TEntity, TBasicEntityDto, TDetailEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>
+    : ApplicationService
+       where TEntity : class, IEntity<TPrimaryKey>
+       where TBasicEntityDto : IEntityDto<TPrimaryKey>
+       where TDetailEntityDto : IEntityDto<TPrimaryKey>
+       where TUpdateInput : IEntityDto<TPrimaryKey>
+       where TGetInput : IEntityDto<TPrimaryKey>
+       where TDeleteInput : IEntityDto<TPrimaryKey>
     {
-        protected virtual string GetAllListPermissionName { get; set; }
+        protected virtual string GetPermissionName { get; set; }
+        protected virtual string ListPermissionName { get; set; }
+        protected virtual string PagerListPermissionName { get; set; }
+        protected virtual string CreatePermissionName { get; set; }
+        protected virtual string UpdatePermissionName { get; set; }
+        protected virtual string DeletePermissionName { get; set; }
+
+        public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; }
+        protected readonly IRepository<TEntity, TPrimaryKey> Repository;
 
         /// <summary>
         /// 父类构造函数
         /// </summary>
         /// <param name="repository">仓储</param>
-        protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository) : base(repository)
+        protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository)
         {
             AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
         }
 
         #region 查询
 
-        public override async Task<PagedResultDto<TBasicEntityDto>> GetAll(TGetAllInput input)
+        #region PagerList
+
+        /// <summary>
+        /// Should apply sorting if needed.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="input">The input.</param>
+        protected virtual IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, TGetAllInput input)
+        {
+            //Try to sort query if available
+            var sortInput = input as ISortedResultRequest;
+            if (sortInput != null)
+            {
+                if (!sortInput.Sorting.IsNullOrWhiteSpace())
+                {
+                    return query.OrderBy(sortInput.Sorting);
+                }
+            }
+
+            //IQueryable.Task requires sorting, so we should sort if Take will be used.
+            if (input is ILimitedResultRequest)
+            {
+                return query.OrderByDescending(e => e.Id);
+            }
+
+            //No sorting
+            return query;
+        }
+
+        /// <summary>
+        /// Should apply paging if needed.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="input">The input.</param>
+        protected virtual IQueryable<TEntity> ApplyPaging(IQueryable<TEntity> query, TGetAllInput input)
+        {
+            //Try to use paging if available
+            var pagedInput = input as IPagedResultRequest;
+            if (pagedInput != null)
+            {
+                return query.PageBy(pagedInput);
+            }
+
+            //Try to limit query result if available
+            var limitedInput = input as ILimitedResultRequest;
+            if (limitedInput != null)
+            {
+                return query.Take(limitedInput.MaxResultCount);
+            }
+
+            //No paging
+            return query;
+        }
+
+        /// <summary>
+        /// This method should create <see cref="IQueryable{TEntity}"/> based on given input.
+        /// It should filter query if needed, but should not do sorting or paging.
+        /// Sorting should be done in <see cref="ApplySorting"/> and paging should be done in <see cref="ApplyPaging"/>
+        /// methods.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        protected virtual IQueryable<TEntity> CreateFilteredQuery(TGetAllInput input)
+        {
+            return Repository.GetAll();
+        }
+
+        public virtual async Task<PagedResultDto<TBasicEntityDto>> PagerList(TGetAllInput input)
         {
             CheckGetAllPermission();
 
@@ -56,14 +134,16 @@ namespace AbpCompanyName.AbpProjectName
             return new PagedResultDto<TBasicEntityDto>(totalCount, entities);
         }
 
+        #endregion PagerList
+
         /// <summary>
         /// 根据条件获取全部实体
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public virtual async Task<ListResultDto<TBasicEntityDto>> GetAllList(TGetAllInput input)
+        public virtual async Task<ListResultDto<TBasicEntityDto>> List(TGetAllInput input)
         {
-            CheckPermission(GetAllListPermissionName);
+            CheckPermission(ListPermissionName);
 
             var query = CreateFilteredQuery(input);
             query = ApplySorting(query, input);
@@ -73,39 +153,34 @@ namespace AbpCompanyName.AbpProjectName
             return new ListResultDto<TBasicEntityDto>(entities);
         }
 
-        public override Task<TBasicEntityDto> Get(TGetInput input)
+        protected virtual async Task<List<TBasicEntityDto>> ToListAsync(IQueryable<TEntity> query)
         {
-            CheckGetPermission();
+            if (UserProjectTo)
+            {
+                return await AsyncQueryableExecuter.ToListAsync(ProjectToList(query));
+            }
+            var entities = await AsyncQueryableExecuter.ToListAsync(query);
 
-            return FirstOrDefaultAsync(input);
+            return entities.Select(MapToList).ToList();
         }
 
         #endregion 查询
 
-        #region ProjectTo
+        #region 查询一条记录
 
-        /// <summary>
-        /// 将实体模型中的每个元素映射到 TEntityQueryDto
-        /// </summary>
-        /// <returns></returns>
-        protected virtual Expression<Func<TEntity, TBasicEntityDto>> SelectMapTo()
+        public virtual async Task<TDetailEntityDto> Get(TGetInput input)
         {
-            return null;
+            CheckGetPermission();
+
+            return await FirstOrDefaultAsync(input);
         }
 
-        private IQueryable<TBasicEntityDto> ProjectTo(IQueryable<TEntity> query)
+        protected virtual Task<TEntity> GetEntityByIdAsync(TPrimaryKey id)
         {
-            var selectMapTo = SelectMapTo();
-            if (selectMapTo == null)
-            {
-                return query.ProjectTo<TBasicEntityDto>();
-            }
-            return query.Select(selectMapTo);
+            return Repository.GetAsync(id);
         }
 
-        protected virtual bool UserProjectTo { get; set; } = false;
-
-        protected virtual async Task<TBasicEntityDto> FirstOrDefaultAsync(TGetInput input)
+        protected virtual async Task<TDetailEntityDto> FirstOrDefaultAsync(TGetInput input)
         {
             if (UserProjectTo)
             {
@@ -130,85 +205,151 @@ namespace AbpCompanyName.AbpProjectName
             return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
         }
 
-        protected virtual async Task<List<TBasicEntityDto>> ToListAsync(IQueryable<TEntity> query)
+        #endregion 查询一条记录
+
+        #region 增删改
+
+        public virtual async Task<TDetailEntityDto> Create(TCreateInput input)
         {
-            if (UserProjectTo)
+            CheckCreatePermission();
+
+            var entity = MapToEntity(input);
+
+            await Repository.InsertAsync(entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            return MapToEntityDto(entity);
+        }
+
+        public virtual async Task<TDetailEntityDto> Update(TUpdateInput input)
+        {
+            CheckUpdatePermission();
+
+            var entity = await GetEntityByIdAsync(input.Id);
+
+            MapToEntity(input, entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            return MapToEntityDto(entity);
+        }
+
+        public virtual Task Delete(TDeleteInput input)
+        {
+            CheckDeletePermission();
+
+            return Repository.DeleteAsync(input.Id);
+        }
+
+        #endregion 增删改
+
+        #region MapTo
+
+        protected virtual TDetailEntityDto MapToEntityDto(TEntity entity)
+        {
+            return ObjectMapper.Map<TDetailEntityDto>(entity);
+        }
+
+        protected virtual TEntity MapToEntity(TCreateInput createInput)
+        {
+            return ObjectMapper.Map<TEntity>(createInput);
+        }
+
+        protected virtual void MapToEntity(TUpdateInput updateInput, TEntity entity)
+        {
+            ObjectMapper.Map(updateInput, entity);
+        }
+
+        /// <summary>
+        /// 将实体模型中的每个元素映射到 TEntityQueryDto
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Expression<Func<TEntity, TBasicEntityDto>> SelectMapToList()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// 将实体模型中的每个元素映射到 TEntityQueryDto
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Expression<Func<TEntity, TDetailEntityDto>> SelectMapTo()
+        {
+            return null;
+        }
+
+        private IQueryable<TBasicEntityDto> ProjectToList(IQueryable<TEntity> query)
+        {
+            var selectMapTo = SelectMapToList();
+            if (selectMapTo == null)
             {
-                return await AsyncQueryableExecuter.ToListAsync(ProjectTo(query));
+                return query.ProjectTo<TBasicEntityDto>();
             }
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
-            return entities.Select(MapToEntityDto).ToList();
+            return query.Select(selectMapTo);
         }
 
-        #endregion ProjectTo
-    }
-
-    public abstract class AsyncCrudAppServiceBase<TEntity, TEntityQueryDto>
-     : AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, int>
-     where TEntity : class, IEntity<int>
-     where TEntityQueryDto : class, IEntityDto<int>
-    {
-        protected AsyncCrudAppServiceBase(IRepository<TEntity, int> repository)
-            : base(repository)
+        private IQueryable<TDetailEntityDto> ProjectTo(IQueryable<TEntity> query)
         {
+            var selectMapTo = SelectMapTo();
+            if (selectMapTo == null)
+            {
+                return query.ProjectTo<TDetailEntityDto>();
+            }
+            return query.Select(selectMapTo);
         }
-    }
 
-    public abstract class AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey>
-        : AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, PagedAndSortedResultRequestDto>
-        where TEntity : class, IEntity<TPrimaryKey>
-        where TEntityQueryDto : class, IEntityDto<TPrimaryKey>
-    {
-        protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository)
-            : base(repository)
+        protected virtual TBasicEntityDto MapToList(TEntity entity)
         {
+            return ObjectMapper.Map<TBasicEntityDto>(entity);
         }
-    }
 
-    public abstract class AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput>
-        : AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput, TEntityQueryDto, TEntityQueryDto>
-        where TEntity : class, IEntity<TPrimaryKey>
-        where TEntityQueryDto : class, IEntityDto<TPrimaryKey>
-        where TGetAllInput : IPagedResultRequest, ILimitedResultRequest
-    {
-        protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository)
-            : base(repository)
+        protected virtual bool UserProjectTo { get; set; } = false;
+
+        #endregion MapTo
+
+        #region 检查权限
+
+        protected virtual void CheckPermission(string permissionName)
         {
+            if (!string.IsNullOrEmpty(permissionName))
+            {
+                PermissionChecker.Authorize(permissionName);
+            }
         }
-    }
 
-    public abstract class AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput, TCreateInput>
-        : AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput, TCreateInput, TCreateInput>
-        where TGetAllInput : IPagedResultRequest, ILimitedResultRequest
-        where TEntity : class, IEntity<TPrimaryKey>
-        where TEntityQueryDto : class, IEntityDto<TPrimaryKey>
-        where TCreateInput : IEntityDto<TPrimaryKey>
-    {
-        protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository)
-            : base(repository)
+        protected virtual void CheckGetPermission()
         {
+            CheckPermission(GetPermissionName);
         }
+
+        protected virtual void CheckGetAllPermission()
+        {
+            CheckPermission(PagerListPermissionName);
+        }
+
+        protected virtual void CheckCreatePermission()
+        {
+            CheckPermission(CreatePermissionName);
+        }
+
+        protected virtual void CheckUpdatePermission()
+        {
+            CheckPermission(UpdatePermissionName);
+        }
+
+        protected virtual void CheckDeletePermission()
+        {
+            CheckPermission(DeletePermissionName);
+        }
+
+        #endregion 检查权限
     }
 
-    public abstract class AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput>
-    : AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, EntityDto<TPrimaryKey>>
+    public abstract class AsyncCrudAppServiceBase<TEntity, TBasicEntityDto, TDetailEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput>
+    : AsyncCrudAppServiceBase<TEntity, TBasicEntityDto, TDetailEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, EntityDto<TPrimaryKey>, EntityDto<TPrimaryKey>>
         where TEntity : class, IEntity<TPrimaryKey>
-        where TEntityQueryDto : class, IEntityDto<TPrimaryKey>
+        where TBasicEntityDto : class, IEntityDto<TPrimaryKey>
+        where TDetailEntityDto : class, IEntityDto<TPrimaryKey>
         where TUpdateInput : IEntityDto<TPrimaryKey>
-        where TGetAllInput : IPagedResultRequest, ILimitedResultRequest
-    {
-        protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository)
-            : base(repository)
-        {
-        }
-    }
-
-    public abstract class AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput>
-    : AsyncCrudAppServiceBase<TEntity, TEntityQueryDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, EntityDto<TPrimaryKey>>
-        where TEntity : class, IEntity<TPrimaryKey>
-        where TEntityQueryDto : class, IEntityDto<TPrimaryKey>
-        where TUpdateInput : IEntityDto<TPrimaryKey>
-        where TGetInput : IEntityDto<TPrimaryKey>
         where TGetAllInput : IPagedResultRequest, ILimitedResultRequest
     {
         protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository)

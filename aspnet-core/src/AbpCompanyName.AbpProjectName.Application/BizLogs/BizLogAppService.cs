@@ -11,7 +11,7 @@ namespace AbpCompanyName.AbpProjectName.BizLogs
     /// <summary>
     /// 业务日志  服务实现
     /// </summary>
-    public class BizLogAppService : AsyncCrudAppServiceBase<BizLog, BizLogQueryDto, Guid, BizLogGetAllInput, BizLogCreateInput, BizLogDto>, IBizLogAppService
+    public class BizLogAppService : AsyncCrudAppServiceBase<BizLog, BizLogQueryDto, BizLogQueryDto, Guid, BizLogGetAllInput, BizLogCreateInput, BizLogDto>, IBizLogAppService
     {
         private readonly IRepository<BizLog, Guid> _bizLogRepository;
         /// <summary>
@@ -31,7 +31,7 @@ namespace AbpCompanyName.AbpProjectName.BizLogs
         {
             //var filters = input.Filter.ToStringArray();
             var creationTimeRange = input.CreationTime.ToDateTimeRange();
-            
+
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
                 .WhereIf(!input.BizData.IsNullOrWhiteSpace(), a => a.BizData.Contains(input.BizData))
@@ -40,7 +40,7 @@ namespace AbpCompanyName.AbpProjectName.BizLogs
                 .WhereIf(!input.BizNo.IsNullOrWhiteSpace(), a => a.BizNo.Contains(input.BizNo))
                 .WhereIf(!input.BizType.IsNullOrWhiteSpace(), a => a.BizType.Contains(input.BizType))
                 .WhereIf(creationTimeRange != null, d => d.CreationTime >= creationTimeRange.StartTime && d.CreationTime <= creationTimeRange.EndTime)
-                
+
                 .WhereIf(input.CreatorUserId.HasValue, a => a.CreatorUserId == input.CreatorUserId.Value)
                 .WhereIf(!input.ExtensionData.IsNullOrWhiteSpace(), a => a.ExtensionData.Contains(input.ExtensionData))
                 .WhereIf(input.Id.HasValue, a => a.Id == input.Id.Value)

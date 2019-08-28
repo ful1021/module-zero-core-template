@@ -24,7 +24,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AbpCompanyName.AbpProjectName.Users
 {
     [AbpAuthorize(PermissionNames.Pages_Users)]
-    public class UserAppService : AsyncCrudAppServiceBase<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
+    public class UserAppService : AsyncCrudAppServiceBase<User, UserDto, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
