@@ -24,7 +24,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AbpCompanyName.AbpProjectName.Users
 {
     [AbpAuthorize(PermissionNames.Pages_Users)]
-    public class UserAppService : AsyncCrudAppServiceBase<User, UserDto, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
+    public class UserAppService : PagedCudAppService<User, UserDto, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
@@ -51,6 +51,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             _logInManager = logInManager;
         }
 
+        [AbpAuthorize(PermissionNames.Pages_Users_Create)]
         public override async Task<UserDto> Create(CreateUserDto input)
         {
             CheckCreatePermission();
@@ -74,6 +75,7 @@ namespace AbpCompanyName.AbpProjectName.Users
             return MapToEntityDto(user);
         }
 
+        [AbpAuthorize(PermissionNames.Pages_Users_Edit)]
         public override async Task<UserDto> Update(UserDto input)
         {
             CheckUpdatePermission();
@@ -126,6 +128,11 @@ namespace AbpCompanyName.AbpProjectName.Users
         {
             ObjectMapper.Map(input, user);
             user.SetNormalizedNames();
+        }
+
+        protected override UserDto MapToList(User entity)
+        {
+            return MapToEntityDto(entity);
         }
 
         protected override UserDto MapToEntityDto(User user)

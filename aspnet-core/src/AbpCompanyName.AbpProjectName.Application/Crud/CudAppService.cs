@@ -11,23 +11,25 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq;
-using Abp.Linq.Extensions;
 using AutoMapper.QueryableExtensions;
 
-namespace AbpCompanyName.AbpProjectName
+namespace AbpCompanyName.AbpProjectName.Crud
 {
-    public abstract class AsyncCrudAppServiceBase<TEntity, TBasicEntityDto, TDetailEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>
-    : ApplicationService
-       where TEntity : class, IEntity<TPrimaryKey>
-       where TBasicEntityDto : IEntityDto<TPrimaryKey>
-       where TDetailEntityDto : IEntityDto<TPrimaryKey>
-       where TUpdateInput : IEntityDto<TPrimaryKey>
-       where TGetInput : IEntityDto<TPrimaryKey>
-       where TDeleteInput : IEntityDto<TPrimaryKey>
+    /// <summary>
+    /// 增删改 父类
+    /// </summary>
+    public abstract class CudAppService<TEntity, TBasicEntityDto, TDetailEntityDto, TPrimaryKey, TListInput, TCreateInput, TUpdateInput, TGetInput, TDeleteInput>
+: ApplicationService
+  where TEntity : class, IEntity<TPrimaryKey>
+  where TBasicEntityDto : IEntityDto<TPrimaryKey>
+  where TDetailEntityDto : IEntityDto<TPrimaryKey>
+  where TUpdateInput : IEntityDto<TPrimaryKey>
+  where TGetInput : IEntityDto<TPrimaryKey>
+  where TDeleteInput : IEntityDto<TPrimaryKey>
     {
         protected virtual string GetPermissionName { get; set; }
         protected virtual string ListPermissionName { get; set; }
-        protected virtual string PagerListPermissionName { get; set; }
+        protected virtual string PagedListPermissionName { get; set; }
         protected virtual string CreatePermissionName { get; set; }
         protected virtual string UpdatePermissionName { get; set; }
         protected virtual string DeletePermissionName { get; set; }
@@ -39,7 +41,7 @@ namespace AbpCompanyName.AbpProjectName
         /// 父类构造函数
         /// </summary>
         /// <param name="repository">仓储</param>
-        protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository)
+        protected CudAppService(IRepository<TEntity, TPrimaryKey> repository)
         {
             Repository = repository;
             AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
@@ -47,14 +49,12 @@ namespace AbpCompanyName.AbpProjectName
 
         #region 查询
 
-        #region PagerList
-
         /// <summary>
         /// Should apply sorting if needed.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="input">The input.</param>
-        protected virtual IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, TGetAllInput input)
+        protected virtual IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, TListInput input)
         {
             //Try to sort query if available
             var sortInput = input as ISortedResultRequest;
@@ -77,81 +77,13 @@ namespace AbpCompanyName.AbpProjectName
         }
 
         /// <summary>
-        /// Should apply paging if needed.
-        /// </summary>
-        /// <param name="query">The query.</param>
-        /// <param name="input">The input.</param>
-        protected virtual IQueryable<TEntity> ApplyPaging(IQueryable<TEntity> query, TGetAllInput input)
-        {
-            //Try to use paging if available
-            var pagedInput = input as IPagedResultRequest;
-            if (pagedInput != null)
-            {
-                return query.PageBy(pagedInput);
-            }
-
-            //Try to limit query result if available
-            var limitedInput = input as ILimitedResultRequest;
-            if (limitedInput != null)
-            {
-                return query.Take(limitedInput.MaxResultCount);
-            }
-
-            //No paging
-            return query;
-        }
-
-        /// <summary>
         /// This method should create <see cref="IQueryable{TEntity}"/> based on given input.
         /// It should filter query if needed, but should not do sorting or paging.
-        /// Sorting should be done in <see cref="ApplySorting"/> and paging should be done in <see cref="ApplyPaging"/>
-        /// methods.
         /// </summary>
         /// <param name="input">The input.</param>
-        protected virtual IQueryable<TEntity> CreateFilteredQuery(TGetAllInput input)
+        protected virtual IQueryable<TEntity> CreateFilteredQuery(TListInput input)
         {
             return Repository.GetAll();
-        }
-
-        public virtual async Task<PagedResultDto<TBasicEntityDto>> PagerList(TGetAllInput input)
-        {
-            CheckGetAllPermission();
-
-            var query = CreateFilteredQuery(input);
-            var noPagerQuery = query;
-            query = ApplySorting(query, input);
-            query = ApplyPaging(query, input);
-
-            var entities = await ToListAsync(query);
-
-            int totalCount = entities?.Count ?? 0;
-            var pagedInput = input as IPagedResultRequest;
-            //没有分页参数,不需要统计总记录数  或者 总条数 小于 每页大小，则代表只有1页数据
-            if (pagedInput != null || totalCount < pagedInput.MaxResultCount)
-            {
-                totalCount = await AsyncQueryableExecuter.CountAsync(noPagerQuery);
-            }
-
-            return new PagedResultDto<TBasicEntityDto>(totalCount, entities);
-        }
-
-        #endregion PagerList
-
-        /// <summary>
-        /// 根据条件获取全部实体
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public virtual async Task<ListResultDto<TBasicEntityDto>> List(TGetAllInput input)
-        {
-            CheckPermission(ListPermissionName);
-
-            var query = CreateFilteredQuery(input);
-            query = ApplySorting(query, input);
-
-            var entities = await ToListAsync(query);
-
-            return new ListResultDto<TBasicEntityDto>(entities);
         }
 
         protected virtual async Task<List<TBasicEntityDto>> ToListAsync(IQueryable<TEntity> query)
@@ -322,11 +254,6 @@ namespace AbpCompanyName.AbpProjectName
             CheckPermission(GetPermissionName);
         }
 
-        protected virtual void CheckGetAllPermission()
-        {
-            CheckPermission(PagerListPermissionName);
-        }
-
         protected virtual void CheckCreatePermission()
         {
             CheckPermission(CreatePermissionName);
@@ -343,19 +270,5 @@ namespace AbpCompanyName.AbpProjectName
         }
 
         #endregion 检查权限
-    }
-
-    public abstract class AsyncCrudAppServiceBase<TEntity, TBasicEntityDto, TDetailEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput>
-    : AsyncCrudAppServiceBase<TEntity, TBasicEntityDto, TDetailEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput, EntityDto<TPrimaryKey>, EntityDto<TPrimaryKey>>
-        where TEntity : class, IEntity<TPrimaryKey>
-        where TBasicEntityDto : class, IEntityDto<TPrimaryKey>
-        where TDetailEntityDto : class, IEntityDto<TPrimaryKey>
-        where TUpdateInput : IEntityDto<TPrimaryKey>
-        where TGetAllInput : IPagedResultRequest, ILimitedResultRequest
-    {
-        protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository)
-            : base(repository)
-        {
-        }
     }
 }

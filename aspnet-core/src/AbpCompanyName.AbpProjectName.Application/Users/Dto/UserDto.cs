@@ -7,7 +7,7 @@ using AbpCompanyName.AbpProjectName.Authorization.Users;
 
 namespace AbpCompanyName.AbpProjectName.Users.Dto
 {
-    [AutoMapFrom(typeof(User))]
+    [AutoMap(typeof(User))]
     public class UserDto : EntityDto<long>
     {
         [Required]

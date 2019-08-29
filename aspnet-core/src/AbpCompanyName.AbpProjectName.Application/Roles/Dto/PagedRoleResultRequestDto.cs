@@ -5,6 +5,8 @@ namespace AbpCompanyName.AbpProjectName.Roles.Dto
     public class PagedRoleResultRequestDto : PagedResultRequestDto
     {
         public string Keyword { get; set; }
+
+        public string Permission { get; set; }
     }
 }
 
