@@ -1,15 +1,10 @@
 ﻿[
   {
-    "name": "Pages",
+    "name": "System",
     "displayName": "设置",
     "url": "/system",
     "icon": "user",
     "children": [
-      {
-        "name": "Tenants",
-        "displayName": "租户管理",
-        "defaultPermission": true
-      },
       {
         "name": "Roles",
         "displayName": "角色管理",

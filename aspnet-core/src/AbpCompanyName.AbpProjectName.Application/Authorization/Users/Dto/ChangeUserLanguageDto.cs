@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AbpCompanyName.AbpProjectName.Users.Dto
+namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
     public class ChangeUserLanguageDto
     {

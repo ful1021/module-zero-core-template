@@ -4,7 +4,7 @@ using Abp.Authorization;
 using Abp.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 
-namespace AbpCompanyName.AbpProjectName.Roles.Dto
+namespace AbpCompanyName.AbpProjectName.Authorization.Roles.Dto
 {
     public class RoleMapProfile : Profile
     {
@@ -14,16 +14,12 @@ namespace AbpCompanyName.AbpProjectName.Roles.Dto
             CreateMap<Permission, string>().ConvertUsing(r => r.Name);
             CreateMap<RolePermissionSetting, string>().ConvertUsing(r => r.Name);
 
-            CreateMap<CreateRoleDto, Role>();
-
             CreateMap<RoleDto, Role>();
 
             CreateMap<Role, RoleDto>().ForMember(x => x.GrantedPermissions,
                 opt => opt.MapFrom(x => x.Permissions.Where(p => p.IsGranted)));
 
             CreateMap<Role, RoleListDto>();
-            CreateMap<Role, RoleEditDto>();
-            CreateMap<Permission, FlatPermissionDto>();
         }
     }
 }

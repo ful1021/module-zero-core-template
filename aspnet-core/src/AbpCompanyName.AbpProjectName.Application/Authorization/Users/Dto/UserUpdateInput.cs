@@ -1,14 +1,10 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.Authorization.Users;
-using Abp.AutoMapper;
-using AbpCompanyName.AbpProjectName.Authorization.Users;
 
-namespace AbpCompanyName.AbpProjectName.Users.Dto
+namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
-    [AutoMap(typeof(User))]
-    public class UserDto : EntityDto<long>
+    public class UserUpdateInput : EntityDto<long>
     {
         [Required]
         [StringLength(AbpUserBase.MaxUserNameLength)]
@@ -31,10 +27,6 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
 
         public string FullName { get; set; }
 
-        public DateTime? LastLoginTime { get; set; }
-
-        public DateTime CreationTime { get; set; }
-
-        public string[] RoleNames { get; set; }
+        public string[] RoleNames { get; set; } = new string[0];
     }
 }

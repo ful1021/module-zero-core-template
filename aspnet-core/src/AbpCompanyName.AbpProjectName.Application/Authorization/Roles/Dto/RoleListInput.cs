@@ -1,8 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
 
-namespace AbpCompanyName.AbpProjectName.Roles.Dto
+namespace AbpCompanyName.AbpProjectName.Authorization.Roles.Dto
 {
-    public class PagedRoleResultRequestDto : PagedResultRequestDto
+    public class RoleListInput : PagedAndSortedResultRequestDto
     {
         public string Keyword { get; set; }
 

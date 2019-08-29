@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Abp.Application.Services.Dto;
 using Abp.Authorization.Roles;
+using Abp.AutoMapper;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 
-namespace AbpCompanyName.AbpProjectName.Roles.Dto
+namespace AbpCompanyName.AbpProjectName.Authorization.Roles.Dto
 {
-    public class CreateRoleDto
+    public class RoleDto : EntityDto<int>
     {
         [Required]
         [StringLength(AbpRoleBase.MaxNameLength)]

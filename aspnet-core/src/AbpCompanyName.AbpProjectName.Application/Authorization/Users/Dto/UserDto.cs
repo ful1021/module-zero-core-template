@@ -1,14 +1,13 @@
+using System;
 using System.ComponentModel.DataAnnotations;
-using Abp.Auditing;
+using Abp.Application.Services.Dto;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
-using Abp.Runtime.Validation;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
 
-namespace AbpCompanyName.AbpProjectName.Users.Dto
+namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
-    [AutoMapTo(typeof(User))]
-    public class CreateUserDto : IShouldNormalize
+    public class UserDto : EntityDto<long>
     {
         [Required]
         [StringLength(AbpUserBase.MaxUserNameLength)]
@@ -29,19 +28,12 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
 
         public bool IsActive { get; set; }
 
+        public string FullName { get; set; }
+
+        public DateTime? LastLoginTime { get; set; }
+
+        public DateTime CreationTime { get; set; }
+
         public string[] RoleNames { get; set; }
-
-        [Required]
-        [StringLength(AbpUserBase.MaxPlainPasswordLength)]
-        [DisableAuditing]
-        public string Password { get; set; }
-
-        public void Normalize()
-        {
-            if (RoleNames == null)
-            {
-                RoleNames = new string[0];
-            }
-        }
     }
 }

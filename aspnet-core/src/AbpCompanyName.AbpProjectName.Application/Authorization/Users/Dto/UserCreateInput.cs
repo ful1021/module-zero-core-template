@@ -1,13 +1,13 @@
 using System.ComponentModel.DataAnnotations;
-using Abp.Application.Services.Dto;
+using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
+using Abp.Runtime.Validation;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
 
-namespace AbpCompanyName.AbpProjectName.Users.Dto
+namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
-    [AutoMapFrom(typeof(User))]
-    public class UpdateUserDto : EntityDto<long>
+    public class UserCreateInput : IShouldNormalize
     {
         [Required]
         [StringLength(AbpUserBase.MaxUserNameLength)]
@@ -21,16 +21,26 @@ namespace AbpCompanyName.AbpProjectName.Users.Dto
         [StringLength(AbpUserBase.MaxSurnameLength)]
         public string Surname { get; set; }
 
-        [StringLength(AbpUserBase.MaxPhoneNumberLength)]
-        public string PhoneNumber { get; set; }
-
         [Required]
         [EmailAddress]
         [StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
 
+        public bool IsActive { get; set; }
+
         public string[] RoleNames { get; set; }
 
-        public string ExtensionData { get; set; }
+        [Required]
+        [StringLength(AbpUserBase.MaxPlainPasswordLength)]
+        [DisableAuditing]
+        public string Password { get; set; }
+
+        public void Normalize()
+        {
+            if (RoleNames == null)
+            {
+                RoleNames = new string[0];
+            }
+        }
     }
 }
