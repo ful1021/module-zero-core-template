@@ -41,6 +41,7 @@ namespace AbpCompanyName.AbpProjectName
         /// <param name="repository">仓储</param>
         protected AsyncCrudAppServiceBase(IRepository<TEntity, TPrimaryKey> repository)
         {
+            Repository = repository;
             AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
         }
 
