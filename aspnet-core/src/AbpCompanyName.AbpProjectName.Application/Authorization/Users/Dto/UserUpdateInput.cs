@@ -7,10 +7,6 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
     public class UserUpdateInput : EntityDto<long>
     {
         [Required]
-        [StringLength(AbpUserBase.MaxUserNameLength)]
-        public string UserName { get; set; }
-
-        [Required]
         [StringLength(AbpUserBase.MaxNameLength)]
         public string Name { get; set; }
 
@@ -18,14 +14,15 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
         [StringLength(AbpUserBase.MaxSurnameLength)]
         public string Surname { get; set; }
 
+        [MaxLength(AbpUserBase.MaxPhoneNumberLength)]
+        public string PhoneNumber { get; set; }
+
         [Required]
         [EmailAddress]
         [StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
 
         public bool IsActive { get; set; }
-
-        public string FullName { get; set; }
 
         public string[] RoleNames { get; set; } = new string[0];
     }

@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Identity;
 namespace AbpCompanyName.AbpProjectName.Authorization.Users
 {
     [AbpAuthorize(PermissionNames.System_Users)]
-    public class UserAppService : PagedCudAppService<User, UserDto, UserDto, long, UserListInput, UserCreateInput, UserDto>, IUserAppService
+    public class UserAppService : PagedCudAppService<User, UserDto, UserDto, long, UserListInput, UserCreateInput, UserUpdateInput>, IUserAppService
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
@@ -70,7 +70,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         }
 
         [AbpAuthorize(PermissionNames.System_Users_Edit)]
-        public override async Task<UserDto> Update(UserDto input)
+        public override async Task<UserDto> Update(UserUpdateInput input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
 
@@ -119,7 +119,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             return user;
         }
 
-        protected override void MapToEntity(UserDto input, User user)
+        protected override void MapToEntity(UserUpdateInput input, User user)
         {
             ObjectMapper.Map(input, user);
             user.SetNormalizedNames();
@@ -134,7 +134,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         {
             var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => new { r.NormalizedName, r.DisplayName }).ToList();
             var userDto = base.MapToEntityDto(user);
-            userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
+            userDto.RoleNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
             return userDto;
         }
 

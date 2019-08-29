@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Abp.Auditing;
 using Abp.Authorization.Users;
-using Abp.AutoMapper;
 using Abp.Runtime.Validation;
-using AbpCompanyName.AbpProjectName.Authorization.Users;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
@@ -21,6 +19,10 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
         [StringLength(AbpUserBase.MaxSurnameLength)]
         public string Surname { get; set; }
 
+
+        [MaxLength(AbpUserBase.MaxPhoneNumberLength)]
+        public string PhoneNumber { get; set; }
+
         [Required]
         [EmailAddress]
         [StringLength(AbpUserBase.MaxEmailAddressLength)]
@@ -28,7 +30,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 
         public bool IsActive { get; set; }
 
-        public string[] RoleNames { get; set; }
+        public string[] RoleNames { get; set; } = new string[0];
 
         [Required]
         [StringLength(AbpUserBase.MaxPlainPasswordLength)]
@@ -37,10 +39,6 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 
         public void Normalize()
         {
-            if (RoleNames == null)
-            {
-                RoleNames = new string[0];
-            }
         }
     }
 }
