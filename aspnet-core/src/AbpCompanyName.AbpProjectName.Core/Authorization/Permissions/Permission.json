@@ -23,6 +23,10 @@
             "displayName": "模拟用户登录"
           },
           {
+            "name": "ChangePermissions",
+            "displayName": "用户权限"
+          },
+          {
             "name": "ResetPassword",
             "displayName": "重置密码"
           },

@@ -73,6 +73,11 @@
 		public const string System_Users_Impersonate = "System.Users.Impersonate";
 
 		/// <summary>
+		/// 设置_用户管理_用户权限
+		/// </summary>
+		public const string System_Users_ChangePermissions = "System.Users.ChangePermissions";
+
+		/// <summary>
 		/// 设置_用户管理_重置密码
 		/// </summary>
 		public const string System_Users_ResetPassword = "System.Users.ResetPassword";

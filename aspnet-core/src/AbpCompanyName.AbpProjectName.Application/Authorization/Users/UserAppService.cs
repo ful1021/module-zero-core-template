@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
@@ -12,8 +11,8 @@ using Abp.Localization;
 using Abp.Runtime.Session;
 using Abp.UI;
 using AbpCompanyName.AbpProjectName.Authorization.Accounts;
+using AbpCompanyName.AbpProjectName.Authorization.Permissions;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
-using AbpCompanyName.AbpProjectName.Authorization.Roles.Dto;
 using AbpCompanyName.AbpProjectName.Authorization.Users.Dto;
 using Microsoft.AspNetCore.Identity;
 
@@ -86,6 +85,37 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             return MapToEntityDto(user);
         }
 
+        #region 编辑用户权限
+
+        [AbpAuthorize(PermissionNames.System_Users_ChangePermissions)]
+        public async Task<GetUserPermissionsForEditOutput> GetUserPermissionsForEdit(EntityDto<long> input)
+        {
+            var user = await _userManager.GetUserByIdAsync(input.Id);
+            var grantedPermissions = await _userManager.GetGrantedPermissionsAsync(user);
+
+            return new GetUserPermissionsForEditOutput
+            {
+                GrantedPermissionNames = grantedPermissions.Select(p => p.Name).ToList()
+            };
+        }
+
+        [AbpAuthorize(PermissionNames.System_Users_ChangePermissions)]
+        public async Task ResetUserSpecificPermissions(EntityDto<long> input)
+        {
+            var user = await _userManager.GetUserByIdAsync(input.Id);
+            await _userManager.ResetAllPermissionsAsync(user);
+        }
+
+        [AbpAuthorize(PermissionNames.System_Users_ChangePermissions)]
+        public async Task UpdateUserPermissions(UpdateUserPermissionsInput input)
+        {
+            var user = await _userManager.GetUserByIdAsync(input.Id);
+            var grantedPermissions = PermissionManager.GetPermissionsFromNamesByValidating(input.GrantedPermissionNames);
+            await _userManager.SetGrantedPermissionsAsync(user, grantedPermissions);
+        }
+
+        #endregion 编辑用户权限
+
         [AbpAuthorize(PermissionNames.System_Users_Delete)]
         public override async Task Delete(EntityDto<long> input)
         {
@@ -94,12 +124,6 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         }
 
         #endregion 增删改
-
-        public async Task<ListResultDto<RoleDto>> GetRoles()
-        {
-            var roles = await _roleRepository.GetAllListAsync();
-            return new ListResultDto<RoleDto>(ObjectMapper.Map<List<RoleDto>>(roles));
-        }
 
         public async Task ChangeLanguage(ChangeUserLanguageDto input)
         {
