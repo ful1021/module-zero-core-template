@@ -3,7 +3,6 @@
     "name": "System",
     "displayName": "设置",
     "url": "/system",
-    "icon": "user",
     "children": [
       {
         "name": "Roles",
