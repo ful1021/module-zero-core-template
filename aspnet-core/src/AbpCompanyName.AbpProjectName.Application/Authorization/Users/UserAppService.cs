@@ -88,12 +88,12 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         #region 编辑用户权限
 
         [AbpAuthorize(PermissionNames.System_Users_ChangePermissions)]
-        public async Task<GetUserPermissionsForEditOutput> GetUserPermissionsForEdit(EntityDto<long> input)
+        public async Task<UserGetPermissionsForEditOutput> GetUserPermissionsForEdit(EntityDto<long> input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
             var grantedPermissions = await _userManager.GetGrantedPermissionsAsync(user);
 
-            return new GetUserPermissionsForEditOutput
+            return new UserGetPermissionsForEditOutput
             {
                 GrantedPermissionNames = grantedPermissions.Select(p => p.Name).ToList()
             };
@@ -107,7 +107,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         }
 
         [AbpAuthorize(PermissionNames.System_Users_ChangePermissions)]
-        public async Task UpdateUserPermissions(UpdateUserPermissionsInput input)
+        public async Task UpdateUserPermissions(UserUpdatePermissionsInput input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
             var grantedPermissions = PermissionManager.GetPermissionsFromNamesByValidating(input.GrantedPermissionNames);
@@ -125,7 +125,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
         #endregion 增删改
 
-        public async Task ChangeLanguage(ChangeUserLanguageDto input)
+        public async Task ChangeLanguage(UserChangeLanguageDto input)
         {
             await SettingManager.ChangeSettingForUserAsync(
                 AbpSession.ToUserIdentifier(),
@@ -176,7 +176,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
         #endregion 私有方法
 
-        public async Task<bool> ChangePassword(ChangePasswordDto input)
+        public async Task<bool> ChangePassword(UserChangePasswordDto input)
         {
             if (_abpSession.UserId == null)
             {
@@ -198,7 +198,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             return true;
         }
 
-        public async Task<bool> ResetPassword(ResetPasswordDto input)
+        public async Task<bool> ResetPassword(UserResetPasswordDto input)
         {
             if (_abpSession.UserId == null)
             {

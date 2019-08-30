@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
-    public class ChangeUserLanguageDto
+    public class UserChangeLanguageDto
     {
         [Required]
         public string LanguageName { get; set; }

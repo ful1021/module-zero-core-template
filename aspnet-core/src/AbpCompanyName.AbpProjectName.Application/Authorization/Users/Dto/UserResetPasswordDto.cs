@@ -2,7 +2,7 @@
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
-    public class ResetPasswordDto
+    public class UserResetPasswordDto
     {
         [Required]
         public string AdminPassword { get; set; }

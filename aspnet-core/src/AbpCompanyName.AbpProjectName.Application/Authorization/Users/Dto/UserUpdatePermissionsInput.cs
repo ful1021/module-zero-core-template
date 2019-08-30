@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
-    public class UpdateUserPermissionsInput
+    public class UserUpdatePermissionsInput
     {
         [Range(1, int.MaxValue)]
         public long Id { get; set; }

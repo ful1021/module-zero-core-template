@@ -2,7 +2,7 @@
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
-    public class ChangePasswordDto
+    public class UserChangePasswordDto
     {
         [Required]
         public string CurrentPassword { get; set; }
