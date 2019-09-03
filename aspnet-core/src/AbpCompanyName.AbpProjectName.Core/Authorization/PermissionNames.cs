@@ -87,5 +87,45 @@
 		/// </summary>
 		public const string System_Users_Unlock = "System.Users.Unlock";
 
+		/// <summary>
+		/// 字典
+		/// </summary>
+		public const string Dict = "Dict";
+
+		/// <summary>
+		/// 字典_字典维护
+		/// </summary>
+		public const string Dict_DictData = "Dict.DictData";
+
+		/// <summary>
+		/// 字典_字典维护_列表
+		/// </summary>
+		public const string Dict_DictData_List = "Dict.DictData.List";
+
+		/// <summary>
+		/// 字典_字典维护_新增
+		/// </summary>
+		public const string Dict_DictData_Create = "Dict.DictData.Create";
+
+		/// <summary>
+		/// 字典_字典维护_编辑
+		/// </summary>
+		public const string Dict_DictData_Edit = "Dict.DictData.Edit";
+
+		/// <summary>
+		/// 字典_字典维护_删除
+		/// </summary>
+		public const string Dict_DictData_Delete = "Dict.DictData.Delete";
+
+		/// <summary>
+		/// 字典_字典维护_导入
+		/// </summary>
+		public const string Dict_DictData_Import = "Dict.DictData.Import";
+
+		/// <summary>
+		/// 字典_字典维护_导出
+		/// </summary>
+		public const string Dict_DictData_Export = "Dict.DictData.Export";
+
     }
 }

@@ -158,7 +158,8 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         {
             var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => new { r.NormalizedName, r.DisplayName }).ToList();
             var userDto = base.MapToEntityDto(user);
-            userDto.RoleNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
+            userDto.DisplayRoleNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
+            userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
             return userDto;
         }
 

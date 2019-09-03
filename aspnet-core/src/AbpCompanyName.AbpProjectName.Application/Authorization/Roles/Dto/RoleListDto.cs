@@ -8,6 +8,8 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Roles.Dto
     {
         public string Name { get; set; }
 
+        public string NormalizedName { get; set; }
+
         public string DisplayName { get; set; }
 
         public bool IsStatic { get; set; }

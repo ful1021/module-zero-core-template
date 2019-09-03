@@ -36,5 +36,19 @@
         ]
       }
     ]
+  },
+  {
+    "name": "Dict",
+    "displayName": "字典",
+    "url": "/dict",
+    "children": [
+      {
+        "name": "DictData",
+        "url": "dictdata",
+        "displayName": "字典维护",
+        "defaultPermission": true,
+        "importExport": true
+      }
+    ]
   }
 ]

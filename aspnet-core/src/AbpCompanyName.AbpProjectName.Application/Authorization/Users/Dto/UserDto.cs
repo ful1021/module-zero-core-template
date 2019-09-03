@@ -2,8 +2,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.Authorization.Users;
-using Abp.AutoMapper;
-using AbpCompanyName.AbpProjectName.Authorization.Users;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
 {
@@ -33,6 +31,8 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
         public DateTime? LastLoginTime { get; set; }
 
         public DateTime CreationTime { get; set; }
+
+        public string[] DisplayRoleNames { get; set; }
 
         public string[] RoleNames { get; set; }
     }

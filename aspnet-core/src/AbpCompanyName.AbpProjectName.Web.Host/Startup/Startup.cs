@@ -17,6 +17,7 @@ using AbpCompanyName.AbpProjectName.Identity;
 
 using Abp.AspNetCore.SignalR.Hubs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 
 namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
 {
@@ -75,6 +76,31 @@ namespace AbpCompanyName.AbpProjectName.Web.Host.Startup
                     In = "header",
                     Type = "apiKey"
                 });
+            });
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // 配置身份选项
+                // 密码强度配置
+                options.Password.RequireDigit = false;//是否需要数字(0-9).
+                options.Password.RequiredLength = 1;//设置密码长度最小为6
+                options.Password.RequireNonAlphanumeric = false;//是否包含非字母或数字字符。
+                options.Password.RequireUppercase = false;//是否需要包含大写字母(A-Z).
+                options.Password.RequireLowercase = false;//是否需要包含小写字母(a-z).
+                options.Password.RequiredUniqueChars = 1;//需要密码中不同字符的数目.默认为1
+
+                // 锁定设置
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);//账户锁定时长5分钟
+                options.Lockout.MaxFailedAccessAttempts = 10;//10次失败的尝试将账户锁定
+                options.Lockout.AllowedForNewUsers = true;//是否锁定新用户
+
+                // 用户注册设置
+                options.User.RequireUniqueEmail = true; //是否Email地址必须唯一
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";//用户名可选字符（字母大小写+数字+（-._@+））
+
+                // 登陆配置
+                options.SignIn.RequireConfirmedEmail = false;//需要确认的电子邮件登录。默认为false。
+                options.SignIn.RequireConfirmedPhoneNumber = false;//需要确认的电话号码登录。默认为false。
             });
 
             // Configure Abp and Dependency Injection
