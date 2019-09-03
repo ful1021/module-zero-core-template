@@ -18,6 +18,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users.Dto
             CreateMap<UserUpdateInput, User>().ForMember(x => x.Roles, opt => opt.Ignore());
 
             CreateMap<User, UserDto>();
+            CreateMap<User, UserListDto>();
         }
     }
 }

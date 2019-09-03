@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Identity;
 namespace AbpCompanyName.AbpProjectName.Authorization.Users
 {
     [AbpAuthorize(PermissionNames.System_Users)]
-    public class UserAppService : PagedCudAppService<User, UserDto, UserDto, long, UserListInput, UserCreateInput, UserUpdateInput>, IUserAppService
+    public class UserAppService : PagedCudAppService<User, UserListDto, UserDto, long, UserListInput, UserCreateInput, UserUpdateInput>, IUserAppService
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
@@ -51,8 +51,9 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         [AbpAuthorize(PermissionNames.System_Users_Create)]
         public override async Task<UserDto> Create(UserCreateInput input)
         {
-            var user = ObjectMapper.Map<User>(input);
+            var user = MapToEntity(input);
 
+            user.Surname = user.Name;
             user.TenantId = AbpSession.TenantId;
             user.IsEmailConfirmed = true;
 
@@ -116,6 +117,18 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
         #endregion 编辑用户权限
 
+        /// <summary>
+        /// 针对登陆密码输错次数过多，锁定的用户解锁
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [AbpAuthorize(PermissionNames.System_Users_Unlock)]
+        public async Task UnlockUser(EntityDto<long> input)
+        {
+            var user = await _userManager.GetUserByIdAsync(input.Id);
+            user.Unlock();
+        }
+
         [AbpAuthorize(PermissionNames.System_Users_Delete)]
         public override async Task Delete(EntityDto<long> input)
         {
@@ -149,15 +162,19 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             user.SetNormalizedNames();
         }
 
-        protected override UserDto MapToList(User entity)
+        protected override UserListDto MapToList(User user)
         {
-            return MapToEntityDto(entity);
+            var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => new { r.NormalizedName, r.DisplayName }).ToList();
+            var userDto = ObjectMapper.Map<UserListDto>(user);
+            userDto.DisplayRoleNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
+            userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
+            return userDto;
         }
 
         protected override UserDto MapToEntityDto(User user)
         {
             var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => new { r.NormalizedName, r.DisplayName }).ToList();
-            var userDto = base.MapToEntityDto(user);
+            var userDto = ObjectMapper.Map<UserDto>(user);
             userDto.DisplayRoleNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
             userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
             return userDto;
