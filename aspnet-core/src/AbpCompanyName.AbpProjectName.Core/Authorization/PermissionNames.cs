@@ -5,107 +5,127 @@
 		/// <summary>
 		/// 设置
 		/// </summary>
-		public const string Pages = "Pages";
-
-		/// <summary>
-		/// 设置_租户管理
-		/// </summary>
-		public const string Pages_Tenants = "Pages.Tenants";
-
-		/// <summary>
-		/// 设置_租户管理_列表
-		/// </summary>
-		public const string Pages_Tenants_List = "Pages.Tenants.List";
-
-		/// <summary>
-		/// 设置_租户管理_新增
-		/// </summary>
-		public const string Pages_Tenants_Create = "Pages.Tenants.Create";
-
-		/// <summary>
-		/// 设置_租户管理_编辑
-		/// </summary>
-		public const string Pages_Tenants_Edit = "Pages.Tenants.Edit";
-
-		/// <summary>
-		/// 设置_租户管理_删除
-		/// </summary>
-		public const string Pages_Tenants_Delete = "Pages.Tenants.Delete";
+		public const string System = "System";
 
 		/// <summary>
 		/// 设置_角色管理
 		/// </summary>
-		public const string Pages_Roles = "Pages.Roles";
+		public const string System_Roles = "System.Roles";
 
 		/// <summary>
 		/// 设置_角色管理_列表
 		/// </summary>
-		public const string Pages_Roles_List = "Pages.Roles.List";
+		public const string System_Roles_List = "System.Roles.List";
 
 		/// <summary>
 		/// 设置_角色管理_新增
 		/// </summary>
-		public const string Pages_Roles_Create = "Pages.Roles.Create";
+		public const string System_Roles_Create = "System.Roles.Create";
 
 		/// <summary>
 		/// 设置_角色管理_编辑
 		/// </summary>
-		public const string Pages_Roles_Edit = "Pages.Roles.Edit";
+		public const string System_Roles_Edit = "System.Roles.Edit";
 
 		/// <summary>
 		/// 设置_角色管理_删除
 		/// </summary>
-		public const string Pages_Roles_Delete = "Pages.Roles.Delete";
+		public const string System_Roles_Delete = "System.Roles.Delete";
 
 		/// <summary>
 		/// 设置_用户管理
 		/// </summary>
-		public const string Pages_Users = "Pages.Users";
+		public const string System_Users = "System.Users";
 
 		/// <summary>
 		/// 设置_用户管理_列表
 		/// </summary>
-		public const string Pages_Users_List = "Pages.Users.List";
+		public const string System_Users_List = "System.Users.List";
 
 		/// <summary>
 		/// 设置_用户管理_新增
 		/// </summary>
-		public const string Pages_Users_Create = "Pages.Users.Create";
+		public const string System_Users_Create = "System.Users.Create";
 
 		/// <summary>
 		/// 设置_用户管理_编辑
 		/// </summary>
-		public const string Pages_Users_Edit = "Pages.Users.Edit";
+		public const string System_Users_Edit = "System.Users.Edit";
 
 		/// <summary>
 		/// 设置_用户管理_删除
 		/// </summary>
-		public const string Pages_Users_Delete = "Pages.Users.Delete";
+		public const string System_Users_Delete = "System.Users.Delete";
 
 		/// <summary>
 		/// 设置_用户管理_导入
 		/// </summary>
-		public const string Pages_Users_Import = "Pages.Users.Import";
+		public const string System_Users_Import = "System.Users.Import";
 
 		/// <summary>
 		/// 设置_用户管理_导出
 		/// </summary>
-		public const string Pages_Users_Export = "Pages.Users.Export";
+		public const string System_Users_Export = "System.Users.Export";
 
 		/// <summary>
 		/// 设置_用户管理_模拟用户登录
 		/// </summary>
-		public const string Pages_Users_Impersonate = "Pages.Users.Impersonate";
+		public const string System_Users_Impersonate = "System.Users.Impersonate";
+
+		/// <summary>
+		/// 设置_用户管理_用户权限
+		/// </summary>
+		public const string System_Users_ChangePermissions = "System.Users.ChangePermissions";
 
 		/// <summary>
 		/// 设置_用户管理_重置密码
 		/// </summary>
-		public const string Pages_Users_ResetPassword = "Pages.Users.ResetPassword";
+		public const string System_Users_ResetPassword = "System.Users.ResetPassword";
 
 		/// <summary>
 		/// 设置_用户管理_解锁
 		/// </summary>
-		public const string Pages_Users_Unlock = "Pages.Users.Unlock";
+		public const string System_Users_Unlock = "System.Users.Unlock";
+
+		/// <summary>
+		/// 字典
+		/// </summary>
+		public const string Dict = "Dict";
+
+		/// <summary>
+		/// 字典_字典维护
+		/// </summary>
+		public const string Dict_DictData = "Dict.DictData";
+
+		/// <summary>
+		/// 字典_字典维护_列表
+		/// </summary>
+		public const string Dict_DictData_List = "Dict.DictData.List";
+
+		/// <summary>
+		/// 字典_字典维护_新增
+		/// </summary>
+		public const string Dict_DictData_Create = "Dict.DictData.Create";
+
+		/// <summary>
+		/// 字典_字典维护_编辑
+		/// </summary>
+		public const string Dict_DictData_Edit = "Dict.DictData.Edit";
+
+		/// <summary>
+		/// 字典_字典维护_删除
+		/// </summary>
+		public const string Dict_DictData_Delete = "Dict.DictData.Delete";
+
+		/// <summary>
+		/// 字典_字典维护_导入
+		/// </summary>
+		public const string Dict_DictData_Import = "Dict.DictData.Import";
+
+		/// <summary>
+		/// 字典_字典维护_导出
+		/// </summary>
+		public const string Dict_DictData_Export = "Dict.DictData.Export";
 
     }
 }

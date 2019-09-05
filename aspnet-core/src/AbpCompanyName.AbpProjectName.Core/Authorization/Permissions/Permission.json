@@ -1,15 +1,9 @@
 ﻿[
   {
-    "name": "Pages",
+    "name": "System",
     "displayName": "设置",
     "url": "/system",
-    "icon": "user",
     "children": [
-      {
-        "name": "Tenants",
-        "displayName": "租户管理",
-        "defaultPermission": true
-      },
       {
         "name": "Roles",
         "displayName": "角色管理",
@@ -28,6 +22,10 @@
             "displayName": "模拟用户登录"
           },
           {
+            "name": "ChangePermissions",
+            "displayName": "用户权限"
+          },
+          {
             "name": "ResetPassword",
             "displayName": "重置密码"
           },
@@ -36,6 +34,20 @@
             "displayName": "解锁"
           }
         ]
+      }
+    ]
+  },
+  {
+    "name": "Dict",
+    "displayName": "字典",
+    "url": "/dict",
+    "children": [
+      {
+        "name": "DictData",
+        "url": "dictdata",
+        "displayName": "字典维护",
+        "defaultPermission": true,
+        "importExport": true
       }
     ]
   }

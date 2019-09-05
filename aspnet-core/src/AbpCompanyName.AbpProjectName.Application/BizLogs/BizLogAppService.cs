@@ -11,7 +11,7 @@ namespace AbpCompanyName.AbpProjectName.BizLogs
     /// <summary>
     /// 业务日志  服务实现
     /// </summary>
-    public class BizLogAppService : AsyncCrudAppServiceBase<BizLog, BizLogQueryDto, BizLogQueryDto, Guid, BizLogGetAllInput, BizLogCreateInput, BizLogDto>, IBizLogAppService
+    public class BizLogAppService : PagedCudAppService<BizLog, BizLogQueryDto, BizLogQueryDto, Guid, BizLogGetAllInput, BizLogCreateInput, BizLogDto>, IBizLogAppService
     {
         private readonly IRepository<BizLog, Guid> _bizLogRepository;
         /// <summary>

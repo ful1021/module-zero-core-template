@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Abp.Application.Navigation;
 using Abp.Auditing;
+using Abp.Authorization;
 using Abp.Runtime.Session;
 using AbpCompanyName.AbpProjectName.Sessions.Dto;
 
@@ -52,6 +53,7 @@ namespace AbpCompanyName.AbpProjectName.Sessions
             return output;
         }
 
+        [AbpAuthorize]
         [DisableAuditing]
         public async Task<Dictionary<string, UserMenu>> GetMenusAsync()
         {
@@ -59,6 +61,7 @@ namespace AbpCompanyName.AbpProjectName.Sessions
             return userMenus.ToDictionary(userMenu => userMenu.Name, userMenu => userMenu);
         }
 
+        [AbpAuthorize]
         [DisableAuditing]
         public async Task<UserMenu> GetMenuAsync(string menuName)
         {
