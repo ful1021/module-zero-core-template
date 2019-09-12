@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
@@ -10,7 +9,6 @@ using Abp.Linq.Extensions;
 using Abp.Localization;
 using Abp.Runtime.Session;
 using Abp.UI;
-using AbpCompanyName.AbpProjectName.Authorization.Accounts;
 using AbpCompanyName.AbpProjectName.Authorization.Permissions;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.Authorization.Users.Dto;
@@ -23,26 +21,20 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
-        private readonly IRepository<Role> _roleRepository;
         private readonly IPasswordHasher<User> _passwordHasher;
-        private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
 
         public UserAppService(
             IRepository<User, long> repository,
             UserManager userManager,
             RoleManager roleManager,
-            IRepository<Role> roleRepository,
             IPasswordHasher<User> passwordHasher,
-            IAbpSession abpSession,
             LogInManager logInManager)
             : base(repository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _roleRepository = roleRepository;
             _passwordHasher = passwordHasher;
-            _abpSession = abpSession;
             _logInManager = logInManager;
         }
 
@@ -190,50 +182,44 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
         #endregion 私有方法
 
+        [AbpAuthorize]
         public async Task<bool> ChangePassword(UserChangePasswordDto input)
         {
-            if (_abpSession.UserId == null)
-            {
-                throw new UserFriendlyException("Please log in before attemping to change password.");
-            }
-            long userId = _abpSession.UserId.Value;
+            long userId = AbpSession.UserId.Value;
             var user = await _userManager.GetUserByIdAsync(userId);
             var loginAsync = await _logInManager.LoginAsync(user.UserName, input.CurrentPassword, shouldLockout: false);
             if (loginAsync.Result != AbpLoginResultType.Success)
             {
-                throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
+                throw new UserFriendlyException("您的‘现有密码’与记录的密码不匹配。请重试或与管理员联系以获得重置密码的帮助。");
             }
-            if (!new Regex(AccountAppService.PasswordRegex).IsMatch(input.NewPassword))
-            {
-                throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
-            }
+            //if (!new Regex(AccountAppService.PasswordRegex).IsMatch(input.NewPassword))
+            //{
+            //    throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
+            //}
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
             CurrentUnitOfWork.SaveChanges();
             return true;
         }
 
+        [AbpAuthorize(PermissionNames.System_Users_ResetPassword)]
         public async Task<bool> ResetPassword(UserResetPasswordDto input)
         {
-            if (_abpSession.UserId == null)
-            {
-                throw new UserFriendlyException("Please log in before attemping to reset password.");
-            }
-            long currentUserId = _abpSession.UserId.Value;
+            long currentUserId = AbpSession.UserId.Value;
             var currentUser = await _userManager.GetUserByIdAsync(currentUserId);
             var loginAsync = await _logInManager.LoginAsync(currentUser.UserName, input.AdminPassword, shouldLockout: false);
             if (loginAsync.Result != AbpLoginResultType.Success)
             {
-                throw new UserFriendlyException("Your 'Admin Password' did not match the one on record.  Please try again.");
+                throw new UserFriendlyException("当前账号密码不正确");
             }
             if (currentUser.IsDeleted || !currentUser.IsActive)
             {
                 return false;
             }
-            var roles = await _userManager.GetRolesAsync(currentUser);
-            if (!roles.Contains(StaticRoleNames.Tenants.Admin))
-            {
-                throw new UserFriendlyException("Only administrators may reset passwords.");
-            }
+            //var roles = await _userManager.GetRolesAsync(currentUser);
+            //if (!roles.Contains(StaticRoleNames.Tenants.Admin))
+            //{
+            //    throw new UserFriendlyException("当前账号没有权限重置密码");
+            //}
 
             var user = await _userManager.GetUserByIdAsync(input.UserId);
             if (user != null)

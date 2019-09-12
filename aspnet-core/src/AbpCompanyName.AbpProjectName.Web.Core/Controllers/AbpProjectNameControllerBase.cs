@@ -5,8 +5,10 @@ using System.Linq;
 using Abp.AspNetCore.Mvc.Controllers;
 using Abp.IdentityFramework;
 using Abp.UI;
+using Abp.Web.Models;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AbpCompanyName.AbpProjectName.Controllers
 {
@@ -20,6 +22,16 @@ namespace AbpCompanyName.AbpProjectName.Controllers
         protected void CheckErrors(IdentityResult identityResult)
         {
             identityResult.CheckErrors(LocalizationManager);
+        }
+
+        protected IActionResult JsonError(string msg)
+        {
+            return Json(new AjaxResponse(new ErrorInfo(msg)));
+        }
+
+        protected IActionResult JsonOk(object result)
+        {
+            return Json(new AjaxResponse(result));
         }
 
         protected Stream GetRequestFileStream()
