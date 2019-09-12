@@ -1,4 +1,5 @@
-﻿using Abp.Modules;
+﻿using Abp.GeneralTree;
+using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Timing;
 using Abp.Zero;
@@ -13,7 +14,7 @@ using AbpCompanyName.AbpProjectName.Timing;
 
 namespace AbpCompanyName.AbpProjectName
 {
-    [DependsOn(typeof(AbpZeroCoreModule))]
+    [DependsOn(typeof(AbpZeroCoreModule), typeof(GeneralTreeModule))]
     public class AbpProjectNameCoreModule : AbpModule
     {
         public override void PreInitialize()

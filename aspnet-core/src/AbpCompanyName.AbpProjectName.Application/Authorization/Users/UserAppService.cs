@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Identity;
 namespace AbpCompanyName.AbpProjectName.Authorization.Users
 {
     [AbpAuthorize(PermissionNames.System_Users)]
-    public class UserAppService : PagedCudAppService<User, UserListDto, UserDto, long, UserListInput, UserCreateInput, UserUpdateInput>, IUserAppService
+    public class UserAppService : AppServiceBase<User, long>, IUserAppService
     {
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
@@ -46,12 +46,36 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             _logInManager = logInManager;
         }
 
+        protected IQueryable<User> CreateFilteredQuery(UserListInput input)
+        {
+            return Repository.GetAllIncluding(x => x.Roles)
+                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
+                .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
+        }
+
+        [AbpAuthorize(PermissionNames.System_Users_List)]
+        public async Task<PagedResultDto<UserListDto>> PagedList(UserListInput input)
+        {
+            var query = CreateFilteredQuery(input);
+            return await base.ToPagedList<UserListInput, UserListDto>(query, input, MapToList);
+        }
+
+        protected UserListDto MapToList(User user)
+        {
+            var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => new { r.NormalizedName, r.DisplayName }).ToList();
+            var userDto = ObjectMapper.Map<UserListDto>(user);
+            userDto.DisplayRoleNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
+            userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
+            return userDto;
+        }
+
         #region 增删改
 
         [AbpAuthorize(PermissionNames.System_Users_Create)]
-        public override async Task<UserDto> Create(UserCreateInput input)
+        public async Task<UserDto> Create(UserCreateInput input)
         {
-            var user = MapToEntity(input);
+            var user = ObjectMapper.Map<User>(input);
+            user.SetNormalizedNames();
 
             user.Surname = user.Name;
             user.TenantId = AbpSession.TenantId;
@@ -70,11 +94,12 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         }
 
         [AbpAuthorize(PermissionNames.System_Users_Edit)]
-        public override async Task<UserDto> Update(UserUpdateInput input)
+        public async Task<UserDto> Update(UserUpdateInput input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
 
-            MapToEntity(input, user);
+            ObjectMapper.Map(input, user);
+            user.SetNormalizedNames();
 
             CheckErrors(await _userManager.UpdateAsync(user));
 
@@ -130,7 +155,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         }
 
         [AbpAuthorize(PermissionNames.System_Users_Delete)]
-        public override async Task Delete(EntityDto<long> input)
+        public async Task Delete(EntityDto<long> input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
             await _userManager.DeleteAsync(user);
@@ -149,42 +174,13 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
         #region 私有方法
 
-        protected override User MapToEntity(UserCreateInput createInput)
-        {
-            var user = ObjectMapper.Map<User>(createInput);
-            user.SetNormalizedNames();
-            return user;
-        }
-
-        protected override void MapToEntity(UserUpdateInput input, User user)
-        {
-            ObjectMapper.Map(input, user);
-            user.SetNormalizedNames();
-        }
-
-        protected override UserListDto MapToList(User user)
-        {
-            var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => new { r.NormalizedName, r.DisplayName }).ToList();
-            var userDto = ObjectMapper.Map<UserListDto>(user);
-            userDto.DisplayRoleNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
-            userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
-            return userDto;
-        }
-
-        protected override UserDto MapToEntityDto(User user)
+        protected UserDto MapToEntityDto(User user)
         {
             var roles = _roleManager.Roles.Where(r => user.Roles.Any(ur => ur.RoleId == r.Id)).Select(r => new { r.NormalizedName, r.DisplayName }).ToList();
             var userDto = ObjectMapper.Map<UserDto>(user);
             userDto.DisplayRoleNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
             userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
             return userDto;
-        }
-
-        protected override IQueryable<User> CreateFilteredQuery(UserListInput input)
-        {
-            return Repository.GetAllIncluding(x => x.Roles)
-                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
-                .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
         }
 
         protected virtual void CheckErrors(IdentityResult identityResult)

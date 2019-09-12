@@ -11,7 +11,7 @@ namespace AbpCompanyName.AbpProjectName.BizLogs
     /// <summary>
     /// 业务日志  服务实现
     /// </summary>
-    public class BizLogAppService : PagedCudAppService<BizLog, BizLogQueryDto, BizLogQueryDto, Guid, BizLogGetAllInput, BizLogCreateInput, BizLogDto>, IBizLogAppService
+    public class BizLogAppService : AppServiceBase<BizLog, Guid>, IBizLogAppService
     {
         private readonly IRepository<BizLog, Guid> _bizLogRepository;
         /// <summary>
@@ -27,12 +27,12 @@ namespace AbpCompanyName.AbpProjectName.BizLogs
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        protected override IQueryable<BizLog> CreateFilteredQuery(BizLogGetAllInput input)
+        protected IQueryable<BizLog> CreateFilteredQuery(BizLogGetAllInput input)
         {
             //var filters = input.Filter.ToStringArray();
             var creationTimeRange = input.CreationTime.ToDateTimeRange();
 
-            return base.CreateFilteredQuery(input)
+            return Repository.GetAll()
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
                 .WhereIf(!input.BizData.IsNullOrWhiteSpace(), a => a.BizData.Contains(input.BizData))
                 .WhereIf(!input.BizDescription.IsNullOrWhiteSpace(), a => a.BizDescription.Contains(input.BizDescription))

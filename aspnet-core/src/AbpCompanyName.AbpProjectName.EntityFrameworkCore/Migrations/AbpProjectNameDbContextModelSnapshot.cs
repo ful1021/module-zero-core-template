@@ -1034,6 +1034,45 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.ToTable("Core_Users");
                 });
 
+            modelBuilder.Entity("AbpCompanyName.AbpProjectName.DataDictionaries.DataDictionary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(128);
+
+                    b.Property<DateTime>("CreationTime");
+
+                    b.Property<long?>("CreatorUserId");
+
+                    b.Property<string>("FullName");
+
+                    b.Property<DateTime?>("LastModificationTime");
+
+                    b.Property<long?>("LastModifierUserId");
+
+                    b.Property<int>("Level");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256);
+
+                    b.Property<int?>("ParentId");
+
+                    b.Property<string>("TypeCode")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("TypeName")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Core_DataDictionaries");
+                });
+
             modelBuilder.Entity("AbpCompanyName.AbpProjectName.MultiTenancy.Tenant", b =>
                 {
                     b.Property<int>("Id")
@@ -1232,6 +1271,13 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     b.HasOne("AbpCompanyName.AbpProjectName.Authorization.Users.User", "LastModifierUser")
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
+                });
+
+            modelBuilder.Entity("AbpCompanyName.AbpProjectName.DataDictionaries.DataDictionary", b =>
+                {
+                    b.HasOne("AbpCompanyName.AbpProjectName.DataDictionaries.DataDictionary", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
                 });
 
             modelBuilder.Entity("AbpCompanyName.AbpProjectName.MultiTenancy.Tenant", b =>

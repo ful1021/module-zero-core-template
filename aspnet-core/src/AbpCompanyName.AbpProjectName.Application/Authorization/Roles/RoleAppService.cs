@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Identity;
 namespace AbpCompanyName.AbpProjectName.Authorization.Roles
 {
     [AbpAuthorize(PermissionNames.System_Roles)]
-    public class RoleAppService : PagedCudAppService<Role, RoleListDto, RoleDto, int, RoleListInput, RoleCreateInput, RoleUpdateInput>, IRoleAppService
+    public class RoleAppService : AppServiceBase<Role, int>, IRoleAppService
     {
         private readonly IPermissionManager _permissionManager;
         private readonly RoleManager _roleManager;
@@ -29,10 +29,25 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Roles
             _userManager = userManager;
         }
 
+        protected IQueryable<Role> CreateFilteredQuery(RoleListInput input)
+        {
+            return Repository.GetAllIncluding(x => x.Permissions)
+                .WhereIf(!input.Permission.IsNullOrWhiteSpace(), r => r.Permissions.Any(rp => rp.Name == input.Permission && rp.IsGranted))
+                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.Name.Contains(input.Keyword)
+                || x.DisplayName.Contains(input.Keyword));
+        }
+
+        [AbpAuthorize(PermissionNames.System_Roles_List)]
+        public async Task<PagedResultDto<RoleListDto>> PagedList(RoleListInput input)
+        {
+            var query = CreateFilteredQuery(input);
+            return await base.ToPagedList<RoleListInput, RoleListDto>(query, input);
+        }
+
         #region 增删改
 
         [AbpAuthorize(PermissionNames.System_Roles_Create)]
-        public override async Task<RoleDto> Create(RoleCreateInput input)
+        public async Task<RoleDto> Create(RoleCreateInput input)
         {
             var role = new Role(AbpSession.TenantId, input.DisplayName) { IsDefault = input.IsDefault };
             CheckErrors(await _roleManager.CreateAsync(role));
@@ -58,7 +73,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Roles
         }
 
         [AbpAuthorize(PermissionNames.System_Roles_Edit)]
-        public override async Task<RoleDto> Update(RoleUpdateInput input)
+        public async Task<RoleDto> Update(RoleUpdateInput input)
         {
             var role = await _roleManager.GetRoleByIdAsync(input.Id);
             role.DisplayName = input.DisplayName;
@@ -70,7 +85,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Roles
         }
 
         [AbpAuthorize(PermissionNames.System_Roles_Delete)]
-        public override async Task Delete(EntityDto<int> input)
+        public async Task Delete(EntityDto<int> input)
         {
             var role = await _roleManager.FindByIdAsync(input.Id.ToString());
             var users = await _userManager.GetUsersInRoleAsync(role.NormalizedName);
@@ -85,15 +100,12 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Roles
 
         #endregion 增删改
 
-        protected override IQueryable<Role> CreateFilteredQuery(RoleListInput input)
-        {
-            return Repository.GetAllIncluding(x => x.Permissions)
-                .WhereIf(!input.Permission.IsNullOrWhiteSpace(), r => r.Permissions.Any(rp => rp.Name == input.Permission && rp.IsGranted))
-                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.Name.Contains(input.Keyword)
-                || x.DisplayName.Contains(input.Keyword));
-        }
-
         #region 私有方法
+
+        private RoleDto MapToEntityDto(Role entity)
+        {
+            return ObjectMapper.Map<RoleDto>(entity);
+        }
 
         private void CheckErrors(IdentityResult identityResult)
         {
