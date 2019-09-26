@@ -9,7 +9,6 @@ using AbpCompanyName.AbpProjectName.Enumerations.Dto;
 
 namespace AbpCompanyName.AbpProjectName.Enumerations
 {
-    [AbpAuthorize()]
     public class EnumsAppService : AbpProjectNameAppServiceBase, IEnumsAppService
     {
         private readonly IEnumDataConventionalRegistrar _enumDataRegistrar;

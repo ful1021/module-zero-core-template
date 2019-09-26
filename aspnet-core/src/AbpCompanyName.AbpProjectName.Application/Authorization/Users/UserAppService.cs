@@ -49,7 +49,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         public async Task<PagedResultDto<UserListDto>> PagedList(UserListInput input)
         {
             var query = CreateFilteredQuery(input);
-            return await base.ToPagedList<UserListInput, UserListDto>(query, input, MapToList);
+            return await base.ToPagedList(query, input, MapToList);
         }
 
         protected UserListDto MapToList(User user)

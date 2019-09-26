@@ -5,6 +5,26 @@
     "url": "/system",
     "children": [
       {
+        "name": "OrganizationUnits",
+        "displayName": "组织单元",
+        "url": "users",
+        "defaultPermission": true,
+        "children": [
+          {
+            "name": "ManageOrganizationTree",
+            "displayName": "管理树"
+          },
+          {
+            "name": "ManageMembers",
+            "displayName": "管理用户"
+          },
+          {
+            "name": "ManageRoles",
+            "displayName": "管理角色"
+          }
+        ]
+      },
+      {
         "name": "Roles",
         "displayName": "角色管理",
         "url": "roles",

@@ -8,6 +8,46 @@
 		public const string System = "System";
 
 		/// <summary>
+		/// 设置_组织单元
+		/// </summary>
+		public const string System_OrganizationUnits = "System.OrganizationUnits";
+
+		/// <summary>
+		/// 设置_组织单元_列表
+		/// </summary>
+		public const string System_OrganizationUnits_List = "System.OrganizationUnits.List";
+
+		/// <summary>
+		/// 设置_组织单元_新增
+		/// </summary>
+		public const string System_OrganizationUnits_Create = "System.OrganizationUnits.Create";
+
+		/// <summary>
+		/// 设置_组织单元_编辑
+		/// </summary>
+		public const string System_OrganizationUnits_Edit = "System.OrganizationUnits.Edit";
+
+		/// <summary>
+		/// 设置_组织单元_删除
+		/// </summary>
+		public const string System_OrganizationUnits_Delete = "System.OrganizationUnits.Delete";
+
+		/// <summary>
+		/// 设置_组织单元_管理树
+		/// </summary>
+		public const string System_OrganizationUnits_ManageOrganizationTree = "System.OrganizationUnits.ManageOrganizationTree";
+
+		/// <summary>
+		/// 设置_组织单元_管理用户
+		/// </summary>
+		public const string System_OrganizationUnits_ManageMembers = "System.OrganizationUnits.ManageMembers";
+
+		/// <summary>
+		/// 设置_组织单元_管理角色
+		/// </summary>
+		public const string System_OrganizationUnits_ManageRoles = "System.OrganizationUnits.ManageRoles";
+
+		/// <summary>
 		/// 设置_角色管理
 		/// </summary>
 		public const string System_Roles = "System.Roles";
