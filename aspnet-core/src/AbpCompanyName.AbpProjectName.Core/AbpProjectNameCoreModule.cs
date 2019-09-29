@@ -1,4 +1,5 @@
-﻿using Abp.GeneralTree;
+﻿using Abp.Dependency;
+using Abp.GeneralTree;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Timing;
@@ -35,6 +36,8 @@ namespace AbpCompanyName.AbpProjectName
             AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
 
             Configuration.Settings.Providers.Add<AppSettingProvider>();
+
+            IocManager.Register(typeof(ITreeManager<,>), typeof(TreeManager<,>), DependencyLifeStyle.Transient);
         }
 
         public override void Initialize()

@@ -12,9 +12,9 @@ namespace AbpCompanyName.AbpProjectName.DataDictionaries
 {
     public class DataDictionaryAppService : AppServiceBase<DataDictionary, int>, IDataDictionaryAppService
     {
-        private readonly IGeneralTreeManager<DataDictionary, int> _generalTreeManager;
+        private readonly ITreeManager<DataDictionary, int> _generalTreeManager;
 
-        public DataDictionaryAppService(IRepository<DataDictionary> repository, IGeneralTreeManager<DataDictionary, int> generalTreeManager)
+        public DataDictionaryAppService(IRepository<DataDictionary> repository, ITreeManager<DataDictionary, int> generalTreeManager)
             : base(repository)
         {
             _generalTreeManager = generalTreeManager;
@@ -25,6 +25,11 @@ namespace AbpCompanyName.AbpProjectName.DataDictionaries
         {
             var query = Repository.GetAll().Select(a => new DataDictionaryQueryDto
             {
+                TypeCode = a.TypeCode,
+                Order = a.Order,
+                IsStatic = a.IsStatic,
+                IsAllowAddChildren = true,
+
                 Id = a.Id,
                 Code = a.Code,
                 Name = a.Name,
@@ -34,7 +39,7 @@ namespace AbpCompanyName.AbpProjectName.DataDictionaries
 
             var entities = await AsyncQueryableExecuter.ToListAsync(query);
 
-            var list = entities.ToTreeDtoOrderBy<DataDictionaryQueryDto, int, int>(a => a.Id).ToList();
+            var list = entities.ToTreeDtoOrder<DataDictionaryQueryDto, int>(arr => arr.OrderBy(b => b.TypeCode).ThenBy(b => b.Order).ThenBy(b => b.Id)).ToList();
 
             return new ListResultDto<DataDictionaryQueryDto>(list);
         }
@@ -85,7 +90,7 @@ namespace AbpCompanyName.AbpProjectName.DataDictionaries
         [AbpAuthorize(PermissionNames.Dict_DictData_Edit)]
         public async Task Move(DataDictionaryMoveInput input)
         {
-            await _generalTreeManager.MoveAsync(input.Id, input.NewParentId);
+            await _generalTreeManager.MoveOrderAsync(input.Id, input.NewParentId, input.Order);
         }
 
         [AbpAuthorize(PermissionNames.Dict_DictData_Delete)]

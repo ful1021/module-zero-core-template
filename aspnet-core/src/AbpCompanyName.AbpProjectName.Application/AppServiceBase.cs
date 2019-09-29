@@ -89,7 +89,7 @@ namespace AbpCompanyName.AbpProjectName
             return query;
         }
 
-        protected virtual async Task<PagedResultDto<TBasicEntityDto>> ToPagedList<TPagedListInput, TBasicEntityDto>(IQueryable<TEntity> query, TPagedListInput input, Func<TEntity, TBasicEntityDto> selector = null) where TPagedListInput : PagedAndSortedResultRequestDto
+        protected virtual async Task<PagedResultDto<TBasicEntityDto>> ToPagedList<TPagedListInput, TBasicEntityDto>(IQueryable<TEntity> query, TPagedListInput input, Func<TEntity, TBasicEntityDto> selector = null) where TPagedListInput : IPagedResultRequest
         {
             var noPagerQuery = query;
             query = ApplySorting(query, input);
@@ -108,9 +108,12 @@ namespace AbpCompanyName.AbpProjectName
             return new PagedResultDto<TBasicEntityDto>(totalCount, entities);
         }
 
-        protected virtual async Task<ListResultDto<TBasicEntityDto>> ToList<TListInput, TBasicEntityDto>(IQueryable<TEntity> query, TListInput input, Func<TEntity, TBasicEntityDto> selector = null)
+        protected virtual async Task<ListResultDto<TBasicEntityDto>> ToList<TListInput, TBasicEntityDto>(IQueryable<TEntity> query, TListInput input = default(TListInput), Func<TEntity, TBasicEntityDto> selector = null)
         {
-            query = ApplySorting(query, input);
+            if (input != null)
+            {
+                query = ApplySorting(query, input);
+            }
 
             var entities = await ToList(query, selector);
 
@@ -137,6 +140,12 @@ namespace AbpCompanyName.AbpProjectName
         #endregion 查询
 
         #region 查询一条记录
+
+        protected virtual async Task<TEntityDto> Get<TEntityDto>(EntityDto<TPrimaryKey> input)
+        {
+            var entity = await Repository.GetAsync(input.Id);
+            return MapToEntityDto<TEntityDto>(entity);
+        }
 
         protected virtual async Task<TDetailEntityDto> FirstOrDefaultAsync<TDetailEntityDto>(EntityDto<TPrimaryKey> input)
         {

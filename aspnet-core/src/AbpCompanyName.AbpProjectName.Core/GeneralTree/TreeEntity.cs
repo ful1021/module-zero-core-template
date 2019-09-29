@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.Domain.Entities.Auditing;
-using Abp.GeneralTree;
 
 //https://github.com/maliming/Abp.GeneralTree/blob/master/README.CN.md
 
-namespace AbpCompanyName.AbpProjectName.GeneralTree
+namespace Abp.GeneralTree
 {
     /// <summary>
     /// 适用于管理各种树结构实体，例如：区域，组织，类别，行业和具有父子实体的其他实体.
     /// </summary>
-    public abstract class GeneralTreeAggregateRoot<TTree, TPrimaryKey> : AuditedAggregateRoot<TPrimaryKey>, IGeneralTree<TTree, TPrimaryKey>
+    public abstract class TreeEntity<TTree, TPrimaryKey> : AuditedAggregateRoot<TPrimaryKey>, IGeneralTree<TTree, TPrimaryKey>
         where TPrimaryKey : struct
     {
         public const int CodeMaxLength = 128;
@@ -31,6 +30,16 @@ namespace AbpCompanyName.AbpProjectName.GeneralTree
         public virtual string FullName { get; set; }
 
         public virtual int Level { get; set; }
+
+        /// <summary>
+        /// 排序 ，越小则越向前
+        /// </summary>
+        public virtual int Order { get; set; }
+
+        /// <summary>
+        /// 如果为 true，则不能修改或者删除
+        /// </summary>
+        public virtual bool IsStatic { get; set; }
 
         public virtual TPrimaryKey? ParentId { get; set; }
 

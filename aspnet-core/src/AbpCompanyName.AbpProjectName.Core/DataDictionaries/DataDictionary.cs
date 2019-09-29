@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AbpCompanyName.AbpProjectName.GeneralTree;
+using Abp.GeneralTree;
 
 namespace AbpCompanyName.AbpProjectName.DataDictionaries
 {
-    public class DataDictionary : GeneralTreeAggregateRoot<DataDictionary, int>
+    public class DataDictionary : TreeEntity<DataDictionary, int>
     {
         public const int TypeCodeMaxLength = 128;
         public const int TypeNameMaxLength = 256;

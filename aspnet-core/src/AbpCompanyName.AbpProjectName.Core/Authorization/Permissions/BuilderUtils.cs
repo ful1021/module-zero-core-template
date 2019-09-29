@@ -38,10 +38,10 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Permissions
             if (children.Any())
             {
                 parentMenu = menu;
-                parentMenu.CustomData = new
-                {
-                    GrantedPermissions = children.Select(a => $"{name}.{a.Name}").Distinct()
-                };
+                //parentMenu.CustomData = new
+                //{
+                //    GrantedPermissions = children.Select(a => $"{name}.{a.Name}").Distinct()
+                //};
                 foreach (var item in children)
                 {
                     var itemMenu = GenerateMenuItem(item, $"{name}.{item.Name}", parentMenu);

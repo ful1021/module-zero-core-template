@@ -7,7 +7,7 @@
       {
         "name": "OrganizationUnits",
         "displayName": "组织单元",
-        "url": "users",
+        "url": "organ",
         "defaultPermission": true,
         "children": [
           {

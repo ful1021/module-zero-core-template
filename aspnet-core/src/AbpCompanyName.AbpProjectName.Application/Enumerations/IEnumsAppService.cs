@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Abp.Application.Services;
-using AbpCompanyName.AbpProjectName.Enumerations.Dto;
 
 namespace AbpCompanyName.AbpProjectName.Enumerations
 {
@@ -11,6 +10,6 @@ namespace AbpCompanyName.AbpProjectName.Enumerations
         /// </summary>
         /// <param name="regKeys">注册的枚举名称，多个以,分割</param>
         /// <returns></returns>
-        Dictionary<string, IEnumerable<EnumNameValueDto>> BatchGetEnumList(string regKeys);
+        Dictionary<string, IEnumerable<EnumNameValue>> BatchGetEnumList(string regKeys);
     }
 }

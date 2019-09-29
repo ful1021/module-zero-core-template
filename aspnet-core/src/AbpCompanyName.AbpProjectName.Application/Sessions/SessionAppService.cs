@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Abp.Application.Navigation;
 using Abp.Auditing;
 using Abp.Authorization;
+using Abp.Configuration;
+using Abp.Dependency;
 using Abp.Runtime.Session;
 using AbpCompanyName.AbpProjectName.Sessions.Dto;
 
@@ -12,10 +14,14 @@ namespace AbpCompanyName.AbpProjectName.Sessions
     public class SessionAppService : AbpProjectNameAppServiceBase, ISessionAppService
     {
         protected IUserNavigationManager UserNavigationManager { get; }
+        protected ISettingDefinitionManager SettingDefinitionManager { get; }
+        private readonly IIocResolver _iocResolver;
 
-        public SessionAppService(IUserNavigationManager userNavigationManager)
+        public SessionAppService(IUserNavigationManager userNavigationManager, ISettingDefinitionManager settingDefinitionManager, IIocResolver iocResolver)
         {
             UserNavigationManager = userNavigationManager;
+            SettingDefinitionManager = settingDefinitionManager;
+            _iocResolver = iocResolver;
         }
 
         [DisableAuditing]
@@ -38,7 +44,11 @@ namespace AbpCompanyName.AbpProjectName.Sessions
 
             if (AbpSession.UserId.HasValue)
             {
-                output.User = ObjectMapper.Map<UserLoginInfoDto>(await GetCurrentUserAsync());
+                var user = await GetCurrentUserAsync();
+                var role = await UserManager.GetRolesAsync(user);
+
+                output.User = ObjectMapper.Map<UserLoginInfoDto>(user);
+                output.Roles = role;
 
                 output.Session = new
                 {
@@ -48,12 +58,33 @@ namespace AbpCompanyName.AbpProjectName.Sessions
                     ImpersonatorTenantId = AbpSession.ImpersonatorTenantId,
                     MultiTenancySide = AbpSession.MultiTenancySide
                 };
+
+                output.GrantedPermissions = await GetGrantedPermissionNames();
             }
 
             return output;
         }
 
-        [AbpAuthorize]
+        protected async Task<List<string>> GetGrantedPermissionNames()
+        {
+            var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
+            var grantedPermissionNames = new List<string>();
+
+            if (AbpSession.UserId.HasValue)
+            {
+                foreach (var permissionName in allPermissionNames)
+                {
+                    if (await PermissionChecker.IsGrantedAsync(permissionName))
+                    {
+                        grantedPermissionNames.Add(permissionName);
+                    }
+                }
+            }
+
+            return grantedPermissionNames;
+        }
+
+        //[AbpAuthorize]
         [DisableAuditing]
         public async Task<Dictionary<string, UserMenu>> GetMenusAsync()
         {
@@ -61,11 +92,36 @@ namespace AbpCompanyName.AbpProjectName.Sessions
             return userMenus.ToDictionary(userMenu => userMenu.Name, userMenu => userMenu);
         }
 
-        [AbpAuthorize]
+        //[AbpAuthorize]//会先访问此接口，如果需要授权的话，将导致前端返回401，会弹窗登陆
         [DisableAuditing]
         public async Task<UserMenu> GetMenuAsync(string menuName)
         {
             return await UserNavigationManager.GetMenuAsync(menuName, AbpSession.ToUserIdentifier());
+        }
+
+        [DisableAuditing]
+        public async Task<Dictionary<string, string>> GetUserSettingConfig()
+        {
+            var config = new Dictionary<string, string>();
+
+            var settingDefinitions = SettingDefinitionManager
+                .GetAllSettingDefinitions();
+
+            using (var scope = _iocResolver.CreateScope())
+            {
+                foreach (var settingDefinition in settingDefinitions)
+                {
+                    if (!await settingDefinition.ClientVisibilityProvider.CheckVisible(scope))
+                    {
+                        continue;
+                    }
+
+                    var settingValue = await SettingManager.GetSettingValueAsync(settingDefinition.Name);
+                    config.Add(settingDefinition.Name, settingValue);
+                }
+            }
+
+            return config;
         }
     }
 }

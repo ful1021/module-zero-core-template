@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AbpCompanyName.AbpProjectName.Migrations
 {
     [DbContext(typeof(AbpProjectNameDbContext))]
-    [Migration("20190911081441_Init")]
+    [Migration("20190929034747_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1051,6 +1051,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<string>("FullName");
 
+                    b.Property<bool>("IsStatic");
+
                     b.Property<DateTime?>("LastModificationTime");
 
                     b.Property<long?>("LastModifierUserId");
@@ -1059,6 +1061,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<string>("Name")
                         .HasMaxLength(256);
+
+                    b.Property<int>("Order");
 
                     b.Property<int?>("ParentId");
 

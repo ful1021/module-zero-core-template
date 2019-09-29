@@ -13,10 +13,10 @@ using AbpCompanyName.AbpProjectName.Authorization.Permissions;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
 using AbpCompanyName.AbpProjectName.Authorization.Users.Dto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Users
 {
-    [AbpAuthorize(PermissionNames.System_Users)]
     public class UserAppService : AppServiceBase<User, long>, IUserAppService
     {
         private readonly UserManager _userManager;
@@ -41,8 +41,20 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
         protected IQueryable<User> CreateFilteredQuery(UserListInput input)
         {
             return Repository.GetAllIncluding(x => x.Roles)
-                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
-                .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
+                .WhereIf(!input.Filter.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Filter) || x.Name.Contains(input.Filter) || x.EmailAddress.Contains(input.Filter))
+                .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive)
+                ;
+        }
+
+        public async Task<ListResultDto<object>> Select()
+        {
+            var result = await AsyncQueryableExecuter.ToListAsync(Repository.GetAll().Take(3000).Select(a => new
+            {
+                a.Id,
+                a.Name,
+                a.UserName
+            }));
+            return new ListResultDto<object>(result);
         }
 
         [AbpAuthorize(PermissionNames.System_Users_List)]
@@ -59,6 +71,17 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             userDto.DisplayRoleNames = roles.Select(r => r.DisplayName).Distinct().ToArray();
             userDto.RoleNames = roles.Select(r => r.NormalizedName).Distinct().ToArray();
             return userDto;
+        }
+
+        [AbpAuthorize]
+        public async Task<UserDto> Get(EntityDto<long> input)
+        {
+            var entity = await Repository.GetAllIncluding(x => x.Roles).AsNoTracking().FirstOrDefaultAsync(a => a.Id == input.Id);
+            if (entity == null)
+            {
+                throw new UserFriendlyException("用户信息有误");
+            }
+            return MapToEntityDto(entity);
         }
 
         #region 增删改
@@ -134,6 +157,8 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
         #endregion 编辑用户权限
 
+        #region 解锁
+
         /// <summary>
         /// 针对登陆密码输错次数过多，锁定的用户解锁
         /// </summary>
@@ -145,6 +170,8 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
             var user = await _userManager.GetUserByIdAsync(input.Id);
             user.Unlock();
         }
+
+        #endregion 解锁
 
         [AbpAuthorize(PermissionNames.System_Users_Delete)]
         public async Task Delete(EntityDto<long> input)

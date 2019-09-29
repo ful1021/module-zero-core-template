@@ -70,6 +70,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     FullName = table.Column<string>(nullable: true),
                     Level = table.Column<int>(nullable: false),
+                    Order = table.Column<int>(nullable: false),
+                    IsStatic = table.Column<bool>(nullable: false),
                     ParentId = table.Column<int>(nullable: true),
                     TypeCode = table.Column<string>(maxLength: 128, nullable: true),
                     TypeName = table.Column<string>(maxLength: 256, nullable: true)

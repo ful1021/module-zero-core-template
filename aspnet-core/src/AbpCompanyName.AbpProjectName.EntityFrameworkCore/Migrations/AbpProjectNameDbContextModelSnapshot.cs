@@ -1049,6 +1049,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<string>("FullName");
 
+                    b.Property<bool>("IsStatic");
+
                     b.Property<DateTime?>("LastModificationTime");
 
                     b.Property<long?>("LastModifierUserId");
@@ -1057,6 +1059,8 @@ namespace AbpCompanyName.AbpProjectName.Migrations
 
                     b.Property<string>("Name")
                         .HasMaxLength(256);
+
+                    b.Property<int>("Order");
 
                     b.Property<int?>("ParentId");
 

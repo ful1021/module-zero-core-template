@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Roles
 {
-    [AbpAuthorize(PermissionNames.System_Roles)]
     public class RoleAppService : AppServiceBase<Role, int>, IRoleAppService
     {
         private readonly IPermissionManager _permissionManager;
@@ -35,6 +34,11 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Roles
                 .WhereIf(!input.Permission.IsNullOrWhiteSpace(), r => r.Permissions.Any(rp => rp.Name == input.Permission && rp.IsGranted))
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.Name.Contains(input.Keyword)
                 || x.DisplayName.Contains(input.Keyword));
+        }
+
+        public async Task<ListResultDto<RoleListDto>> Select()
+        {
+            return await base.ToList<RoleListInput, RoleListDto>(Repository.GetAll().Take(3000));
         }
 
         [AbpAuthorize(PermissionNames.System_Roles_List)]

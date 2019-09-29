@@ -8,5 +8,7 @@ namespace AbpCompanyName.AbpProjectName.DataDictionaries.Dto
         public int Id { get; set; }
 
         public int? NewParentId { get; set; }
+
+        public int Order { get; set; } 
     }
 }

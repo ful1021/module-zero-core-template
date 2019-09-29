@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Abp.Authorization;
 using Abp.Extensions;
-using AbpCompanyName.AbpProjectName.Enumerations.Dto;
 
 namespace AbpCompanyName.AbpProjectName.Enumerations
 {
@@ -23,7 +22,7 @@ namespace AbpCompanyName.AbpProjectName.Enumerations
         /// </summary>
         /// <param name="regKeys">注册的枚举名称，多个以,分割</param>
         /// <returns></returns>
-        public Dictionary<string, IEnumerable<EnumNameValueDto>> BatchGetEnumList(string regKeys)
+        public Dictionary<string, IEnumerable<EnumNameValue>> BatchGetEnumList(string regKeys)
         {
             if (regKeys == null) throw new ArgumentNullException(nameof(regKeys));
 
@@ -34,33 +33,9 @@ namespace AbpCompanyName.AbpProjectName.Enumerations
                 .Where(t => keyList.Contains(t.Name))
                 .ToList();
 
-            var result = types.ToDictionary(t => t.Name.ToCamelCase(), GetEnumMembers);
+            var result = types.ToDictionary(t => t.Name.ToCamelCase(), t => t.GetEnum());
 
             return result;
-        }
-
-        private IEnumerable<EnumNameValueDto> GetEnumMembers(Type enumType)
-        {
-            var values = Enum.GetValues(enumType);
-
-            var result = new List<EnumNameValueDto>();
-
-            foreach (var item in values)
-            {
-                var fi = enumType.GetField(item.ToString());
-                var attr = fi.GetCustomAttribute<DisplayAttribute>();
-                var text = attr?.Name ?? fi?.Name ?? Enum.GetName(enumType, item);
-
-                result.Add(new EnumNameValueDto
-                {
-                    Name = item.ToString(),
-                    Text = text,
-                    Value = Convert.ToInt32(item),
-                    Order = attr?.GetOrder() ?? 0
-                });
-            }
-
-            return result.OrderByDescending(r => r.Order).ToList();
         }
     }
 }

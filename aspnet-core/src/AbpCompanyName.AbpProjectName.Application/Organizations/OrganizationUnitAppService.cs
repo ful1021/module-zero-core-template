@@ -1,17 +1,19 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
+using Abp.GeneralTree;
 using Abp.Linq.Extensions;
 using Abp.Organizations;
 using AbpCompanyName.AbpProjectName.Authorization;
-using AbpCompanyName.AbpProjectName.Organizations.Dto;
-using System.Linq.Dynamic.Core;
-using Abp.Extensions;
-using Microsoft.EntityFrameworkCore;
 using AbpCompanyName.AbpProjectName.Authorization.Roles;
+using AbpCompanyName.AbpProjectName.Organizations.Dto;
+using Microsoft.EntityFrameworkCore;
 
 namespace AbpCompanyName.AbpProjectName.Organizations
 {
@@ -43,23 +45,23 @@ namespace AbpCompanyName.AbpProjectName.Organizations
             var query = from ou in _organizationUnitRepository.GetAll()
                         join uoUser in _userOrganizationUnitRepository.GetAll() on ou.Id equals uoUser.OrganizationUnitId into uoUserGrouped
                         join uoRole in _organizationUnitRoleRepository.GetAll() on ou.Id equals uoRole.OrganizationUnitId into uoRoleGrouped
-                        select new
+                        select new OrganizationUnitDto
                         {
-                            ou,
-                            memberCount = uoUserGrouped.Count(),
-                            roleCount = uoRoleGrouped.Count()
+                            Code = ou.Code,
+                            CreationTime = ou.CreationTime,
+                            CreatorUserId = ou.CreatorUserId,
+                            DisplayName = ou.DisplayName,
+                            Id = ou.Id,
+                            LastModificationTime = ou.LastModificationTime,
+                            LastModifierUserId = ou.LastModifierUserId,
+                            MemberCount = uoUserGrouped.Count(),
+                            ParentId = ou.ParentId,
+                            RoleCount = uoRoleGrouped.Count()
                         };
 
             var items = await query.ToListAsync();
-
-            return new ListResultDto<OrganizationUnitDto>(
-                items.Select(item =>
-                {
-                    var organizationUnitDto = ObjectMapper.Map<OrganizationUnitDto>(item.ou);
-                    organizationUnitDto.MemberCount = item.memberCount;
-                    organizationUnitDto.RoleCount = item.roleCount;
-                    return organizationUnitDto;
-                }).ToList());
+            var list = items.ToTreeDtoOrderBy<OrganizationUnitDto, long, long>(a => a.Id).ToList();
+            return new ListResultDto<OrganizationUnitDto>(list);
         }
 
         public async Task<PagedResultDto<OrganizationUnitUserListDto>> GetOrganizationUnitUsers(GetOrganizationUnitUsersInput input)
@@ -150,7 +152,6 @@ namespace AbpCompanyName.AbpProjectName.Organizations
         {
             await _organizationUnitManager.DeleteAsync(input.Id);
         }
-
 
         [AbpAuthorize(PermissionNames.System_OrganizationUnits_ManageMembers)]
         public async Task RemoveUserFromOrganizationUnit(UserToOrganizationUnitInput input)

@@ -9,15 +9,15 @@ namespace AbpCompanyName.AbpProjectName.Ui
         public List<ElementUiTableColumnDto> GetColumns(string name)
         {
             List<ElementUiTableColumnDto> elementUis = new List<ElementUiTableColumnDto>();
-            switch (name)
-            {
-                case PermissionNames.System_Users:
-                    elementUis = System_Users();
-                    break;
+            //switch (name)
+            //{
+            //    case PermissionNames.System_Users:
+            //        elementUis = System_Users();
+            //        break;
 
-                default:
-                    break;
-            }
+            //    default:
+            //        break;
+            //}
             return elementUis;
         }
 
