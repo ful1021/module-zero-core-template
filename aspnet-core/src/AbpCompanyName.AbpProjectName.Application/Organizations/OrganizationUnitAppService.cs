@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -62,6 +63,43 @@ namespace AbpCompanyName.AbpProjectName.Organizations
             var items = await query.ToListAsync();
             var list = items.ToTreeDtoOrderBy<OrganizationUnitDto, long, long>(a => a.Id).ToList();
             return new ListResultDto<OrganizationUnitDto>(list);
+        }
+
+        public async Task<ListResultDto<OrganizationUnitByDto>> GetOrganizationUnitsByUser(GetOrganizationUnitsByUserInput input)
+        {
+            var ids = _userOrganizationUnitRepository.GetAll()
+                .Where(uou => uou.UserId == input.UserId)
+                .Select(uou => uou.OrganizationUnitId);
+
+            var list = await GetAllByIds(ids);
+            return new ListResultDto<OrganizationUnitByDto>(list);
+        }
+
+        public async Task<ListResultDto<OrganizationUnitByDto>> GetOrganizationUnitsByRole(GetOrganizationUnitsByRoleInput input)
+        {
+            var ids = _organizationUnitRoleRepository.GetAll()
+                .Where(uou => uou.RoleId == input.RoleId)
+                .Select(uou => uou.OrganizationUnitId);
+
+            var list = await GetAllByIds(ids);
+            return new ListResultDto<OrganizationUnitByDto>(list);
+        }
+
+        private async Task<List<OrganizationUnitByDto>> GetAllByIds(IQueryable<long> ids)
+        {
+            var query = _organizationUnitRepository.GetAll()
+                .Where(a => ids.Contains(a.Id))
+                .Select(ou => new OrganizationUnitByDto
+                {
+                    Code = ou.Code,
+                    DisplayName = ou.DisplayName,
+                    Id = ou.Id,
+                    ParentId = ou.ParentId,
+                });
+
+            var items = await query.ToListAsync();
+            var list = items.ToTreeDtoOrderBy<OrganizationUnitByDto, long, long>(a => a.Id).ToList();
+            return list;
         }
 
         public async Task<PagedResultDto<OrganizationUnitUserListDto>> GetOrganizationUnitUsers(GetOrganizationUnitUsersInput input)
