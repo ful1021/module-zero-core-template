@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Abp.AspNetCore.Mvc.Controllers;
 using Abp.IdentityFramework;
 using Abp.UI;
 using Abp.Web.Models;
-using ExcelDataReader;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -71,31 +68,5 @@ namespace AbpCompanyName.AbpProjectName.Controllers
         //    //todo @fuliang 使用Npoi 支持xls
         //    return GetRequestFileStream().ProcessExcelFile(processExcelRow);
         //}
-
-        protected List<TEntity> RequestFileToList<TEntity>(Func<IExcelDataReader, int, TEntity> processExcelRow)
-        {
-            //https://github.com/ExcelDataReader/ExcelDataReader
-
-            var entities = new List<TEntity>();
-            var stream = GetRequestFileStream();
-            using (var reader = ExcelReaderFactory.CreateReader(stream))
-            {
-                do
-                {
-                    var rowIndex = 1;
-                    while (reader.Read())
-                    {
-                        var info = processExcelRow(reader, rowIndex++);
-                        if (info == null)
-                        {
-                            continue;
-                        }
-                        entities.Add(info);
-                    }
-                } while (reader.NextResult());
-            }
-
-            return entities;
-        }
     }
 }

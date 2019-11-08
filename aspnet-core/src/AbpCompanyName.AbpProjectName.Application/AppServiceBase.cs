@@ -212,20 +212,12 @@ namespace AbpCompanyName.AbpProjectName
         protected virtual IQueryable<TBasicEntityDto> ProjectToList<TBasicEntityDto>(IQueryable<TEntity> query)
         {
             var selectMapTo = SelectMapToList<TBasicEntityDto>();
-            if (selectMapTo == null)
-            {
-                return query.ProjectTo<TBasicEntityDto>();
-            }
             return query.Select(selectMapTo);
         }
 
         protected virtual IQueryable<TDetailEntityDto> ProjectTo<TDetailEntityDto>(IQueryable<TEntity> query)
         {
             var selectMapTo = SelectMapTo<TDetailEntityDto>();
-            if (selectMapTo == null)
-            {
-                return query.ProjectTo<TDetailEntityDto>();
-            }
             return query.Select(selectMapTo);
         }
 
