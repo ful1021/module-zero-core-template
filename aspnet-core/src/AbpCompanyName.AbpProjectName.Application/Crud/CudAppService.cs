@@ -213,20 +213,12 @@ namespace AbpCompanyName.AbpProjectName.Crud
         private IQueryable<TBasicEntityDto> ProjectToList(IQueryable<TEntity> query)
         {
             var selectMapTo = SelectMapToList();
-            if (selectMapTo == null)
-            {
-                return query.ProjectTo<TBasicEntityDto>();
-            }
             return query.Select(selectMapTo);
         }
 
         private IQueryable<TDetailEntityDto> ProjectTo(IQueryable<TEntity> query)
         {
             var selectMapTo = SelectMapTo();
-            if (selectMapTo == null)
-            {
-                return query.ProjectTo<TDetailEntityDto>();
-            }
             return query.Select(selectMapTo);
         }
 

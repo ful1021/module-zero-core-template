@@ -63,7 +63,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
             if (input.RoleNames != null)
             {
-                CheckErrors(await _userManager.SetRoles(user, input.RoleNames));
+                CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
             }
 
             return MapToEntityDto(user);
@@ -80,7 +80,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Users
 
             if (input.RoleNames != null)
             {
-                CheckErrors(await _userManager.SetRoles(user, input.RoleNames));
+                CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
             }
 
             return MapToEntityDto(user);
