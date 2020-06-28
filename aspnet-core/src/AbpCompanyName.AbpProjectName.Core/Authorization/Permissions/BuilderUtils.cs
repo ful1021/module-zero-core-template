@@ -33,7 +33,7 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Permissions
             {
                 return null;
             }
-            var menu = new MenuItemDefinition(name, new FixedLocalizableString(permission.DisplayName), permission.Icon, permission.Url, requiredPermissionName: name);
+            var menu = new MenuItemDefinition(name, new FixedLocalizableString(permission.DisplayName), permission.Icon, permission.Url, permissionDependency:new SimplePermissionDependency(name));
             var children = permission.GetChildren();
             if (children.Any())
             {

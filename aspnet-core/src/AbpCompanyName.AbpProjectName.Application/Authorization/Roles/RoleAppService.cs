@@ -11,6 +11,7 @@ using AbpCompanyName.AbpProjectName.Authorization.Permissions;
 using AbpCompanyName.AbpProjectName.Authorization.Roles.Dto;
 using AbpCompanyName.AbpProjectName.Authorization.Users;
 using Microsoft.AspNetCore.Identity;
+using Abp.Application.Services;
 
 namespace AbpCompanyName.AbpProjectName.Authorization.Roles
 {
@@ -36,17 +37,17 @@ namespace AbpCompanyName.AbpProjectName.Authorization.Roles
                 || x.DisplayName.Contains(input.Keyword));
         }
 
-        public async Task<ListResultDto<RoleListDto>> Select()
-        {
-            return await base.ToList<RoleListInput, RoleListDto>(Repository.GetAll().Take(3000));
-        }
+        //public async Task<ListResultDto<RoleListDto>> Select()
+        //{
+        //    return await base.ToList<RoleListInput, RoleListDto>(Repository.GetAll().Take(3000));
+        //}
 
-        [AbpAuthorize(PermissionNames.System_Roles_List)]
-        public async Task<PagedResultDto<RoleListDto>> PagedList(RoleListInput input)
-        {
-            var query = CreateFilteredQuery(input);
-            return await base.ToPagedList<RoleListInput, RoleListDto>(query, input);
-        }
+        //[AbpAuthorize(PermissionNames.System_Roles_List)]
+        //public async Task<PagedResultDto<RoleListDto>> PagedList(RoleListInput input)
+        //{
+        //    var query = CreateFilteredQuery(input);
+        //    return await base.ToPagedList<RoleListInput, RoleListDto>(query, input);
+        //}
 
         #region 增删改
 

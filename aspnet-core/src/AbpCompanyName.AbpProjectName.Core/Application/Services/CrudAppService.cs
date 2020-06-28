@@ -1,18 +1,19 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 
-namespace AbpCompanyName.AbpProjectName
+namespace Boss.Hr
 {
     /// <summary>
     /// Crud  服务实现
     /// </summary>
     public abstract class CrudAppService<TEntity, TBasicEntityDto, TDetailEntityDto, TPrimaryKey, TGetAllInput, TCreateInput, TUpdateInput> : AppServiceBase<TEntity, TPrimaryKey>
   where TEntity : class, IEntity<TPrimaryKey>
-  where TBasicEntityDto : IEntityDto<TPrimaryKey>
-  where TDetailEntityDto : IEntityDto<TPrimaryKey>
+  where TBasicEntityDto : IEntityDto<TPrimaryKey>, new()
+  where TDetailEntityDto : IEntityDto<TPrimaryKey>, new()
   where TGetAllInput : PagedAndSortedResultRequestDto
   where TUpdateInput : IEntityDto<TPrimaryKey>
     {
@@ -32,7 +33,7 @@ namespace AbpCompanyName.AbpProjectName
         {
             CheckGetAllPermission();
             var query = CreateFilteredQuery(input);
-            return await base.ToPagedList<TGetAllInput, TBasicEntityDto>(query, input);
+            return await base.ToPagedList<TBasicEntityDto>(query, input);
         }
 
         public virtual async Task<TDetailEntityDto> Get(EntityDto<TPrimaryKey> input)

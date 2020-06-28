@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Abp.Application.Services;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
@@ -14,9 +15,10 @@ namespace AbpCompanyName.AbpProjectName.BizLogs
     public class BizLogAppService : AppServiceBase<BizLog, Guid>, IBizLogAppService
     {
         private readonly IRepository<BizLog, Guid> _bizLogRepository;
+
         /// <summary>
         /// 构造函数
-        /// </summary>        
+        /// </summary>
         public BizLogAppService(IRepository<BizLog, Guid> bizLogRepository) : base(bizLogRepository)
         {
             _bizLogRepository = bizLogRepository;

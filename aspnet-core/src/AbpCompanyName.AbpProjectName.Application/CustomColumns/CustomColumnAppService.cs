@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Application.Services;
+using Abp.Domain.Repositories;
 
 namespace AbpCompanyName.AbpProjectName.CustomColumns
 {

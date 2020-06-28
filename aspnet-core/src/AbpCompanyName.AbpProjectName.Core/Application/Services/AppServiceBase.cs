@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Entities;
@@ -12,9 +11,9 @@ using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq;
 using Abp.Linq.Extensions;
-using AutoMapper.QueryableExtensions;
+using Abp.Runtime.Caching;
 
-namespace AbpCompanyName.AbpProjectName
+namespace Abp.Application.Services
 {
     /// <summary>
     /// 服务 父类
@@ -22,6 +21,11 @@ namespace AbpCompanyName.AbpProjectName
     public abstract class AppServiceBase<TEntity, TPrimaryKey> : ApplicationService
         where TEntity : class, IEntity<TPrimaryKey>
     {
+        /// <summary>
+        /// 缓存Manager
+        /// </summary>
+        public ICacheManager CacheManager { get; set; }
+
         public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; }
         protected readonly IRepository<TEntity, TPrimaryKey> Repository;
 
@@ -67,7 +71,7 @@ namespace AbpCompanyName.AbpProjectName
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="input">The input.</param>
-        protected virtual IQueryable<TEntity> ApplySorting<TListInput>(IQueryable<TEntity> query, TListInput input)
+        protected virtual IQueryable<TQueryDto> ApplySorting<TListInput, TQueryDto>(IQueryable<TQueryDto> query, TListInput input) where TQueryDto : IEntity<TPrimaryKey>
         {
             //Try to sort query if available
             var sortInput = input as ISortedResultRequest;
@@ -89,71 +93,89 @@ namespace AbpCompanyName.AbpProjectName
             return query;
         }
 
-        protected virtual async Task<PagedResultDto<TBasicEntityDto>> ToPagedList<TPagedListInput, TBasicEntityDto>(IQueryable<TEntity> query, TPagedListInput input, Func<TEntity, TBasicEntityDto> selector = null) where TPagedListInput : IPagedResultRequest
+        protected virtual async Task<PagedResultDto<TBasicEntityDto>> ToPagedList<TBasicEntityDto>(IQueryable<TEntity> query, IPagedResultRequest input, Func<TEntity, TBasicEntityDto> mapTo)
+        {
+            return await PagedList(query, input, mapTo: mapTo);
+        }
+
+        protected virtual async Task<PagedResultDto<TBasicEntityDto>> ToPagedList<TBasicEntityDto>(IQueryable<TEntity> query, IPagedResultRequest input)
+        {
+            return await PagedList<TBasicEntityDto>(query, input);
+        }
+
+        protected virtual async Task<PagedResultDto<TBasicEntityDto>> ToPagedList<TBasicEntityDto>(IQueryable<TEntity> query, IPagedResultRequest input, Func<IQueryable<TEntity>, IQueryable<TBasicEntityDto>> selectMap)
+        {
+            return await PagedList(query, input, selectMap: selectMap);
+        }
+
+        private async Task<PagedResultDto<TBasicEntityDto>> PagedList<TBasicEntityDto>(IQueryable<TEntity> query, IPagedResultRequest input, Func<IQueryable<TEntity>, IQueryable<TBasicEntityDto>> selectMap = null, Func<TEntity, TBasicEntityDto> mapTo = null)
         {
             var noPagerQuery = query;
+
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await ToList(query, selector);
+            var list = await ToList(query, selectMap, mapTo, false);
 
-            int totalCount = entities?.Count ?? 0;
-            var pagedInput = input as IPagedResultRequest;
-            //没有分页参数,不需要统计总记录数  或者 总条数 小于 每页大小，则代表只有1页数据
-            if (pagedInput != null || totalCount < pagedInput.MaxResultCount)
+            return await GetPagedResult(input, noPagerQuery, list);
+        }
+
+        protected async Task<List<TBasicEntityDto>> ToList<TBasicEntityDto>(IQueryable<TEntity> query, Func<IQueryable<TEntity>, IQueryable<TBasicEntityDto>> selectMap = null, Func<TEntity, TBasicEntityDto> mapTo = null, bool useAutoMapper = false)
+        {
+            List<TBasicEntityDto> result;
+
+            //if (useAutoMapper)
+            //{
+            //    result = await AsyncQueryableExecuter.ToListAsync(query.ProjectTo<TBasicEntityDto>());
+            //}
+            //else
             {
-                totalCount = await AsyncQueryableExecuter.CountAsync(noPagerQuery);
+                if (selectMap == null)
+                {
+                    var entities = await AsyncQueryableExecuter.ToListAsync(query);
+
+                    if (mapTo == null)
+                    {
+                        result = ObjectMapper.Map<List<TBasicEntityDto>>(entities);
+                    }
+                    else
+                    {
+                        result = entities.Select(mapTo).ToList();
+                    }
+                }
+                else
+                {
+                    result = await AsyncQueryableExecuter.ToListAsync(selectMap(query));
+                }
             }
+
+            return result;
+        }
+
+        protected virtual async Task<PagedResultDto<TBasicEntityDto>> GetPagedResult<TPagedListInput, TBasicEntityDto>(TPagedListInput input, IQueryable<TEntity> noPagerQuery, List<TBasicEntityDto> entities) where TPagedListInput : IPagedResultRequest
+        {
+            int totalCount = await AsyncQueryableExecuter.CountAsync(noPagerQuery);
 
             return new PagedResultDto<TBasicEntityDto>(totalCount, entities);
-        }
-
-        protected virtual async Task<ListResultDto<TBasicEntityDto>> ToList<TListInput, TBasicEntityDto>(IQueryable<TEntity> query, TListInput input = default(TListInput), Func<TEntity, TBasicEntityDto> selector = null)
-        {
-            if (input != null)
-            {
-                query = ApplySorting(query, input);
-            }
-
-            var entities = await ToList(query, selector);
-
-            return new ListResultDto<TBasicEntityDto>(entities);
-        }
-
-        protected virtual async Task<List<TBasicEntityDto>> ToList<TBasicEntityDto>(IQueryable<TEntity> query, Func<TEntity, TBasicEntityDto> selector = null)
-        {
-            if (UserProjectTo)
-            {
-                return await AsyncQueryableExecuter.ToListAsync(ProjectToList<TBasicEntityDto>(query));
-            }
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
-            if (selector == null)
-            {
-                return entities.Select(entity => ObjectMapper.Map<TBasicEntityDto>(entity)).ToList();
-            }
-            else
-            {
-                return entities.Select(selector).ToList();
-            }
         }
 
         #endregion 查询
 
         #region 查询一条记录
 
-        protected virtual async Task<TEntityDto> Get<TEntityDto>(EntityDto<TPrimaryKey> input)
+        protected virtual async Task<TEntityDto> Get<TEntityDto>(EntityDto<TPrimaryKey> input) where TEntityDto : new()
         {
             var entity = await Repository.GetAsync(input.Id);
             return MapToEntityDto<TEntityDto>(entity);
         }
 
-        protected virtual async Task<TDetailEntityDto> FirstOrDefaultAsync<TDetailEntityDto>(EntityDto<TPrimaryKey> input)
+        protected virtual async Task<TDetailEntityDto> FirstOrDefaultAsync<TDetailEntityDto>(EntityDto<TPrimaryKey> input) where TDetailEntityDto : new()
         {
-            if (UserProjectTo)
-            {
-                var query = Repository.GetAll().Where(CreateEqualityExpressionForId(input.Id));
-                return await AsyncQueryableExecuter.FirstOrDefaultAsync(ProjectTo<TDetailEntityDto>(query));
-            }
+            //if (useAutoMapper)
+            //{
+            //    var query = Repository.GetAll().Where(CreateEqualityExpressionForId(input.Id));
+            //    return await AsyncQueryableExecuter.FirstOrDefaultAsync(query.ProjectTo<TDetailEntityDto>());
+            //}
             var info = await Repository.FirstOrDefaultAsync(input.Id);
             return MapToEntityDto<TDetailEntityDto>(info);
         }
@@ -176,9 +198,13 @@ namespace AbpCompanyName.AbpProjectName
 
         #region MapTo
 
-        protected virtual TDetailEntityDto MapToEntityDto<TDetailEntityDto>(TEntity entity)
+        protected virtual TEntityDto MapToEntityDto<TEntityDto>(TEntity entity) where TEntityDto : new()
         {
-            return ObjectMapper.Map<TDetailEntityDto>(entity);
+            if (entity == null)
+            {
+                return new TEntityDto();
+            }
+            return ObjectMapper.Map<TEntityDto>(entity);
         }
 
         protected virtual TEntity MapToEntity<TCreateInput>(TCreateInput createInput)
@@ -190,38 +216,6 @@ namespace AbpCompanyName.AbpProjectName
         {
             ObjectMapper.Map(updateInput, entity);
         }
-
-        /// <summary>
-        /// 将实体模型中的每个元素映射到 TEntityQueryDto
-        /// </summary>
-        /// <returns></returns>
-        protected virtual Expression<Func<TEntity, TBasicEntityDto>> SelectMapToList<TBasicEntityDto>()
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// 将实体模型中的每个元素映射到 TEntityQueryDto
-        /// </summary>
-        /// <returns></returns>
-        protected virtual Expression<Func<TEntity, TDetailEntityDto>> SelectMapTo<TDetailEntityDto>()
-        {
-            return null;
-        }
-
-        protected virtual IQueryable<TBasicEntityDto> ProjectToList<TBasicEntityDto>(IQueryable<TEntity> query)
-        {
-            var selectMapTo = SelectMapToList<TBasicEntityDto>();
-            return query.Select(selectMapTo);
-        }
-
-        protected virtual IQueryable<TDetailEntityDto> ProjectTo<TDetailEntityDto>(IQueryable<TEntity> query)
-        {
-            var selectMapTo = SelectMapTo<TDetailEntityDto>();
-            return query.Select(selectMapTo);
-        }
-
-        protected virtual bool UserProjectTo { get; set; } = false;
 
         #endregion MapTo
 
